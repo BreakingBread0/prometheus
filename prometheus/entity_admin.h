@@ -396,7 +396,7 @@ struct Component_2F_LocalPlayer {
     };
 
     void SetRotation(Vector4 rot) {
-        ((void(*)(Component_2F_LocalPlayer*, Vector4*))(globals::gameBase + 0xca6fb0))(this, &rot);
+        ((void(*)(__int64, Component_2F_LocalPlayer*, Vector4*))(globals::gameBase + 0xca6fb0))(0, this, &rot);
     }
 };
 
