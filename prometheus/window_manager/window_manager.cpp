@@ -41,6 +41,9 @@ void window_manager::register_window(window* instance) {
 	Kind Reagards,
 	Someone who has had enough of this dumpster fire of a compiler and will switch to NixOS and clang.
 	Update: after one month of pain while trying to switch i will do that laterTM
+
+	The next person:
+	Just wait until you realize that MSVC doesn't actually handle unions to spec :^) MSVC big funny.
 	*/
 
 	const char* window_name = instance->window_name();
@@ -83,7 +86,12 @@ std::shared_ptr<window> window_manager::add_window(std::unique_ptr<window> windo
 	}
 	int window_id = InterlockedAdd(&s_id_counter, 1);
 	window_reference->window_id = window_id;
-	if (from && !from->this_instance.expired()) //no need if its already expired
+
+	// (carter): Potentially a bug?
+	//           Apparently not? Moving the assignment of created_by within the scope beneath
+	//           results in no ribbon imgui menu. If there's a bug here, it would maybe have to do with
+	//           how expiration is handled for windows.
+	if (from && !from->this_instance.expired())
 		window_reference->created_by = from->this_instance;
 	{
 		std::shared_ptr<window> new_window(window_reference.release());
@@ -338,8 +346,15 @@ std::shared_ptr<window> window_manager::get_latest_by_type(window_type typ) {
 }
 
 bool window::open_window(const char* title, int flags, ImVec2 size) {
+    auto colWinFlags = ImGuiWindowFlags_NoTitleBar    |
+                       ImGuiWindowFlags_NoResize      |
+                       ImGuiWindowFlags_NoMove        |
+                       ImGuiWindowFlags_NoBackground  |
+                       ImGuiWindowFlags_NoNav         |
+                       ImGuiWindowFlags_NoInputs;
+
 	if (is_collapsed) {
-		ImGui::Begin("###collapsed", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoInputs);
+		ImGui::Begin("###collapsed", nullptr, flags);
 		ImGui::SetWindowSize(ImVec2(0, 0));
 		ImGui::SetWindowPos(ImVec2(5000, 5000));
 		return false;
