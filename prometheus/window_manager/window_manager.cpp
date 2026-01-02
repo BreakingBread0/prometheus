@@ -77,8 +77,7 @@ void window_manager::add_default_window(window_type typ) {
 }
 
 std::shared_ptr<window> window_manager::add_window(std::unique_ptr<window> window_reference, window* from) {
-	if (!window_reference)
-		return {};
+	if (!window_reference) return {};
 	if (window_reference->is_singleton()) {
 		auto result = get_latest_by_type(window_reference->get_window_type());
 		if (result)

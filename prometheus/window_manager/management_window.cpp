@@ -18,12 +18,6 @@ std::map<int, std::string> s_worldstates = {
 	{ 8, "World Running" }
 };
 
-ImGuiDockNode* root_docknode(ImGuiDockNode* node) {
-	while (!node->IsRootNode())
-		node = node->ParentNode;
-	return node;
-}
-
 struct window_context_invis {
 	std::vector<std::shared_ptr<window>> children;
 	std::vector<std::shared_ptr<window>> docked_dependents;
@@ -65,6 +59,9 @@ std::map<std::string, __int64> get_maps() {
 		const char* map_path = map_header.get_argument_primitive("m_mapName").get_value<const char*>();
 		const char* map_internal_name = map_header.get_argument_primitive(0x39824653).get_value<const char*>(); //sometimes null
 		const char* display_name = map_header.get_argument_resource("m_displayName")->get_UXDisplayString();
+
+		// (carter): TODO: Don't skip silently, these should likely be logged. Potential pita if not.
+		if (!map_path || !map_internal_name || !display_name) continue;
 
 		std::string name_out = map_path;
 		if (strlen(map_internal_name) > 0)
