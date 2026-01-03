@@ -43,8 +43,7 @@ jobs:
       run: msbuild /p:Configuration=Release /p:PlatformTarget=x64 /p:OutDir=${{env.GITHUB_WORKSPACE}}\output ${{env.SOLUTION_FILE_PATH}}
 
     - name: Zip
-      working-directory: ${{env.GITHUB_WORKSPACE}}\output
-      run: Compress-Archive -Path *.* -DestinationPath prometheus-release.zip
+      run: Compress-Archive -Path ${{env.GITHUB_WORKSPACE}}\output\*.* -DestinationPath ${{env.GITHUB_WORKSPACE}}\prometheus-release.zip
 
     - uses: ncipollo/release-action@v1
       with:
@@ -56,4 +55,4 @@ jobs:
         generateReleaseNotes: true
         removeArtifacts: true
         replacesArtifacts: true
-        artifacts: ${{env.GITHUB_WORKSPACE}}\output\prometheus-release.zip
+        artifacts: ${{env.GITHUB_WORKSPACE}}\prometheus-release.zip
