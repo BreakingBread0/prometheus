@@ -781,6 +781,14 @@ char componen1_oncreate_hook(Component_1_SceneRendering* comp, EntityLoader* loa
 //    VigsTickOrig(a1, a2);
 //}
 
+__int64 (*System63_orig)(__int64);
+__int64 System63_hook(__int64 sys) {
+    if (!*(__int64*)(sys + 0x30)) { //should be component 2
+        return ((__int64(*)(__int64, __int64))(globals::gameBase + 0xc43d00))(sys - 0x80, 0);
+    }
+    return System63_orig(sys);
+}
+
 void __cdecl StartHook(void*) {
     //system("pause");
     printf("hello monsieur\n");
@@ -903,6 +911,10 @@ void __cdecl StartHook(void*) {
     MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xc43a40), selectiveResLoad_hook, (PVOID*)&selectiveResLoad_orig));
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0xc43a40)));
     printf("selectiveResLoad_hook\n");
+
+    MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xc43ab0), System63_hook, (PVOID*)&System63_orig));
+    MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0xc43ab0)));
+    printf("system63 bugfix\n"); 
 
     ((_TlsCallbackFunc)(globals::gameBase + TlsCallback2_Addr))(globals::gameBase, 3, 0);
 
