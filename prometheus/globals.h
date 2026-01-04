@@ -186,6 +186,8 @@ namespace globals {
 	extern DWORD_PTR gameBase;
 	extern DWORD_PTR gameWindow;
 	extern DWORD_PTR gameSize;
+	extern DWORD_PTR modBase;
+	extern DWORD_PTR modSize;
 	extern bool exit_normal;
 	extern bool pauseLogHook;
 	extern bool isDemo;
@@ -257,8 +259,11 @@ inline std::string stacktrace_str() {
 	USHORT count = CaptureStackBackTrace(0, 48, stack, NULL);
 	for (USHORT c = 0; c < count; c++) {
 		__int64 addr = (__int64)stack[c];
+		//TODO: Properly enumerate the modules... someday
 		if (addr > globals::gameBase && (addr - globals::gameBase) < globals::gameSize)
 			sprintf(buf + strlen(buf), "addr %02d: %p (RVA %p)\n", c, addr, addr - globals::gameBase);
+		else if (addr > globals::modBase && (addr - globals::modBase) < globals::modSize)
+			sprintf(buf + strlen(buf), "addr %02d: %p (inject.dll+%p)\n", c, addr, addr - globals::modBase);
 		else
 			sprintf(buf + strlen(buf), "addr %02d: %p\n", c, addr);
 	}

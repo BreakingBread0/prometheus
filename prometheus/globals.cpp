@@ -6,6 +6,8 @@ namespace globals {
 	DWORD_PTR gameBase = 0;
 	DWORD_PTR gameWindow = 0;
 	DWORD_PTR gameSize = 0;
+	DWORD_PTR modBase = 0;
+	DWORD_PTR modSize = 0;
 	bool switchGameEA = false;
 	bool exit_normal = false;
 	bool pauseLogHook = false;

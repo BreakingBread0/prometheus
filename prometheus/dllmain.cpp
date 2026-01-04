@@ -1134,6 +1134,19 @@ bool CheckDebuggerPresentHook() {
     return false;
 }
 
+//https://stackoverflow.com/questions/557081/how-do-i-get-the-hmodule-for-the-currently-executing-code
+HMODULE GetCurrentModule()
+{ // NB: XP+ solution!
+    HMODULE hModule = NULL;
+    GetModuleHandleEx(
+        GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS,
+        (LPCTSTR)GetCurrentModule,
+        &hModule);
+
+    return hModule;
+}
+
+
 BOOL APIENTRY DllMain(HMODULE hModule,
     DWORD  ul_reason_for_call,
     LPVOID lpReserved
@@ -1146,8 +1159,12 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 
         printf("Adding VEH: %p\n", AddVectoredExceptionHandler(true, (PVECTORED_EXCEPTION_HANDLER)VectoredExceptionHandler));
         globals::gameBase = (DWORD_PTR)GetModuleHandleA(nullptr);
+        globals::modBase = (DWORD_PTR)GetCurrentModule();
         const auto pe = Pe::PeNative::fromModule(GetModuleHandleA(NULL));
         globals::gameSize = pe.imageSize();
+        const auto modpe = Pe::PeNative::fromModule(GetCurrentModule());
+        globals::modSize = modpe.imageSize();
+        printf("Module Base: %p %p\n", globals::modBase, globals::modSize);
         printf("Game Base: %p %p\n", globals::gameBase, globals::gameSize);
         mainThreadId = GetCurrentThreadId();
         printf("Main Thread: %d (%x)\n", mainThreadId, mainThreadId);
