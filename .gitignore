@@ -405,3 +405,6 @@ FodyWeavers.xsd
 
 vcpkg_installed/
 output/
+
+
+prometheus/build/settings.json
