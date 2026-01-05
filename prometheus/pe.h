@@ -509,7 +509,7 @@ namespace Pe
         }
 
         template <typename DirType>
-        typename DirectoryDescriptor<DirType> directory() const noexcept
+        DirectoryDescriptor<DirType> directory() const noexcept
         {
             const auto* const directoryHeader = directory(DirType::k_id);
             if (!directoryHeader->Size)
