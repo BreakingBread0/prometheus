@@ -21,7 +21,7 @@ class entadmin_compodependencies : public window {
 					ImGui::TableNextColumn();
 					auto& dependencies = creation_info->component_dependencies[i];
 					for (int j = 0; j < dependencies.num; j++) {
-						allmighty_hash_lib::display_component(dependencies.ptr[j]);
+						stringhash_library::display_component(dependencies.ptr[j]);
 					}
 				}
 

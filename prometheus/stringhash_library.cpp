@@ -9,13 +9,23 @@
 #include <thread>
 #include <mutex>
 
-namespace allmighty_hash_lib {
+namespace stringhash_library {
 	std::map<int, std::string> hashes{};
 	std::map<__int64, std::string> comments{};
 	std::map<int, component_info> components{};
 	std::recursive_mutex mut{};
-	bool will_save = false;
+	bool has_error = false;
+	bool error_shown = false;
+	std::string error = "No error";
 
+	void enable_library_saving() {
+		has_error = false;
+		error_shown = false;
+	}
+
+	void show_error() {
+		imgui_helpers::messageBox(std::format("Has error: %s\nError: %s", has_error ? "Yes" : "No", error), "Stringhash Library", nullptr);
+	}
 	
 	void display_hash(int hash, const char* prepend) {
 		std::unique_lock lock(mut);
@@ -46,6 +56,21 @@ namespace allmighty_hash_lib {
 		}
 	}
 
+	std::string _empty_string;
+	const std::string& find_component(__int64 hash) {
+		auto result = comments.find(hash);
+		if (result != comments.end())
+			return _empty_string;
+		return result->second;
+	}
+
+	const std::string& find_hash(int hash) {
+		auto result = comments.find(hash);
+		if (result != comments.end())
+			return _empty_string;
+		return result->second;
+	}
+
 	void add_comment(__int64 key, std::string value, bool force_override) {
 		std::unique_lock lock(mut);
 		if (comments.find(key) == comments.end()) {
@@ -65,8 +90,8 @@ namespace allmighty_hash_lib {
 	std::thread save_thread = {};
 	//Mutexed
 	void save_all() {
-		if (!will_save) {
-			imgui_helpers::messageBox("Saving hashlibrary is disabled.", "Hashlib");
+		if (has_error && !error_shown) {
+			show_error();
 			return;
 		}
 		//save_thread.joinable() is unreliable
@@ -131,12 +156,12 @@ namespace allmighty_hash_lib {
 			nlohmann::json json;
 			{
 				if (!std::filesystem::exists(filename)) {
-					will_save = true;
 					return;
 				}
 				std::ifstream input_file(filename);
 				if (!input_file.is_open()) {
-					printf("Failed to open input hash file.");
+					has_error = true;
+					error = "Failed to open input hash file.";
 					return;
 				}
 				json = nlohmann::json::parse(input_file);
@@ -146,18 +171,25 @@ namespace allmighty_hash_lib {
 			}
 
 			auto db = json["db"];
-			for (auto it = db.begin(); it != db.end(); ++it) {
-				int expectedHash = strtoll(it.key().c_str(), nullptr, 16);
-				if (expectedHash == 0) {
-					continue;
-				}
-				auto value = it.value().get<std::string>();
-				if (expectedHash != stringHash(value.c_str())) {
-					printf("Invalid hash: Expected %x but got %x (%s)\n", expectedHash, stringHash(value.c_str()), value.c_str());
-					continue;
-				}
+			if (db.is_object()) {
+				for (auto it = db.begin(); it != db.end(); ++it) {
+					int expectedHash = strtoll(it.key().c_str(), nullptr, 16);
+					if (expectedHash == 0) {
+						continue;
+					}
+					auto value = it.value().get<std::string>();
+					if (expectedHash != stringHash(value.c_str())) {
+						printf("Invalid hash: Expected %x but got %x (%s)\n", expectedHash, stringHash(value.c_str()), value.c_str());
+						continue;
+					}
 
-				hashes.emplace(expectedHash, value);
+					hashes.emplace(expectedHash, value);
+				}
+			}
+			else {
+				error = "Failed to open input hash file.";
+				has_error = true;
+				return;
 			}
 			auto comm = json["comments"];
 			for (auto it = comm.begin(); it != comm.end(); ++it) {
@@ -179,26 +211,26 @@ namespace allmighty_hash_lib {
 				components.emplace(expectedHash, value);
 			}
 
-			will_save = true;
-
 			if (json.contains("add") && json["add"].is_array()) {
 				for (auto it = json["add"].begin(); it != json["add"].end(); ++it) {
 					add_hash(it.value().get<std::string>());
 				}
 			}
+			return;
 		}
 		catch (nlohmann::json::exception ex) {
-			printf("Failed to open hashlibrary.json. Saving is disabled. JSON Error: %s\n", ex.what());
+			error = "Failed to open hashlibrary.json. Saving is disabled. JSON Error: %s\n", ex.what();
 		}
 		catch (std::bad_alloc& ex) {
-			printf("Failed to open hashlibrary.json. Saving is disabled. Error: %s\n", ex.what());
+			error = "Failed to open hashlibrary.json. Saving is disabled. Error: %s\n", ex.what();
 		}
 		catch (std::exception& ex) {
-			printf("Failed to open hashlibrary.json. Saving is disabled. Error: %s\n", ex.what());
+			error = "Failed to open hashlibrary.json. Saving is disabled. Error: %s\n", ex.what();
 		}
 		catch (...) {
-			printf("Failed to open hashlibrary.json. Saving is disabled.\n");
+			error = "Failed to open hashlibrary.json. Saving is disabled.\n";
 		}
+		has_error = true;
 	}
 
 	/*void initialize() {

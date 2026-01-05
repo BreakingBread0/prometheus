@@ -1,5 +1,7 @@
 #pragma once
 #include "Statescript.h"
+#include "STUConfigVarDynamic_Custom.h"
+#include "STUConfigVar_Custom.h"
 
 struct StatescriptVar_Base;
 struct StatescriptVar_VarBag;
@@ -181,16 +183,13 @@ struct StatescriptVar_VarBag {
 	};
 
 	void SetVar(std::vector<__int64> cv_path, StatescriptPrimitive value) {
-		STUConfigVarDynamic_Editable set_health_cv(cv_path); //current health value
-		STUConfigVar value_cv{};
-		GetSTUInfoByHash(stringHash("STUConfigVar"))->clear_instance_fn((__int64)&value_cv);
-		STUConfigVar_impl_Custom value_cv_impl(value);
-		value_cv.cv_impl = (STUConfigVar_impl*)&value_cv_impl;
-		base.stu_base.vfptr->SetConfigVarValueFromSTUConfigVar(this, set_health_cv.get(), (STUConfigVar*)&value_cv, 0);
+		STUConfigVarDynamic_Custom set_health_cv(cv_path); //current health value
+		STUConfigVar_Custom value_cv(value);
+		base.stu_base.vfptr->SetConfigVarValueFromSTUConfigVar(this, set_health_cv.get(), value_cv.get(), 0);
 	}
 
 	void SetArray(std::vector<__int64> cv_path, StatescriptPrimitive m_key, StatescriptPrimitive m_value, int m_index) {
-		STUConfigVarDynamic_Editable cvd(cv_path);
+		STUConfigVarDynamic_Custom cvd(cv_path);
 		base.stu_base.vfptr->VarBag_DictionaryAddSetItem(this, cvd.get(), &m_key, &m_value, nullptr, m_index);
 	}
 

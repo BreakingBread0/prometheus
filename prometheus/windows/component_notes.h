@@ -15,7 +15,7 @@ class component_notes : public window {
 
 			imgui_helpers::beginTable("components", {"Component", "Name", "Comment"});
 
-			for (auto& component : allmighty_hash_lib::components) {
+			for (auto& component : stringhash_library::components) {
 				ImGui::PushID(component.first);
 				if (search.needs_haystack()) {
 					search.haystack_hex(component.first);
@@ -36,8 +36,8 @@ class component_notes : public window {
 				ImGui::PushID("second");
 				if (ImGui::Button(EMOJI_EDIT)) {
 					window_manager::add_window(new textedit_window(component.second.name, [compid](std::string new_value){
-						allmighty_hash_lib::components[compid].name = new_value;
-						allmighty_hash_lib::save_all();
+						stringhash_library::components[compid].name = new_value;
+						stringhash_library::save_all();
 					}), this);
 				}
 				ImGui::PopID();
@@ -47,8 +47,8 @@ class component_notes : public window {
 				ImGui::TableNextColumn();
 				if (ImGui::Button(EMOJI_EDIT)) {
 					window_manager::add_window(new textedit_window(component.second.comment, [compid](std::string new_value) {
-						allmighty_hash_lib::components[compid].comment = new_value;
-						allmighty_hash_lib::save_all();
+						stringhash_library::components[compid].comment = new_value;
+						stringhash_library::save_all();
 					}), this);
 				}
 				ImGui::SameLine();

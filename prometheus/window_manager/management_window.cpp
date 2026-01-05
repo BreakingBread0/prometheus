@@ -229,6 +229,8 @@ void management_window::render() {
 					continue;
 				if (window->is_docked)
 					continue;
+				if (window->is_modal)
+					continue;
 
 				ImGui::PushID(window.get());
 

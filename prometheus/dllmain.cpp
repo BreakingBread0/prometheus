@@ -451,7 +451,7 @@ __int64 stuux_string_hash_hook(char* input) {
     if (last_stuux_hash != hash) {
         last_stuux_hash = hash;
         if (hash != 0)
-            allmighty_hash_lib::add_comment(hash, input, true);
+            stringhash_library::add_comment(hash, input, true);
     }
     return hash;
 }
@@ -517,8 +517,8 @@ Entity* emplace_entity_hook(EntityAdminBase* ea, int* entid, EntityLoader* loade
     //        continue;
     //    /*if (loader->stu_id == 0x0400000000000001 && (entry->component_id == 0xe || entry->component_id == 0x1c))
     //        entry->component_id = 0;*/
-    //    if (allmighty_hash_lib::components.find(entry->component_id) != allmighty_hash_lib::components.end())
-    //        printf("- Component %s (%x) (data %p %p %p )\n", allmighty_hash_lib::components[entry->component_id].name.c_str(), entry->component_id, entry->a1, entry->a2, entry->a3);
+    //    if (stringhash_library::components.find(entry->component_id) != stringhash_library::components.end())
+    //        printf("- Component %s (%x) (data %p %p %p )\n", stringhash_library::components[entry->component_id].name.c_str(), entry->component_id, entry->a1, entry->a2, entry->a3);
     //    else
     //        printf("- Component %x (data %p %p %p)\n", entry->component_id, entry->a1, entry->a2, entry->a3);
     //}
@@ -1095,7 +1095,7 @@ void __cdecl StartHook(void*) {
     window_manager::call_preStartInitialize();
 
     printf("Loading hashlib\n");
-    allmighty_hash_lib::initialize();
+    stringhash_library::initialize();
     stu_resources::initialize();
 
     printf("Prepared to launch %p.\n", globals::gameBase + Start_Addr);

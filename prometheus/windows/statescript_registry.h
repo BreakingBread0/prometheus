@@ -26,7 +26,7 @@
 //				ImGui::TableNextColumn();
 //				while (temp != nullptr) {
 //					if (temp->info->rtti_info == rtti->stuclass_inherit) {
-//						allmighty_hash_lib::display_hash(temp->info->name_hash);
+//						stringhash_library::display_hash(temp->info->name_hash);
 //						break;
 //					}
 //					temp = temp->next;

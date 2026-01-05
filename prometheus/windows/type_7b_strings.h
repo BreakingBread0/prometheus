@@ -74,7 +74,7 @@ class type_7b_strings : public window {
 					ImGui::Text("%s", str.string);
 
 					if (emplace) {
-						allmighty_hash_lib::add_comment(str.id, str.string);
+						stringhash_library::add_comment(str.id, str.string);
 					}
 				}
 				ImGui::EndTable();

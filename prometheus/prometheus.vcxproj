@@ -244,6 +244,8 @@
     <ClInclude Include="state_replicator.h" />
     <ClInclude Include="stringhash_library.h" />
     <ClInclude Include="STU.h" />
+    <ClInclude Include="STUConfigVarDynamic_Custom.h" />
+    <ClInclude Include="STUConfigVar_Custom.h" />
     <ClInclude Include="STU_Editable.h" />
     <ClInclude Include="stu_resources.h" />
     <ClInclude Include="Viewmodel.h" />
@@ -343,6 +345,8 @@
     <ClCompile Include="state_replicator.cpp" />
     <ClCompile Include="stringhash_library.cpp" />
     <ClCompile Include="STU.cpp" />
+    <ClCompile Include="STUConfigVarDynamic_Custom.cpp" />
+    <ClCompile Include="STUConfigVar_Custom.cpp" />
     <ClCompile Include="STU_Editable.cpp" />
     <ClCompile Include="stu_resources.cpp" />
     <ClCompile Include="windows\entity_window.cpp" />

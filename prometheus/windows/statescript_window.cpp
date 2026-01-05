@@ -176,14 +176,14 @@ void statescript_window::render() {
                 int outplug_id = 0xD000 | node->idx_in_nodes | outplug_i++ << 20;
                 ImNodes::BeginOutputAttribute(outplug_id, ImNodesPinShape_CircleFilled);
                 std::string plug_name;
-                if (allmighty_hash_lib::hashes.find(out_node.first) != allmighty_hash_lib::hashes.end()) {
-                    plug_name = allmighty_hash_lib::hashes[out_node.first];
+                if (stringhash_library::hashes.find(out_node.first) != stringhash_library::hashes.end()) {
+                    plug_name = stringhash_library::hashes[out_node.first];
                 }
                 else {
                     plug_name = std::format("{:x}", out_node.first);
                 }
-                if (allmighty_hash_lib::comments.find(out_node.first) != allmighty_hash_lib::comments.end()) {
-                    plug_name += " (" + allmighty_hash_lib::comments[out_node.first] + ")";
+                if (stringhash_library::comments.find(out_node.first) != stringhash_library::comments.end()) {
+                    plug_name += " (" + stringhash_library::comments[out_node.first] + ")";
                 }
                 int indent_size = ImNodes::GetNodeDimensions(node->idx_in_nodes).x - ImGui::CalcTextSize(plug_name.c_str()).x - 20;
                 if (indent_size < 10)

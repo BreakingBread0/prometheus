@@ -41,7 +41,7 @@ public:
 			return;
 		}
 
-		for (auto& hash : allmighty_hash_lib::hashes) {
+		for (auto& hash : stringhash_library::hashes) {
 			out_file2 << hash.second << std::endl;
 		}
 	}

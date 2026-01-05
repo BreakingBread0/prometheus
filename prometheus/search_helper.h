@@ -71,12 +71,12 @@ public:
 	void haystack_stringhash(__int64 input) {
 		if (!_needs_haystack)
 			return;
-		auto comment = allmighty_hash_lib::comments.find(input);
-		if (comment != allmighty_hash_lib::comments.end()) {
+		auto comment = stringhash_library::comments.find(input);
+		if (comment != stringhash_library::comments.end()) {
 			haystack(comment->second);
 		}
-		auto hash = allmighty_hash_lib::hashes.find(input);
-		if (hash != allmighty_hash_lib::hashes.end()) {
+		auto hash = stringhash_library::hashes.find(input);
+		if (hash != stringhash_library::hashes.end()) {
 			haystack(hash->second);
 		}
 		haystack_hex(input);

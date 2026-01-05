@@ -106,6 +106,7 @@ public:
 	}
 
 	static STU_Object create(STUInfo* struct_info);
+	static STU_Object* createNew(STUInfo* struct_info);
 };
 
 class STU_ListBase {

@@ -115,10 +115,10 @@
 //								continue;
 //							}
 //							std::string name = *instance->hero_name.resource_load_entry->align()->resource_ptr;
-//							allmighty_hash_lib::add_comment(instance->m_gameplayEntity.resource_id, name);
-//							allmighty_hash_lib::add_comment(instance->entity_heroselect_lineup.resource_id, name + " (HeroSelect)");
-//							allmighty_hash_lib::add_comment(instance->entity_herolineup.resource_id, name + "(Lineup)");
-//							allmighty_hash_lib::add_comment(instance->entity_potg.resource_id, name + "(POTG)");
+//							stringhash_library::add_comment(instance->m_gameplayEntity.resource_id, name);
+//							stringhash_library::add_comment(instance->entity_heroselect_lineup.resource_id, name + " (HeroSelect)");
+//							stringhash_library::add_comment(instance->entity_herolineup.resource_id, name + "(Lineup)");
+//							stringhash_library::add_comment(instance->entity_potg.resource_id, name + "(POTG)");
 //						}
 //						else {
 //							printf("Failed to load hero %p\n", hero);
@@ -139,14 +139,14 @@
 //					if (_search.needs_haystack()) {
 //						bool has = false;
 //						_search.haystack_hex(it->first);
-//						if (allmighty_hash_lib::comments.find(it->first) != allmighty_hash_lib::comments.end()) {
-//							_search.haystack(allmighty_hash_lib::comments[it->first]);
+//						if (stringhash_library::comments.find(it->first) != stringhash_library::comments.end()) {
+//							_search.haystack(stringhash_library::comments[it->first]);
 //						}
 //						for (int i = 0; i < it->second->m_componentMap.count(); i++) {
 //							auto& comp_def = it->second->m_componentMap.list()[i];
 //							_search.haystack(comp_def.component_hash);
-//							auto hash_name = allmighty_hash_lib::hashes.find((int)comp_def.component_hash);
-//							if (hash_name != allmighty_hash_lib::hashes.end()) {
+//							auto hash_name = stringhash_library::hashes.find((int)comp_def.component_hash);
+//							if (hash_name != stringhash_library::hashes.end()) {
 //								_search.haystack(hash_name->second);
 //							}
 //							/*char hash_buf[32];

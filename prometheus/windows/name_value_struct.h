@@ -59,7 +59,7 @@ class name_value_struct : public window {
 		int size = *(int*)(globals::gameBase + 0x18a70b8 + 8);
 		for (int i = 0; i < size; i++) {
 			if (addnames) {
-				allmighty_hash_lib::add_hash(arr[i]->item_name.get());
+				stringhash_library::add_hash(arr[i]->item_name.get());
 			}
 			TreeItem* tree = (TreeItem*)(arr[i]->tree_location);
 			if (typ == 1) {
@@ -148,7 +148,7 @@ class name_value_struct : public window {
 					display_addr(stringHash(namedItem->item_name.get()));
 
 					ImGui::TableNextColumn();
-					allmighty_hash_lib::display_hash(namedItem->item_hash_xored_with_smth ^ stringHash(namedItem->item_name.get()));
+					stringhash_library::display_hash(namedItem->item_hash_xored_with_smth ^ stringHash(namedItem->item_name.get()));
 
 					ImGui::TableNextColumn();
 					display_addr(namedItem->item_name.hash);

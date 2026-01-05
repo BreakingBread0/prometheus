@@ -303,7 +303,7 @@ void entity_window::render_entity(Entity* ent, int depth) {
 			ImGui::Text(compo->is_mirrored ? "(ext):" : ":");
 			ImGui::PopFont();
 			ImGui::SameLine();
-			allmighty_hash_lib::display_component(compo->component_id);
+			stringhash_library::display_component(compo->component_id);
 			ImGui::SameLine();
 			display_addr((__int64)compo);
 			if (compo->component_id == 0x23) {

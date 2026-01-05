@@ -392,6 +392,10 @@ class game_data_window : public window {
 					((void(*)(__int64))(globals::gameBase + 0xcc3b00))(comp_2d);
 				}
 			}
+			ImGui::Button("Right click me test!");
+			if (ImGui::IsItemHovered()) {
+				window_manager::modal_onrightclick<message_window>(this, "Test Modal!");
+			}
 
 			if (ImGui::Button("Replace State")) {
 				auto inst = (STUStatescriptGraph*)try_load_resource(0x5800000000009d0);

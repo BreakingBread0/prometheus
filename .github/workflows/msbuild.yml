@@ -16,6 +16,10 @@ permissions: # For creating a release
   contents: write 
   packages: write
 
+concurrency: # We only need the latest to build. Theres no point in building every single commit
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: windows-latest

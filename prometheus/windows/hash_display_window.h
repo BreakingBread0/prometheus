@@ -13,18 +13,18 @@ class hash_display_window : public window {
 			display_addr(stringHash(buf) & 0xFFFFFFFF, "Result");
 			ImGui::SameLine();
 			if (ImGui::Button("Add to Library")) {
-				allmighty_hash_lib::add_hash(buf);
+				stringhash_library::add_hash(buf);
 			}
 			ImGui::NewLine();
 			ImGui::Separator();
 
-			ImGui::Text("The allmighty string hashing library has a size of %d. ALL PRAISE OUR LORD AND SAVIOUR STRINGHASH", allmighty_hash_lib::hashes.size());
+			ImGui::Text("The allmighty string hashing library has a size of %d. ALL PRAISE OUR LORD AND SAVIOUR STRINGHASH", stringhash_library::hashes.size());
 
 			static char filter[256];
 			ImGui::InputText("Filter: ", filter, 256);
 
 			if (imgui_helpers::beginTable("Hashes", { "Hash", "Meaning" })) {
-				for (auto& hash : allmighty_hash_lib::hashes) {
+				for (auto& hash : stringhash_library::hashes) {
 					std::string searchFor = hash.second + std::format("{:x}", (uint)hash.first);
 					if (strlen(filter) > 0 && !icontains(searchFor, filter))
 						continue;

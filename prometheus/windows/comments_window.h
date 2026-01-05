@@ -10,19 +10,19 @@ class comments_window : public window {
 	inline void render() override {
 		if (open_window(nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
 			ImGui::Text("Editing for '%p'", _typ);
-			auto item = allmighty_hash_lib::comments.find(_typ);
-			if (item == allmighty_hash_lib::comments.end())
+			auto item = stringhash_library::comments.find(_typ);
+			if (item == stringhash_library::comments.end())
 				return;
 
-			auto hashitem = allmighty_hash_lib::hashes.find(_typ);
-			if (hashitem != allmighty_hash_lib::hashes.end()) {
+			auto hashitem = stringhash_library::hashes.find(_typ);
+			if (hashitem != stringhash_library::hashes.end()) {
 				ImGui::Text("Hash found: %s", hashitem->second.c_str());
 			}
 			char* buf = new char[item->second.size() + 32];
 			memcpy(buf, item->second.c_str(), item->second.size());
 			buf[item->second.size()] = 0;
 			if (ImGui::InputText("Comment", buf, item->second.size() + 32)) {
-				allmighty_hash_lib::comments[_typ] = buf;
+				stringhash_library::comments[_typ] = buf;
 			}
 			delete[] buf;
 			ImGui::Text("Expected %x got %x", _typ, stringHash(item->second.c_str()));
@@ -31,16 +31,16 @@ class comments_window : public window {
 			}
 			if (ImGui::Button("Save")) {
 				if (stringHash(item->second.c_str()) == _typ) {
-					allmighty_hash_lib::add_hash(item->second);
-					allmighty_hash_lib::comments.erase(_typ);
+					stringhash_library::add_hash(item->second);
+					stringhash_library::comments.erase(_typ);
 				}
-				allmighty_hash_lib::save_all();
+				stringhash_library::save_all();
 				queue_deletion();
 			}
 			ImGui::SameLine();
 			if (ImGui::Button("Delete")) {
-				allmighty_hash_lib::comments.erase(_typ);
-				allmighty_hash_lib::save_all();
+				stringhash_library::comments.erase(_typ);
+				stringhash_library::save_all();
 				queue_deletion();
 			}
 			ImGui::SameLine();
@@ -60,12 +60,12 @@ class comments_window : public window {
 public:
 	comments_window() {}
 	comments_window(__int64 type) : _typ(type) {
-		if (allmighty_hash_lib::comments.find(type) == allmighty_hash_lib::comments.end()) {
+		if (stringhash_library::comments.find(type) == stringhash_library::comments.end()) {
 			char* buf = new char[256];
 			sprintf_s(buf, 256, "Unknown Item");
-			allmighty_hash_lib::comments.emplace(type, buf);
+			stringhash_library::comments.emplace(type, buf);
 		}
-		auto& comment = allmighty_hash_lib::comments[type];
+		auto& comment = stringhash_library::comments[type];
 		comment.resize(comment.size() + 10);
 	}
 };

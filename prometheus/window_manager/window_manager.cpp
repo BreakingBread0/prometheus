@@ -14,6 +14,7 @@
 #include "../stringhash_library.h"
 #include "../filetype_library.h"
 #include "../windows/radio_selector_window.h"
+#include "../ImguiRenderer.h"
 //#include "../windows/radio_selector_window.h"
 
 bool window_manager::window_id_exists(int window_id) {
@@ -110,6 +111,30 @@ void window_manager::remove_window_internal(window* window) {
 		dependant->_has_dependents = has_dependents;
 }
 
+
+template <typename modal_window_type, typename arg_type>
+static void window_manager::modal_onrightclick(window* from, arg_type arg) {
+	if (ImGui::IsMouseReleased(ImGuiMouseButton_Right)) {
+		auto new_wind = create_by_type<modal_window_type>(from);
+		owassert(new_wind.get());
+		auto wind_cast = dynamic_cast<modal_window_type*>(new_wind.get());
+		wind_cast->set(arg);
+		new_wind->is_dependent = true;
+		new_wind->is_modal = true;
+		new_wind->set_focus_next_frame(true);
+	}
+}
+
+template <typename modal_window_type>
+static void modal_onrightclick(window* from) {
+	if (ImGui::IsMouseReleased(ImGuiMouseButton_Right)) {
+		auto new_wind = create_by_type<modal_window_type>(from);
+		new_wind->is_dependent = true;
+		new_wind->is_modal = true;
+		new_wind->set_focus_next_frame(true);
+	}
+}
+
 void window_manager::kill_dependents(window* from) {
 	if (!from)
 		return;
@@ -170,124 +195,161 @@ void window_manager::call_window_render(window* window) {
 	}
 }
 
+void window_manager::render_error(const char* err) {
+	auto renderer = ImguiRenderer::GetInstance();
+	renderer->BeginScene();
+	renderer->DrawString(ImGui::GetDefaultFont(), "Window manager failed to render!", ImVec2(50, 50), 18, IM_COL32(255, 0, 0, 255), false);
+	renderer->DrawString(ImGui::GetDefaultFont(), err, ImVec2(50, 70), 18, IM_COL32(255, 0, 0, 255), false);
+	renderer->EndScene();
+}
+
 void window_manager::render() {
-	for (int i = 0; i < s_windows.size(); i++) {
-		auto window = s_windows[i];
-		if (window) {
-			if (window->_wants_delete) {
-				i--;
-				remove_window_internal(window.get());
-				continue;
-			}
-			if (window->is_dependent) {
-				auto dependant = window->created_by.lock();
-				if (!dependant) {
+	__try {
+		render_ex();
+	}
+	__except (EXCEPTION_EXECUTE_HANDLER) {
+		render_error("C handler exception");
+	}
+}
+
+void window_manager::render_ex() {
+	try {
+		for (int i = 0; i < s_windows.size(); i++) {
+			auto window = s_windows[i];
+			if (window) {
+				if (window->_wants_delete) {
 					i--;
 					remove_window_internal(window.get());
 					continue;
 				}
-				else {
-					dependant->_has_dependents = true;
-				}
-			}
-			if (window->is_docked) {
-				auto this_root = window->_root_dock.lock();
-				if (this_root) {
-					if (this_root->is_collapsed) {
+				if (window->is_modal) {
+					window->is_dependent = true;
+					if (window->is_collapsed) {
+						window->queue_deletion();
 						continue;
 					}
-					if (window->is_dependent) {
-						auto creator = window->created_by.lock();
-						if (creator) {
-							if (this_root != creator->_root_dock.lock()) {
-								ImGui::DockContextQueueUndockWindow(ImGui::GetCurrentContext(), ImGui::FindWindowByID(window->im_id));
-							}
-						}
+				}
+				if (window->is_dependent) {
+					auto dependant = window->created_by.lock();
+					if (!dependant) {
+						window->queue_deletion();
+						continue;
+					}
+					else {
+						dependant->_has_dependents = true;
 					}
 				}
-			}
-
-			if (window->_focus_next_frame && !window->is_collapsed && window->im_id) {
-				window->_focus_next_frame = false;
-				ImGui::FocusWindow(ImGui::FindWindowByID(window->im_id));
-			}
-
-			call_window_render(window.get());
-
-			if (window->_focus_next_frame) {
-				window->set_collapsed(false);
-			}
-
-			auto imw = ImGui::GetCurrentWindowRead();
-			if (window->im_id != 0) {
-				if (imw->ID == window->im_id) {
-					ImGui::End();
-				}
-				auto this_window = ImGui::FindWindowByID(window->im_id);
-				if (this_window) {
-					if (window->_dock_requests.size() > 0) {
-						for (auto it = window->_dock_requests.begin(); it != window->_dock_requests.end();) {
-							auto other = it->target.lock();
-							if (other) {
-								if (other->_im_id) {
-									auto other_window = ImGui::FindWindowByID(other->im_id);
-									if (other_window) {
-										ImGui::DockContextQueueDock(ImGui::GetCurrentContext(), this_window, this_window->DockNodeAsHost, other_window, it->direction, it->size_ratio, true);
-										window->_dock_requests.erase(it);
-										continue;
-									}
+				if (window->is_docked) {
+					auto this_root = window->_root_dock.lock();
+					if (this_root) {
+						if (this_root->is_collapsed) {
+							continue;
+						}
+						if (window->is_dependent) {
+							auto creator = window->created_by.lock();
+							if (creator) {
+								if (this_root != creator->_root_dock.lock()) {
+									ImGui::DockContextQueueUndockWindow(ImGui::GetCurrentContext(), ImGui::FindWindowByID(window->im_id));
 								}
 							}
-							it++;
 						}
 					}
-					s_windows_by_im_id[window->im_id] = window;
-					auto root = window->_root_dock.lock();
-					//printf("visual root valid: %s\n", visual_root_window ? "Yes" : "No");
-					if (!root || !root->is_collapsed) {
-						auto visual_root_window = get_leftmost_window(window.get());
-						window->_root_dock = visual_root_window ? s_windows_by_im_id[visual_root_window->ID] : window;
-						root = window->_root_dock.lock();
-						//window->_dock_uniqueid = this_window->RootWindowDockTree->ID;
-						window->_is_docked = root != window;
+				}
+
+				if (window->_focus_next_frame && !window->is_collapsed && window->im_id) {
+					window->_focus_next_frame = false;
+					ImGui::FocusWindow(ImGui::FindWindowByID(window->im_id));
+				}
+
+				call_window_render(window.get());
+
+				if (window->_is_focused)
+					s_focused_window = window->window_id;
+				
+				if (window->_focus_next_frame) {
+					window->set_collapsed(false);
+				}
+				else if (window->is_modal && !window->_is_focused) {
+					window->queue_deletion();
+				}
+
+				auto imw = ImGui::GetCurrentWindowRead();
+				if (window->im_id != 0) {
+					if (imw->ID == window->im_id) {
+						ImGui::End();
 					}
-					window->_is_collapsed = root->is_collapsed;
-					if (window->_wants_collapse) {
-						root->_is_collapsed = true;
-						window->_wants_collapse = false;
-					}
-					if (window->_wants_show) {
-						root->_is_collapsed = false;
-						window->_wants_show = false;
-					}
-					if (window->_first_render && !window->is_docked) {
-						auto parent = window->created_by.lock();
-						if (parent && parent->im_id) {
-							auto parent_window = ImGui::FindWindowByID(parent->im_id);
-							auto new_pos = parent_window->Pos;
-							new_pos += parent_window->Size / 2;
-							auto curr_window = ImGui::FindWindowByID(window->im_id);
-							new_pos -= curr_window->Size / 2;
-							if (new_pos.x < 20)
-								new_pos.x = 20;
-							if (new_pos.y < 20)
-								new_pos.y = 20;
-							curr_window->Pos = new_pos;
+					auto this_window = ImGui::FindWindowByID(window->im_id);
+					if (this_window) {
+						if (window->_dock_requests.size() > 0) {
+							for (auto it = window->_dock_requests.begin(); it != window->_dock_requests.end();) {
+								auto other = it->target.lock();
+								if (other) {
+									if (other->_im_id) {
+										auto other_window = ImGui::FindWindowByID(other->im_id);
+										if (other_window) {
+											ImGui::DockContextQueueDock(ImGui::GetCurrentContext(), this_window, this_window->DockNodeAsHost, other_window, it->direction, it->size_ratio, true);
+											window->_dock_requests.erase(it);
+											continue;
+										}
+									}
+								}
+								it++;
+							}
 						}
+						s_windows_by_im_id[window->im_id] = window;
+						auto root = window->_root_dock.lock();
+						//printf("visual root valid: %s\n", visual_root_window ? "Yes" : "No");
+						if (!root || !root->is_collapsed) {
+							auto visual_root_window = get_leftmost_window(window.get());
+							window->_root_dock = visual_root_window ? s_windows_by_im_id[visual_root_window->ID] : window;
+							root = window->_root_dock.lock();
+							//window->_dock_uniqueid = this_window->RootWindowDockTree->ID;
+							window->_is_docked = root != window;
+						}
+						window->_is_collapsed = root->is_collapsed;
+						if (window->_wants_collapse) {
+							root->_is_collapsed = true;
+							window->_wants_collapse = false;
+						}
+						if (window->_wants_show) {
+							root->_is_collapsed = false;
+							window->_wants_show = false;
+						}
+						if (window->_first_render && !window->is_docked && !window->is_modal) {
+							auto parent = window->created_by.lock();
+							if (parent && parent->im_id) {
+								auto parent_window = ImGui::FindWindowByID(parent->im_id);
+								auto new_pos = parent_window->Pos;
+								new_pos += parent_window->Size / 2;
+								auto curr_window = ImGui::FindWindowByID(window->im_id);
+								new_pos -= curr_window->Size / 2;
+								if (new_pos.x < 20)
+									new_pos.x = 20;
+								if (new_pos.y < 20)
+									new_pos.y = 20;
+								curr_window->Pos = new_pos;
+							}
+						}
+						window->_first_render = false;
 					}
-					window->_first_render = false;
+				}
+
+				if (imw->LastFrameJustFocused) {
+					s_latest_windows[window->get_window_type()] = window;
 				}
 			}
-
-			if (imw->LastFrameJustFocused) {
-				s_latest_windows[window->get_window_type()] = window;
-			}
 		}
+		for (auto window : s_window_add_queue) {
+			s_windows.push_back(std::move(window));
+		}
+		s_window_add_queue.clear();
 	}
-	for (auto window : s_window_add_queue) {
-		s_windows.push_back(std::move(window));
+	catch (const std::exception& ex) {
+
 	}
-	s_window_add_queue.clear();
+	catch (...) {
+
+	}
 }
 
 std::shared_ptr<window> window_manager::get_docked(window_type typ, window* from) {
@@ -358,14 +420,24 @@ bool window::open_window(const char* title, int flags, ImVec2 size) {
 	if (name.empty()) {
 		name = std::format("{:s}###{:x}", title == nullptr ? window_name() : title, window_id);
 	}
-	auto state = ImGui::Begin(name.c_str(), &open, flags | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings);
+	flags |= ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings;
+	if (is_modal) {
+		flags |= ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove;
+		if (_first_render) {
+			auto pos = ImGui::GetIO().MousePos;
+			pos.x += 10;
+			pos.y += 10;
+			ImGui::SetNextWindowPos(pos);
+		}
+	}
+	auto state = ImGui::Begin(name.c_str(), &open, flags);
 	if (!open) {
 		this->queue_deletion();
 	}
 	if (state) {
 		auto window = ImGui::GetCurrentWindowRead();
 		this->_im_id = window->ID;
-		this->_is_latest = true;
+		this->_is_focused = ImGui::IsWindowFocused();
 	}
 	return state;
 }
@@ -684,8 +756,8 @@ namespace imgui_helpers {
 		}
 
 		if (type < UINT_MAX) {
-			auto found_dehash = allmighty_hash_lib::hashes.find((uint)type);
-			if (found_dehash != allmighty_hash_lib::hashes.end()) {
+			auto found_dehash = stringhash_library::hashes.find((uint)type);
+			if (found_dehash != stringhash_library::hashes.end()) {
 				if (color) {
 					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(100, 255, 0, 255));
 					ImGui::TextUnformatted(found_dehash->second.c_str());
@@ -716,8 +788,8 @@ namespace imgui_helpers {
 			}
 		}
 
-		auto comment = allmighty_hash_lib::comments.find(type);
-		if (comment != allmighty_hash_lib::comments.end()) {
+		auto comment = stringhash_library::comments.find(type);
+		if (comment != stringhash_library::comments.end()) {
 			/*std::string cmt = comment->second;
 			std::regex regex("0x([0-9a-f]{8,16})", std::regex_constants::ECMAScript | std::regex_constants::icase);
 			auto beg = std::sregex_iterator(cmt.begin(), cmt.end(), regex);

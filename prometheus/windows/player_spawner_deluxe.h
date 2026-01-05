@@ -50,9 +50,9 @@ class player_spawner_deluxe : public window {
 				inf->resource_id = ent_out;
 			}), this);
 		}*/
-		if (allmighty_hash_lib::comments.find(inf->resource_id) != allmighty_hash_lib::comments.end()) {
+		if (stringhash_library::comments.find(inf->resource_id) != stringhash_library::comments.end()) {
 			ImGui::SameLine();
-			ImGui::Text("(%s)", allmighty_hash_lib::comments[inf->resource_id].c_str());
+			ImGui::Text("(%s)", stringhash_library::comments[inf->resource_id].c_str());
 		}
 		/*if (inf->latest_entid) {
 			display_addr(inf->latest_entid & 0xFFFFFFFF, "EntID");

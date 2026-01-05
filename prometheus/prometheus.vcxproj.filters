@@ -17,6 +17,27 @@
     <Filter Include="windows\STU">
       <UniqueIdentifier>{771b3f77-2bba-4d3f-9fe9-58807f45d205}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\STU">
+      <UniqueIdentifier>{e40701c0-9ac6-49c0-8f82-99539a654dd6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game">
+      <UniqueIdentifier>{c04f498c-acb1-41bc-ab53-24e9ad117f4c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Misc">
+      <UniqueIdentifier>{174a0a33-422c-4d68-aaf5-ef70aee9e506}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Entity Admin &amp; Systems">
+      <UniqueIdentifier>{0dac20be-1876-4216-82e6-34bbfb9e7b00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Entity Admin &amp; Systems\Components">
+      <UniqueIdentifier>{d90b8e72-ea8e-491a-b660-9d29eb3df2e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Entity Admin &amp; Systems\Components\Statescript">
+      <UniqueIdentifier>{872ca6d0-6c44-4b63-9c11-4bf14de35d7b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Entity Admin &amp; Systems\Components\MovementState">
+      <UniqueIdentifier>{12bdd5e6-0c6c-4293-a3da-b086d42c117f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="window_manager\window_manager.h">
@@ -30,24 +51,6 @@
     </ClInclude>
     <ClInclude Include="windows\ini_settings_window.h">
       <Filter>windows</Filter>
-    </ClInclude>
-    <ClInclude Include="globals.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ExceptionFormatter.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="framework.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="idadefs.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="lazy_importer.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="pch.h">
-      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="pe.h">
       <Filter>Source Files</Filter>
@@ -67,17 +70,11 @@
     <ClInclude Include="windows\jam_messagedetail_window.h">
       <Filter>windows</Filter>
     </ClInclude>
-    <ClInclude Include="JAM.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="windows\example_window.h">
       <Filter>windows</Filter>
     </ClInclude>
     <ClInclude Include="windows\AAA window template.h">
       <Filter>windows</Filter>
-    </ClInclude>
-    <ClInclude Include="Statescript.h">
-      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="windows\bitconverter_calls.h">
       <Filter>windows</Filter>
@@ -85,20 +82,11 @@
     <ClInclude Include="windows\name_value_struct.h">
       <Filter>windows</Filter>
     </ClInclude>
-    <ClInclude Include="game.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="windows\type_7b_strings.h">
       <Filter>windows</Filter>
     </ClInclude>
-    <ClInclude Include="stringhash_library.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="windows\hash_display_window.h">
       <Filter>windows</Filter>
-    </ClInclude>
-    <ClInclude Include="STU.h">
-      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="windows\STU_Types_window.h">
       <Filter>windows</Filter>
@@ -111,9 +99,6 @@
     </ClInclude>
     <ClInclude Include="windows\manager_infos.h">
       <Filter>windows</Filter>
-    </ClInclude>
-    <ClInclude Include="filetype_library.h">
-      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="windows\filetype_window.h">
       <Filter>windows</Filter>
@@ -141,9 +126,6 @@
     </ClInclude>
     <ClInclude Include="windows\entity_window.h">
       <Filter>windows</Filter>
-    </ClInclude>
-    <ClInclude Include="entity_admin.h">
-      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="windows\asset_pack_manager.h">
       <Filter>windows</Filter>
@@ -184,20 +166,11 @@
     <ClInclude Include="windows\textedit_window.h">
       <Filter>windows</Filter>
     </ClInclude>
-    <ClInclude Include="search_helper.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="windows\radio_selector_window.h">
       <Filter>windows</Filter>
     </ClInclude>
     <ClInclude Include="windows\movementsys_editor.h">
       <Filter>windows</Filter>
-    </ClInclude>
-    <ClInclude Include="statescript_logger.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui_json.h">
-      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="windows\statescript_fuzzer.h">
       <Filter>windows\Statescript</Filter>
@@ -223,9 +196,6 @@
     <ClInclude Include="windows\statescript_varbag_window.h">
       <Filter>windows\Statescript</Filter>
     </ClInclude>
-    <ClInclude Include="StatescriptExpressionParser.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="windows\local_player_component_insights.h">
       <Filter>windows</Filter>
     </ClInclude>
@@ -234,9 +204,6 @@
     </ClInclude>
     <ClInclude Include="windows\entityadmin_timing.h">
       <Filter>windows</Filter>
-    </ClInclude>
-    <ClInclude Include="stu_resources.h">
-      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="windows\statescript_fake_logicalbtn.h">
       <Filter>windows\Statescript</Filter>
@@ -252,9 +219,6 @@
     </ClInclude>
     <ClInclude Include="windows\CVD_VarbagSelector.h">
       <Filter>windows</Filter>
-    </ClInclude>
-    <ClInclude Include="hash_exporter.h">
-      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="windows\stu_bslist_edit.h">
       <Filter>windows\STU</Filter>
@@ -274,9 +238,6 @@
     <ClInclude Include="windows\stu_types.h">
       <Filter>windows\STU</Filter>
     </ClInclude>
-    <ClInclude Include="STU_Editable.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="windows\entadmin_compodependencies.h">
       <Filter>windows</Filter>
     </ClInclude>
@@ -286,29 +247,14 @@
     <ClInclude Include="windows\voice_system_triggerer.h">
       <Filter>windows</Filter>
     </ClInclude>
-    <ClInclude Include="ImguiRenderer.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="windows\entity_bounds_renderer.h">
       <Filter>windows</Filter>
-    </ClInclude>
-    <ClInclude Include="player_spawner.h">
-      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="windows\pachimari_creator.h">
       <Filter>windows</Filter>
     </ClInclude>
-    <ClInclude Include="MovementState.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="windows\movstate_visualizer.h">
       <Filter>windows</Filter>
-    </ClInclude>
-    <ClInclude Include="serialization.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="state_replicator.h">
-      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="windows\awful_demo_server.h">
       <Filter>windows</Filter>
@@ -322,40 +268,97 @@
     <ClInclude Include="windows\herolineup_creator.h">
       <Filter>windows</Filter>
     </ClInclude>
+    <ClInclude Include="Statescript.h">
+      <Filter>Source Files\Entity Admin &amp; Systems\Components\Statescript</Filter>
+    </ClInclude>
+    <ClInclude Include="STU.h">
+      <Filter>Source Files\STU</Filter>
+    </ClInclude>
+    <ClInclude Include="STU_Editable.h">
+      <Filter>Source Files\STU</Filter>
+    </ClInclude>
+    <ClInclude Include="framework.h">
+      <Filter>Source Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="game.h">
+      <Filter>Source Files\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="globals.h">
+      <Filter>Source Files\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="entity_admin.h">
+      <Filter>Source Files\Entity Admin &amp; Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="ExceptionFormatter.h">
+      <Filter>Source Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="filetype_library.h">
+      <Filter>Source Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="hash_exporter.h">
+      <Filter>Source Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="player_spawner.h">
+      <Filter>Source Files\Entity Admin &amp; Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="JAM.h">
+      <Filter>Source Files\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="search_helper.h">
+      <Filter>Source Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="ImguiRenderer.h">
+      <Filter>Source Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Source Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="lazy_importer.h">
+      <Filter>Source Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="stringhash_library.h">
+      <Filter>Source Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="StatescriptExpressionParser.h">
+      <Filter>Source Files\Entity Admin &amp; Systems\Components\Statescript</Filter>
+    </ClInclude>
+    <ClInclude Include="stu_resources.h">
+      <Filter>Source Files\STU</Filter>
+    </ClInclude>
+    <ClInclude Include="idadefs.h">
+      <Filter>Source Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="STUConfigVar_Custom.h">
+      <Filter>Source Files\Entity Admin &amp; Systems\Components\Statescript</Filter>
+    </ClInclude>
+    <ClInclude Include="statescript_logger.h">
+      <Filter>Source Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_json.h">
+      <Filter>Source Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="STUConfigVarDynamic_Custom.h">
+      <Filter>Source Files\Entity Admin &amp; Systems\Components\Statescript</Filter>
+    </ClInclude>
+    <ClInclude Include="MovementState.h">
+      <Filter>Source Files\Entity Admin &amp; Systems\Components\MovementState</Filter>
+    </ClInclude>
+    <ClInclude Include="serialization.h">
+      <Filter>Source Files\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="state_replicator.h">
+      <Filter>Source Files\Entity Admin &amp; Systems\Components\MovementState</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="dllmain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="pch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ExceptionFormatter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="window_manager\window_manager.cpp">
       <Filter>window_manager</Filter>
     </ClCompile>
     <ClCompile Include="window_manager\management_window.cpp">
       <Filter>window_manager</Filter>
     </ClCompile>
-    <ClCompile Include="globals.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="stringhash_library.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceManager.h">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="filetype_library.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="windows\viewmodel_write_blocker.cpp">
       <Filter>windows</Filter>
-    </ClCompile>
-    <ClCompile Include="STU.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="windows\statescript_window.cpp">
       <Filter>windows\Statescript</Filter>
@@ -366,32 +369,62 @@
     <ClCompile Include="windows\statescript_list.cpp">
       <Filter>windows\Statescript</Filter>
     </ClCompile>
-    <ClCompile Include="Statescript.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="STU_Editable.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="entity_admin.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ImguiRenderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="stu_resources.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="windows\stu_explorer.cpp">
       <Filter>windows\STU</Filter>
     </ClCompile>
-    <ClCompile Include="player_spawner.cpp">
+    <ClCompile Include="Statescript.cpp">
+      <Filter>Source Files\Entity Admin &amp; Systems\Components\Statescript</Filter>
+    </ClCompile>
+    <ClCompile Include="STU.cpp">
+      <Filter>Source Files\STU</Filter>
+    </ClCompile>
+    <ClCompile Include="STU_Editable.cpp">
+      <Filter>Source Files\STU</Filter>
+    </ClCompile>
+    <ClCompile Include="globals.cpp">
+      <Filter>Source Files\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="entity_admin.cpp">
+      <Filter>Source Files\Entity Admin &amp; Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="ExceptionFormatter.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="filetype_library.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="player_spawner.cpp">
+      <Filter>Source Files\Entity Admin &amp; Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.h">
+      <Filter>Source Files\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="ImguiRenderer.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="stringhash_library.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="stu_resources.cpp">
+      <Filter>Source Files\STU</Filter>
+    </ClCompile>
+    <ClCompile Include="STUConfigVar_Custom.cpp">
+      <Filter>Source Files\Entity Admin &amp; Systems\Components\Statescript</Filter>
     </ClCompile>
     <ClCompile Include="serialization.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Game</Filter>
     </ClCompile>
     <ClCompile Include="state_replicator.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Entity Admin &amp; Systems\Components\MovementState</Filter>
+    </ClCompile>
+    <ClCompile Include="STUConfigVarDynamic_Custom.cpp">
+      <Filter>Source Files\Entity Admin &amp; Systems\Components\Statescript</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -13,10 +13,11 @@ Hey and welcome, thanks for stopping by!
   - [DataFlow](#dataflow)
   - [Game Messages](#game-messages)
   - [Components](#components)
-    - [STUPvPGameComponent 0x24](#stupvpgamecomponent-0x24)
-    - [STUStatescriptComponent 0x23](#stustatescriptcomponent-0x23)
-    - [Component 1](#component-1)
-    - [MovementStateSystem](#movementstatesystem)
+    - [STUPvPGameComponent (0x24)](#stupvpgamecomponent-0x24)
+    - [STUStatescriptComponent (0x23)](#stustatescriptcomponent-0x23)
+    - [SceneRendering Component (1)](#scenerendering-component-1)
+    - [MovementStateSystem (0x12, 0x15, 0x16)](#movementstatesystem-0x12-0x15-0x16)
+    - [Embedded / LobbyMap Entity Admin (0x54)](#embedded--lobbymap-entity-admin-0x54)
 - [3. Broken stuff and why it's broken](#3-broken-stuff-and-why-its-broken)
 - [4. Tips \& Tricks](#4-tips--tricks)
 - [5. Contributions Welcome!](#5-contributions-welcome)
@@ -96,9 +97,13 @@ DataFlow members can also be out of an entity and out of the Entity Component sy
 
 TODO
 
-### STUPvPGameComponent 0x24
+### STUPvPGameComponent (0x24)
 
-### STUStatescriptComponent 0x23
+Contains information about the current game state, like what phase it's in, how much time is remaining, ...
+
+Other systems access this information by using an embedded class in the GameEntityAdmin. This 
+
+### STUStatescriptComponent (0x23)
 
 Statescript controls:
 * Ingame abilities and pretty much everything ingame except for basic movement
@@ -115,11 +120,11 @@ An implementation class is either static for the game (Actions, Conditions, Entr
 
 As far as I can see there is only one Entity in the LobbyEntityAdmin which holds a statescript instance. This is used for Lobby / Login UI, Login flow and Music. For ingame stuff: The controller entity has no Statescript Instance. Only the model has one which controls abilities and other various stuff. Other stuff may also have statescript instances. These include: Health Packs, Capture Points, 
 
-### Component 1
+### SceneRendering Component (1)
 
 I called this SceneRendering. This component is needed if the entity wants to be shown in the map. It holds size, scaling and rotation and some other miscellanious stuff.
 
-### MovementStateSystem
+### MovementStateSystem (0x12, 0x15, 0x16)
 
 (Quick note: When talking about the MovementStateSystem I mean everything which encompasses it, movement_vt, Movement system(s), Component 12 (STUMovementState), 15 (STUCharacterMoverComponent) and 16 (STUSimpleMovementComponent))
 
@@ -128,6 +133,10 @@ If an object needs to dynamically move in the map, the MovementStateSystem updat
 For the local player, there are some flags which you NEED to set in order for you to be able to move around. This is done by the player_spawner for you.
 
 The most important thing is the list of MovementState in component 12. It holds all the deltas sent down from the server and does interpolation and stuff to hide network interference for you.
+
+### Embedded / LobbyMap Entity Admin (0x54)
+
+The embedded entity admin is very cool. Its only purpose is to display the lobby background map, and is contained within the singleton components of the Lobby Entity Admin. The component itself contains a pointer to the entity admin, 
 
 # 3. Broken stuff and why it's broken
 
@@ -179,7 +188,7 @@ Also dont look into the window manager. Its an abomination. You have been warned
 * [keystone](https://github.com/keystone-engine/keystone)
 * [capstone](github.com/capstone-engine/capstone)
 * [imgui](https://github.com/ocornut/imgui/)
-* [imnodes](https://github.com/BreakingBread0/imnodes/) ([my branch](github.com/BreakingBread0/imnodes/))
+* [imnodes](https://github.com/BreakingBread0/imnodes/) ([my branch](https://github.com/BreakingBread0/imnodes/))
 * pe (Could not find the original repository, please open an issue if you know it!)
 * [lazy_importer](https://github.com/JustasMasiulis/lazy_importer)
 * [nlohmann_json](https://github.com/nlohmann/json)

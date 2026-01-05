@@ -3,19 +3,19 @@
 
 class message_window : public window {
 private:
-	std::string value, title;
+	std::string title{};
 public:
-	WINDOW_DEFINE(message_window, "Tools", "Message Window", false);
+	WINDOW_DEFINE_ARG(message_window, "Tools", "Message Window", std::string);
 
 	message_window(std::string value, std::string title = "") {
-		this->value = value;
+		set(value);
 		this->title = title;
 	}
 	message_window() {}
 
 	inline void render() override {
-		if (open_window(title.empty() ? window_name() : title.c_str(), ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove)) {
-			ImGui::TextWrapped("%s", value.c_str());
+		if (open_window(title.empty() ? window_name() : title.c_str()), ImGuiWindowFlags_AlwaysAutoResize) {
+			ImGui::TextWrapped("%s", _arg.c_str());
 			if (imgui_helpers::CenteredButton("Close")) {
 				queue_deletion();
 			}
