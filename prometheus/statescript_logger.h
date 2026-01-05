@@ -180,7 +180,9 @@ private:
     static inline std::map<StatescriptInstance*, LogStruct> s_subscriptions{};
     static inline std::vector<std::weak_ptr<std::function<void(StatescriptInstance*)>>> s_deletionSubs{};
     static inline std::map<StatescriptInstance*, std::map<int, ScriptState>> s_scriptStates{};
-    static inline const LogStruct const EmptyLog{};
-    static inline const std::map<int, ScriptState> const EmptyScriptState{};
-    static inline const ScriptState const EmptyNodeState{};
+    static inline const LogStruct EmptyLog{};
+    static inline const std::map<int, ScriptState> EmptyScriptState{};
+
+    // TODO idk why defaulting does not work
+    static inline const ScriptState EmptyNodeState{0, true};
 };

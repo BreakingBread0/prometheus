@@ -51,11 +51,11 @@ class game_data_window : public window {
 		unsigned __int64 v3; // r8
 		unsigned __int64 v4; // rcx
 
-		v1 = (2 * a1) ^ ((2 * a1) ^ (a1 >> 1)) & 0x5555555555555555i64;
-		v2 = (4 * v1) ^ ((4 * v1) ^ (v1 >> 2)) & 0x3333333333333333i64;
-		v3 = (16 * v2) ^ ((16 * v2) ^ (v2 >> 4)) & 0xF0F0F0F0F0F0F0Fi64;
-		v4 = (v3 << 8) ^ ((v3 << 8) ^ (v3 >> 8)) & 0xFF00FF00FF00FFi64;
-		return __ROL8__((v4 << 16) ^ ((v4 << 16) ^ (v4 >> 16)) & 0xFFFF0000FFFFi64, 32);
+		v1 = (2 * a1) ^ ((2 * a1) ^ (a1 >> 1)) & 0x5555555555555555ll;
+		v2 = (4 * v1) ^ ((4 * v1) ^ (v1 >> 2)) & 0x3333333333333333ll;
+		v3 = (16 * v2) ^ ((16 * v2) ^ (v2 >> 4)) & 0xF0F0F0F0F0F0F0Fll;
+		v4 = (v3 << 8) ^ ((v3 << 8) ^ (v3 >> 8)) & 0xFF00FF00FF00FFll;
+		return __ROL8__((v4 << 16) ^ ((v4 << 16) ^ (v4 >> 16)) & 0xFFFF0000FFFFll, 32);
 	}
 
 	std::string getLocaleStr(int input) {
@@ -86,13 +86,13 @@ class game_data_window : public window {
 			ImGui::Text("Last Assertion: %s", globals::gameBase + 0x18b2130);
 
 			int clientType = *(int*)(globals::gameBase + 0x17a16dc);
-			ImGui::Text("Client Type: %s (%d)", getClientType(clientType), clientType);
+			ImGui::Text("Client Type: %s (%d)", getClientType(clientType).c_str(), clientType);
 			int region = *(int*)(globals::gameBase + 0x17a16e4);
-			ImGui::Text("Client Region: %s (%d)", getRegionString(region), region);
+			ImGui::Text("Client Region: %s (%d)", getRegionString(region).c_str(), region);
 			int locale = *(int*)(globals::gameBase + 0x17a16e8);
-			ImGui::Text("Locale: %s (%d)", getLocaleStr(locale), locale);
+			ImGui::Text("Locale: %s (%d)", getLocaleStr(locale).c_str(), locale);
 			int audlocale = *(int*)(globals::gameBase + 0x17a16ec);
-			ImGui::Text("Audio Locale: %s (%d)", getLocaleStr(audlocale), audlocale);
+			ImGui::Text("Audio Locale: %s (%d)", getLocaleStr(audlocale).c_str(), audlocale);
 
 			ImGui::Checkbox("Tabbing Enabled", (bool*)(globals::gameBase + 0x1859dcc));
 
@@ -332,7 +332,7 @@ class game_data_window : public window {
 			//ZeroMemory(buf, 32);
 			//static __int64 ssid = 0x400000000000001;
 			//if (ImGui::InputText("SS ID", buf, 32)) {
-			//	ssid = _strtoi64(buf, nullptr, 16);
+			//	ssid = _strtoll(buf, nullptr, 16);
 			//}
 			//ImGui::Text("SS ResID: %p", ssid);
 			///*if (ImGui::Button("Load Script on Local Ent")) {

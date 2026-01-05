@@ -105,7 +105,7 @@ class ini_settings_window : public window {
 				ImGui::Text("%s", ini->parsed_value.get());
 
 				ImGui::TableNextColumn();
-				ImGui::Text("%s", ini_type_to_string(ini->ini_type));
+				ImGui::Text("%s", ini_type_to_string(ini->ini_type).c_str());
 
 				ImGui::TableNextColumn();
 				switch (ini->ini_type) {

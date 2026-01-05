@@ -58,6 +58,7 @@ namespace STURegistryData {
 	}
 }
 
+template<>
 STU_Object STUBase<>::to_editable() {
 	return STU_Object(vfptr_stubase->GetSTUInfo(), this);
 }

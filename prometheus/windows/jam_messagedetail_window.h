@@ -83,7 +83,7 @@ public:
 		ImGui::Text("%s", item->name_str);
 
 		ImGui::TableNextColumn();
-		ImGui::Text("%s", get_type_str(item->message_type));
+		ImGui::Text("%s", get_type_str(item->message_type).c_str());
 
 		ImGui::TableNextColumn();
 		ImGui::Text("%x %d", item->offset, item->offset);

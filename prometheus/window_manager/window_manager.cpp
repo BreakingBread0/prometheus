@@ -3,7 +3,7 @@
 #include "memory.h"
 #include <memory>
 #include <mutex>
-#include <Windows.h>
+#include <windows.h>
 #include <vector>
 #include <map>
 #include <regex>

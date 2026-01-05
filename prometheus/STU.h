@@ -5,7 +5,8 @@
    the type library 'GameClientApp_dump_SCY.exetreated.exe'
 */
 
-#include <Windows.h>
+#include <windows.h>
+#include <stdint.h>
 #include "idadefs.h"
 #include "globals.h"
 #include <set>
@@ -404,7 +405,7 @@ struct STUBullshitMapFull {
 	}
 };
 
-/// Benützt bei allen value containern geladen aus CASC. Sollte die Basis für alle statescript sachen sein.
+/// Benï¿½tzt bei allen value containern geladen aus CASC. Sollte die Basis fï¿½r alle statescript sachen sein.
 struct STUBase_vt
 {
 	void(__fastcall* SomeNullsub)();

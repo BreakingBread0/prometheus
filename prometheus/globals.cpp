@@ -1,6 +1,6 @@
 #include "globals.h"
 #include <mutex>
-#include <Windows.h>
+#include <windows.h>
 
 namespace globals {
 	DWORD_PTR gameBase = 0;

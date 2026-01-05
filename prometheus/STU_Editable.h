@@ -129,10 +129,11 @@ public:
 			return *this;
 		}
 
-		ListIteratorBase operator++(int) {
-			ListIteratorBase tmp = *this;
+		// TODO this change changes behaviour, make sure it is still valid.
+		ListIteratorBase& operator++(int) {
+			auto tmp = *this;
 			++(*this);
-			return tmp;
+			return *tmp;
 		}
 
 		bool operator==(const ListIteratorBase& it) const {

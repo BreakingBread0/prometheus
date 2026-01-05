@@ -1,4 +1,4 @@
-#include "stringhash_library.h";
+#include "stringhash_library.h"
 #include <imgui.h>
 #include <nlohmann/json.hpp>
 #include <fstream>

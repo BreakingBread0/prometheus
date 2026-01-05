@@ -313,8 +313,8 @@ namespace Pe
 
     struct PeMagic
     {
-        static constexpr auto k_mz = 0x5A4Dui16; // MZ
-        static constexpr auto k_pe = 0x00004550ui32; // "PE\0\0"
+        static constexpr uint16_t k_mz = 0x5A4D; // MZ
+        static constexpr uint32_t k_pe = 0x00004550; // "PE\0\0"
     };
 
     template <Arch arch>
@@ -800,7 +800,7 @@ namespace Pe
                 }
 
                 const Rva rva = importLookupTableEntry()->name.hintNameRva;
-                return m_lib.pe().byRva<typename GenericTypes::ImgImportByName>(rva);
+                return m_lib.pe().template byRva<typename GenericTypes::ImgImportByName>(rva);
             }
 
             unsigned long long address() const noexcept
@@ -872,19 +872,19 @@ namespace Pe
 
             const char* libName() const noexcept
             {
-                return m_pe.byRva<char>(m_descriptor->Name);
+                return m_pe.template byRva<char>(m_descriptor->Name);
             }
 
             // Import Address Table:
             const typename Types<arch>::ImportAddressTableEntry* importAddressTable() const noexcept
             {
-                return m_pe.byRva<typename Types<arch>::ImportAddressTableEntry>(m_descriptor->FirstThunk);
+                return m_pe.template byRva<typename Types<arch>::ImportAddressTableEntry>(m_descriptor->FirstThunk);
             }
 
             // Import Lookup Table:
             const typename Types<arch>::ImportLookupTableEntry* importLookupTable() const noexcept
             {
-                return m_pe.byRva<typename Types<arch>::ImportLookupTableEntry>(m_descriptor->OriginalFirstThunk);
+                return m_pe.template byRva<typename Types<arch>::ImportLookupTableEntry>(m_descriptor->OriginalFirstThunk);
             }
 
             bool bound() const noexcept
@@ -937,7 +937,7 @@ namespace Pe
 
         DirectoryDescriptor<DirImports> descriptor() const noexcept
         {
-            return m_pe.directory<DirImports>();
+            return m_pe.template directory<DirImports>();
         }
 
         bool valid() const noexcept
@@ -1019,7 +1019,7 @@ namespace Pe
                 }
 
                 const Rva rva = importNameTableEntry()->name.hintNameRva;
-                return m_lib.pe().byRva<typename GenericTypes::ImgImportByName>(rva);
+                return m_lib.pe().template byRva<typename GenericTypes::ImgImportByName>(rva);
             }
 
             unsigned long long address() const noexcept
@@ -1086,19 +1086,19 @@ namespace Pe
 
             const char* moduleName() const noexcept
             {
-                return m_pe.byRva<char>(m_descriptor->DllNameRVA);
+                return m_pe.template byRva<char>(m_descriptor->DllNameRVA);
             }
 
             // Import Address Table:
             const typename Types<arch>::ImportAddressTableEntry* importAddressTable() const noexcept
             {
-                return m_pe.byRva<typename Types<arch>::ImportAddressTableEntry>(m_descriptor->ImportAddressTableRVA);
+                return m_pe.template byRva<typename Types<arch>::ImportAddressTableEntry>(m_descriptor->ImportAddressTableRVA);
             }
 
             // Import Name Table:
             const typename Types<arch>::ImportNameTableEntry* importNameTable() const noexcept
             {
-                return m_pe.byRva<typename Types<arch>::ImportNameTableEntry>(m_descriptor->ImportNameTableRVA);
+                return m_pe.template byRva<typename Types<arch>::ImportNameTableEntry>(m_descriptor->ImportNameTableRVA);
             }
 
             bool operator == (const ModuleEntry& entry) const noexcept
@@ -1145,7 +1145,7 @@ namespace Pe
 
         DirectoryDescriptor<DirDelayedImports> descriptor() const noexcept
         {
-            return m_pe.directory<DirDelayedImports>();
+            return m_pe.template directory<DirDelayedImports>();
         }
 
         bool valid() const noexcept
@@ -1342,7 +1342,7 @@ namespace Pe
 
         DirectoryDescriptor<DirBoundImports> descriptor() const noexcept
         {
-            return m_pe.directory<DirBoundImports>();
+            return m_pe.template directory<DirBoundImports>();
         }
 
         bool valid() const noexcept
@@ -1416,7 +1416,7 @@ namespace Pe
             const char* name() const noexcept
             {
                 return hasName()
-                    ? m_exports.pe().byRva<char>(*m_name)
+                    ? m_exports.pe().template byRva<char>(*m_name)
                     : nullptr;
             }
 
@@ -1432,7 +1432,7 @@ namespace Pe
                     return nullptr;
                 }
 
-                return m_exports.pe().byRva<void>(exportAddressTableEntry()->address);
+                return m_exports.pe().template byRva<void>(exportAddressTableEntry()->address);
             }
 
             const char* forwarder() const noexcept
@@ -1442,7 +1442,7 @@ namespace Pe
                     return nullptr;
                 }
 
-                return m_exports.pe().byRva<char>(exportAddressTableEntry()->forwarderString);
+                return m_exports.pe().template byRva<char>(exportAddressTableEntry()->forwarderString);
             }
 
             bool valid() const noexcept
@@ -1535,13 +1535,13 @@ namespace Pe
         explicit Exports(const Pe<arch>& pe) noexcept
             : m_pe(pe)
             , m_directory(pe.directory(DirExports::k_id))
-            , m_descriptor(m_directory ? pe.byRva<typename DirExports::Type>(m_directory->VirtualAddress) : nullptr)
+            , m_descriptor(m_directory ? pe.template byRva<typename DirExports::Type>(m_directory->VirtualAddress) : nullptr)
             , m_tables(m_descriptor
                 ? Tables
                 {
-                    pe.byRva<typename GenericTypes::ExportAddressTableEntry>(m_descriptor->AddressOfFunctions),
-                    pe.byRva<Rva>(m_descriptor->AddressOfNames),
-                    pe.byRva<Ordinal>(m_descriptor->AddressOfNameOrdinals)
+                    pe.template byRva<typename GenericTypes::ExportAddressTableEntry>(m_descriptor->AddressOfFunctions),
+                    pe.template byRva<Rva>(m_descriptor->AddressOfNames),
+                    pe.template byRva<Ordinal>(m_descriptor->AddressOfNameOrdinals)
                 }
                 : Tables{})
         {
@@ -1592,7 +1592,7 @@ namespace Pe
         const char* moduleName() const noexcept
         {
             const Rva rva = descriptor()->Name;
-            return m_pe.byRva<char>(rva);
+            return m_pe.template byRva<char>(rva);
         }
 
         unsigned int ordinalBase() const noexcept
@@ -1624,7 +1624,7 @@ namespace Pe
 
             const auto strByRva = [this](const Rva rva) -> const char*
                 {
-                    return m_pe.byRva<char>(rva);
+                    return m_pe.template byRva<char>(rva);
                 };
 
             // [left, right):
@@ -1659,11 +1659,11 @@ namespace Pe
             const auto& exportEntry = m_tables.exportAddressTable[unbiasedOrdinal];
             if (!contains(exportEntry.address))
             {
-                return Export(m_pe.byRva<void>(exportEntry.address), unbiasedOrdinal + ordinalBase(), ExportType::exact);
+                return Export(m_pe.template byRva<void>(exportEntry.address), unbiasedOrdinal + ordinalBase(), ExportType::exact);
             }
             else
             {
-                return Export(m_pe.byRva<void>(exportEntry.forwarderString), unbiasedOrdinal + ordinalBase(), ExportType::forwarder);
+                return Export(m_pe.template byRva<void>(exportEntry.forwarderString), unbiasedOrdinal + ordinalBase(), ExportType::forwarder);
             }
         }
 
@@ -1683,11 +1683,11 @@ namespace Pe
             const auto& exportEntry = m_tables.exportAddressTable[unbiasedOrdinal];
             if (!contains(exportEntry.address))
             {
-                return Export(m_pe.byRva<void>(exportEntry.address), unbiasedOrdinal + ordinalBase(), ExportType::exact);
+                return Export(m_pe.template byRva<void>(exportEntry.address), unbiasedOrdinal + ordinalBase(), ExportType::exact);
             }
             else
             {
-                return Export(m_pe.byRva<void>(exportEntry.forwarderString), unbiasedOrdinal + ordinalBase(), ExportType::forwarder);
+                return Export(m_pe.template byRva<void>(exportEntry.forwarderString), unbiasedOrdinal + ordinalBase(), ExportType::forwarder);
             }
         }
     };
@@ -1771,7 +1771,7 @@ namespace Pe
 
             const void* page() const noexcept
             {
-                return m_relocs.pe().byRva<void>(m_entry->VirtualAddress);
+                return m_relocs.pe().template byRva<void>(m_entry->VirtualAddress);
             }
 
             unsigned int count() const noexcept
@@ -1820,7 +1820,7 @@ namespace Pe
     public:
         explicit Relocs(const Pe<arch>& pe) noexcept
             : m_pe(pe)
-            , m_descriptor(pe.directory<DirRelocs>())
+            , m_descriptor(pe.template directory<DirRelocs>())
         {
         }
 
@@ -1896,7 +1896,7 @@ namespace Pe
 
     public:
         explicit Exceptions(const Pe<arch>& pe) noexcept
-            : m_descriptor(pe.directory<DirExceptions>())
+            : m_descriptor(pe.template directory<DirExceptions>())
         {
         }
 
@@ -1943,7 +1943,7 @@ namespace Pe
             typename GenericTypes::FnImageTlsCallback callback() const noexcept
             {
                 const Rva rva = static_cast<Rva>(static_cast<unsigned long long>(reinterpret_cast<size_t>(*m_callbackPointer)) - m_tls.pe().imageBase());
-                return static_cast<typename GenericTypes::FnImageTlsCallback>(m_tls.pe().byRva<void>(rva));
+                return static_cast<typename GenericTypes::FnImageTlsCallback>(m_tls.pe().template byRva<void>(rva));
             }
 
             bool operator == (const CallbackEntry& entry) const noexcept
@@ -1972,7 +1972,7 @@ namespace Pe
     public:
         explicit Tls(const Pe<arch>& pe) noexcept
             : m_pe(pe)
-            , m_directory(pe.directory<DirTls<arch>>())
+            , m_directory(pe.template directory<DirTls<arch>>())
         {
         }
 
@@ -2002,7 +2002,7 @@ namespace Pe
             {
             case ImgType::file:
             {
-                return m_pe.byRva<typename GenericTypes::FnImageTlsCallback>(static_cast<Rva>(m_directory.ptr->AddressOfCallBacks - m_pe.imageBase()));
+                return m_pe.template byRva<typename GenericTypes::FnImageTlsCallback>(static_cast<Rva>(m_directory.ptr->AddressOfCallBacks - m_pe.imageBase()));
             }
             case ImgType::module:
             {
@@ -2121,7 +2121,7 @@ namespace Pe
     public:
         explicit Debug(const Pe<arch>& pe) noexcept
             : m_pe(pe)
-            , m_descriptor(pe.directory<DirDebug>())
+            , m_descriptor(pe.template directory<DirDebug>())
         {
         }
 
@@ -2164,7 +2164,7 @@ namespace Pe
                     continue;
                 }
 
-                const auto* const codeView = m_pe.byRva<CodeView::DebugInfo>(entry.debugEntry()->PointerToRawData);
+                const auto* const codeView = m_pe.template byRva<CodeView::DebugInfo>(entry.debugEntry()->PointerToRawData);
                 switch (codeView->magic)
                 {
                 case CodeView::CodeViewMagic::pdb20:

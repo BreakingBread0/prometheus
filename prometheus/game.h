@@ -207,11 +207,11 @@ inline __int64 bitswap(__int64 a1) {
 	unsigned __int64 v3; // r8
 	unsigned __int64 v4; // rcx
 
-	v1 = (2 * a1) ^ ((2 * a1) ^ (a1 >> 1)) & 0x5555555555555555i64;
-	v2 = (4 * v1) ^ ((4 * v1) ^ (v1 >> 2)) & 0x3333333333333333i64;
-	v3 = (16 * v2) ^ ((16 * v2) ^ (v2 >> 4)) & 0xF0F0F0F0F0F0F0Fi64;
-	v4 = (v3 << 8) ^ ((v3 << 8) ^ (v3 >> 8)) & 0xFF00FF00FF00FFi64;
-	return __ROL8__((v4 << 16) ^ ((v4 << 16) ^ (v4 >> 16)) & 0xFFFF0000FFFFi64, 32);
+	v1 = (2 * a1) ^ ((2 * a1) ^ (a1 >> 1)) & 0x5555555555555555ll;
+	v2 = (4 * v1) ^ ((4 * v1) ^ (v1 >> 2)) & 0x3333333333333333ll;
+	v3 = (16 * v2) ^ ((16 * v2) ^ (v2 >> 4)) & 0xF0F0F0F0F0F0F0Fll;
+	v4 = (v3 << 8) ^ ((v3 << 8) ^ (v3 >> 8)) & 0xFF00FF00FF00FFll;
+	return __ROL8__((v4 << 16) ^ ((v4 << 16) ^ (v4 >> 16)) & 0xFFFF0000FFFFll, 32);
 }
 
 inline __int64 crc64_round(__int64 start, void* data, int size) {
