@@ -643,7 +643,7 @@ __int64 afterdatapackload_hook(__int64 a1, __int64 a2, __int64 a3, int a4, int a
             afterdatapackload_fn(a1, pack, a3, 0, 5);
         }
 
-        char ret_1[] = { 0xB0, 0x01, 0xC3 };
+        static constexpr unsigned char ret_1[] = { 0xB0, 0x01, 0xC3 };
         memcpy((void*)(globals::gameBase + 0xc7c960), ret_1, sizeof(ret_1));
         printf("Force chat enabled\n"); //Must be done after data packs loaded
     }
@@ -784,7 +784,7 @@ void __cdecl StartHook(void*) {
     printf("hello monsieur\n");
     atexit(exit_handler);
 
-    char orig[] = { 0x7E, 0x41, 0xDB, 0xB6, 0x8F, 0x68, 0x93, 0x42, 0x09, 0xC8, 0x5F, 0x4A };
+    static constexpr unsigned char orig[] = { 0x7E, 0x41, 0xDB, 0xB6, 0x8F, 0x68, 0x93, 0x42, 0x09, 0xC8, 0x5F, 0x4A };
     memcpy((void*)(globals::gameBase + Start_Addr), orig, sizeof(orig));
     printf("restored game start.\n");
 
@@ -804,7 +804,7 @@ void __cdecl StartHook(void*) {
     }
     printf("called text decryptor (veh)\n");
 
-    char verify[] = { 0x48, 0x83, 0xEC, 0x28, 0xE8, 0xFF, 0xD8, 0x00, 0x00 };
+    static constexpr unsigned char verify[] = { 0x48, 0x83, 0xEC, 0x28, 0xE8, 0xFF, 0xD8, 0x00, 0x00 };
     for (int i = 0; i < sizeof(verify); i++) {
         if (*(char*)(globals::gameBase + Start_Addr + i) != verify[i]) {
             printf(".text decryption failed!\n");
@@ -837,7 +837,7 @@ void __cdecl StartHook(void*) {
     MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0x8fc240), (PVOID*)createwindow_hook, (PVOID*)&createwindow_orig));
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0x8fc240)));
 
-    char return_zero[] = { 0x31, 0xC0, 0xC3 };
+    static constexpr unsigned char return_zero[] = { 0x31, 0xC0, 0xC3 };
     memcpy((void*)(globals::gameBase + 0x804740), return_zero, sizeof(return_zero));
     printf("patched debugger trap 2 (return value check)\n");
 
@@ -1066,7 +1066,7 @@ void __cdecl StartHook(void*) {
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0xc541c0)));
     printf("gameEA initialize hook\n");
 
-    char ret_1[] = { 0xB0, 0x01, 0xC3 };
+    static constexpr unsigned char ret_1[] = { 0xB0, 0x01, 0xC3 };
     memcpy((void*)(globals::gameBase + 0xf4c920), ret_1, sizeof(ret_1)); //Debug Statescript log enabled
     memcpy((void*)(globals::gameBase + 0xcfd740), ret_1, sizeof(ret_1)); //Force Enable all heroes
     memset((void*)(globals::gameBase + 0x7e1f69), 0x90, 8);
@@ -1185,7 +1185,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
         MH_VERIFY(MH_EnableHook((PVOID*)CheckRemoteDebuggerPresent));
 
         printf("Creating WinMain Hook...\n");
-        char starthook[] = {
+        static constexpr unsigned char starthook[] = {
             0x48, 0xB8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, //mov rax,0
             0xFF, 0xE0 //jmp rax
         };
