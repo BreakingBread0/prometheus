@@ -70,10 +70,10 @@ __int64 ow_memalloc(int size) {
 
 void ow_dealloc(__int64 address) {
     auto memmgr = get_memmgr();
-    __try {
+    __try1 (EXCEPTION_EXECUTE_HANDLER) {
         return memmgr->vfptr->deallocate(memmgr, address);
     }
-    __except (EXCEPTION_EXECUTE_HANDLER) {
+    __except1 {
         printf("failed ow_dealloc for %p\n", address);
     }
 }
