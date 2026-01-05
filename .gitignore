@@ -400,10 +400,7 @@ FodyWeavers.xsd
 *.sln.iml
 .idea/
 
-
-
-
-
 vcpkg_installed/
 output/
-/external
+external/
+!Prometheus-Core/Logs

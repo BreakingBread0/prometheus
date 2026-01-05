@@ -139,8 +139,8 @@ add_library(Prometheus-Core SHARED
         "windows/viewmodel_write_blocker.cpp"
         "window_manager/management_window.cpp"
         "window_manager/window_manager.cpp"
-        Log/Logs.cpp
-        Log/Logs.h
+        Logs/Logs.cpp
+        Logs/Logs.h
 )
 target_include_directories(Prometheus-Core PRIVATE ${PROJECT_SOURCE_DIR}/)
 

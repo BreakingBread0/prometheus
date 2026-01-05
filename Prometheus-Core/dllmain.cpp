@@ -50,7 +50,7 @@
 //Who needs a build system?
 #include <imnodes/imnodes.cpp>
 
-#include "Log/Logs.h"
+#include "Logs/Logs.h"
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ImVec2, x, y);
 

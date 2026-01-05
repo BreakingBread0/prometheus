@@ -2,7 +2,7 @@
 #include <mutex>
 #include <Windows.h>
 
-#include "Log/Logs.h"
+#include "Logs/Logs.h"
 
 namespace globals {
 	DWORD_PTR gameBase = 0;
