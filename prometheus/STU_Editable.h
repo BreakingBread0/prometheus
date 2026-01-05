@@ -19,33 +19,27 @@ public:
 
 	template <typename T>
 	T get_value() const {
+		if constexpr (std::is_same_v<T, const char*> || std::is_same_v<T, std::string>)
+		{
+			return ((STUteString*)value)->read();
+		}
+
 		return *(T*)value;
-	}
-
-	template<>
-	const char* get_value<const char*>() const {
-		return ((STUteString*)value)->read();
-	}
-
-	template<>
-	std::string get_value<std::string>() const {
-		return ((STUteString*)value)->read();
 	}
 
 	template<typename T>
 	void set_value(T new_value) {
-		*(T*)value = new_value;
-	}
+		if constexpr (std::is_same_v<T, const char*>)
+		{
+			STUteString* str = (STUteString*)value;
+			return str->set(new_value);
+		}
+		if constexpr (std::is_same_v<T, std::string>)
+		{
+			return set_value(new_value.c_str());
+		}
 
-	template<>
-	void set_value<std::string>(std::string new_value) {
-		return set_value(new_value.c_str());
-	}
-
-	template<>
-	void set_value<const char*>(const char* new_value) {
-		STUteString* str = (STUteString*)value;
-		str->set(new_value);
+		return *(T*)value = new_value;
 	}
 };
 
@@ -149,8 +143,8 @@ public:
 	STUBullshitListFull<__int64>* value;
 	STUArgumentInfo* argument;
 
-	STU_ListBase(STUArgumentInfo* argument, void* value = nullptr) : 
-		argument(argument), 
+	STU_ListBase(STUArgumentInfo* argument, void* value = nullptr) :
+		argument(argument),
 		value((STUBullshitListFull<__int64>*)value) {
 		if (!valid() || !this->value->valid()) {
 			value = nullptr;
@@ -289,6 +283,18 @@ public:
 
 	template <typename T>
 	void push_back(T item) {
+		if constexpr (std::is_same_v<T, const char*>)
+		{
+			STUteString teString{};
+			teString.set(item);
+			push_back(teString);
+		}
+		if constexpr (std::is_same_v<T, std::string>)
+		{
+			push_back(item.c_str());
+		}
+
+
 		owassert(sizeof(T) == _item_size);
 
 		int old_size = value->count() * _item_size;
@@ -299,18 +305,6 @@ public:
 		value->set_count(value->count() + 1);
 		ow_dealloc((__int64)value->list());
 		value->set_list(new_buf);
-	}
-
-	template<>
-	void push_back<std::string>(std::string str) {
-		push_back(str.c_str());
-	}
-
-	template<>
-	void push_back<const char*>(const char* str) {
-		STUteString teString{};
-		teString.set(str);
-		push_back(teString);
 	}
 
 	void remove_at_index(int index) {
@@ -452,7 +446,7 @@ private:
 // void to_json(json& j, const STU_ResourceRefList& p);
 // void to_json(json& j, const STU_ObjectList& p);
 // void to_json(json& j, const STU_PrimitiveList& p);
-// 
+//
 // void from_json(const json& j, STU_Primitive& p);
 // void from_json(const json& j, STUResourceReference& stu);
 // void from_json(const json& j, STU_Object& p);
