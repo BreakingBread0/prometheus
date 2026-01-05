@@ -7,13 +7,13 @@
 class stu_resources {
 public:
 	static inline void initialize() {
-		MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xa4c3f0), STUD_ConstructFromResource, (PVOID*)&stud_construct_orig));
+		MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xa4c3f0), (PVOID*)STUD_ConstructFromResource, (PVOID*)&stud_construct_orig));
 		MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0xa4c3f0)));
 
-		MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xa4c620), STUD_DestroyResource, (PVOID*)&stud_destroy_orig));
+		MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xa4c620), (PVOID*)STUD_DestroyResource, (PVOID*)&stud_destroy_orig));
 		MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0xa4c620)));
 
-		MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0x8553f0), DisplayText_ConstructFromResource, (PVOID*)&DisplayText_construct_orig));
+		MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0x8553f0), (PVOID*)DisplayText_ConstructFromResource, (PVOID*)&DisplayText_construct_orig));
 		MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0x8553f0)));
 		memset((void*)(globals::gameBase + 0x8553fb), 0x90, 0x3BB);
 	}

@@ -58,7 +58,7 @@ class bitconverter_calls : public window {
 	}
 
 	inline void preStartInitialize() override {
-		MH_CreateHook((LPVOID)(globals::gameBase + 0x848720), flipBits_hook, (void**)&flipBits_orig);
+		MH_CreateHook((LPVOID)(globals::gameBase + 0x848720), (PVOID*)flipBits_hook, (void**)&flipBits_orig);
 		//MH_EnableHook((LPVOID)(globals::gameBase + 0x848720));
 	}
 	//inline void initialize() override {}
