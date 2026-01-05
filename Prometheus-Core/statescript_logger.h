@@ -14,6 +14,8 @@ public:
     struct ScriptState {
         __int64 change_timestamp = 0;
         bool is_finish_state = true;
+
+        ScriptState() noexcept {} //default
     };
 
     static void Initialize() {
@@ -180,7 +182,7 @@ private:
     static inline std::map<StatescriptInstance*, LogStruct> s_subscriptions{};
     static inline std::vector<std::weak_ptr<std::function<void(StatescriptInstance*)>>> s_deletionSubs{};
     static inline std::map<StatescriptInstance*, std::map<int, ScriptState>> s_scriptStates{};
-    static inline const LogStruct const EmptyLog{};
-    static inline const std::map<int, ScriptState> const EmptyScriptState{};
-    static inline const ScriptState const EmptyNodeState{};
+    static inline const LogStruct EmptyLog{};
+    static inline const std::map<int, ScriptState> EmptyScriptState{};
+    static inline const ScriptState EmptyNodeState{};
 };

@@ -63,8 +63,8 @@ struct Entity {
         STRUCT_PLACE(uint32, entity_global_id, 0x90);
         STRUCT_PLACE(uint32, entity_id, 0x94);
         STRUCT_PLACE(MisalignedResourceLoadEntry*, resload_entry, 0x30);
-        STRUCT_PLACE(MisalignedResourceLoadEntry*, resload_entry2, 0x38); //Für STUSkinTheme
-        STRUCT_PLACE(MisalignedResourceLoadEntry*, resload_entry3, 0x40); //Für STUSkinBase
+        STRUCT_PLACE(MisalignedResourceLoadEntry*, resload_entry2, 0x38); //Fï¿½r STUSkinTheme
+        STRUCT_PLACE(MisalignedResourceLoadEntry*, resload_entry3, 0x40); //Fï¿½r STUSkinBase
     };
 
     inline ComponentBase* getById(int id) {
@@ -220,7 +220,7 @@ struct Component_10_FilterBits {
         }
     }
 
-    //default values für controller entity
+    //default values fï¿½r controller entity
     void set_filterbits_spectator() {
         field_8C = 0x101;
         field_8E = 1;
@@ -230,7 +230,7 @@ struct Component_10_FilterBits {
     }
 
     void FilterBitsMakeFinal() {
-        ((void(*__fastcall)(Component_10_FilterBits*))(globals::gameBase + 0xcbf660))(this);
+        reinterpret_cast<void(*__fastcall)(Component_10_FilterBits*)>(globals::gameBase + 0xcbf660)(this);
     }
 };
 

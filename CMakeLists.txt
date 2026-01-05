@@ -1,0 +1,361 @@
+cmake_minimum_required(VERSION 3.31)
+include(CMake/Platform/${PRO_PLATFORM}.cmake)
+
+project(Prometheus
+        DESCRIPTION "Research and Reverse-Engineering project of Overwatch!"
+        HOMEPAGE_URL "https://github.com/BreakingBread0/prometheus")
+
+include_directories(external)
+
+include(CMake/Configure.cmake)
+include(CMake/Version.cmake)
+
+add_subdirectory(Prometheus-Core)
+
+#[[
+cmake_minimum_required(VERSION 3.28)
+project(prometheus
+        DESCRIPTION "Research and Reverse-Engineering project of Overwatch!"
+        HOMEPAGE_URL "https://github.com/BreakingBread0/prometheus"
+        LANGUAGES C CXX)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+include_directories(external)
+include_directories(external/imnodes)
+include_directories(external/imnodes/example)
+include_directories(external/imnodes/vcpkg)
+include_directories(external/imnodes/vcpkg/ports)
+include_directories(external/imnodes/vcpkg/ports/alac-decoder)
+include_directories(external/imnodes/vcpkg/ports/b64)
+include_directories(external/imnodes/vcpkg/ports/breakpad)
+include_directories(external/imnodes/vcpkg/ports/cgns)
+include_directories(external/imnodes/vcpkg/ports/chartdir)
+include_directories(external/imnodes/vcpkg/ports/cityhash)
+include_directories(external/imnodes/vcpkg/ports/clapack)
+include_directories(external/imnodes/vcpkg/ports/freeimage)
+include_directories(external/imnodes/vcpkg/ports/gettimeofday)
+include_directories(external/imnodes/vcpkg/ports/graphicsmagick)
+include_directories(external/imnodes/vcpkg/ports/gts)
+include_directories(external/imnodes/vcpkg/ports/igraph)
+include_directories(external/imnodes/vcpkg/ports/libaiff)
+include_directories(external/imnodes/vcpkg/ports/libmspack)
+include_directories(external/imnodes/vcpkg/ports/libu2f-server)
+include_directories(external/imnodes/vcpkg/ports/libuuid)
+include_directories(external/imnodes/vcpkg/ports/modp-base64)
+include_directories(external/imnodes/vcpkg/ports/openblas)
+include_directories(external/imnodes/vcpkg/ports/ragel)
+include_directories(external/vcpkg)
+include_directories(external/vcpkg/ports/b64)
+include_directories(external/vcpkg/ports/cgns)
+include_directories(external/vcpkg/ports/chartdir)
+include_directories(external/vcpkg/ports/cityhash)
+include_directories(external/vcpkg/ports/clapack)
+include_directories(external/vcpkg/ports/foonathan-memory)
+include_directories(external/vcpkg/ports/freeimage)
+include_directories(external/vcpkg/ports/gettimeofday)
+include_directories(external/vcpkg/ports/gts)
+include_directories(external/vcpkg/ports/igraph)
+include_directories(external/vcpkg/ports/libaiff)
+include_directories(external/vcpkg/ports/libmspack)
+include_directories(external/vcpkg/ports/libodb-boost)
+include_directories(external/vcpkg/ports/libu2f-server)
+include_directories(external/vcpkg/ports/libuuid)
+include_directories(external/vcpkg/ports/modp-base64)
+include_directories(external/vcpkg/ports/openblas)
+include_directories(external/vcpkg/ports/openzl)
+include_directories(external/vcpkg/ports/pdal)
+include_directories(external/vcpkg/ports/ragel)
+include_directories(prometheus)
+include_directories(prometheus/window_manager)
+include_directories(prometheus/windows)
+
+add_executable(haz_prometheus
+        external/imnodes/example/color_node_editor.cpp
+        external/imnodes/example/graph.h
+        external/imnodes/example/hello.cpp
+        external/imnodes/example/main.cpp
+        external/imnodes/example/multi_editor.cpp
+        external/imnodes/example/node_editor.h
+        external/imnodes/example/save_load.cpp
+        external/imnodes/vcpkg/ports/alac-decoder/decomp.c
+        external/imnodes/vcpkg/ports/b64/b64_dynamic_config.h
+        external/imnodes/vcpkg/ports/b64/b64_static_config.h
+        external/imnodes/vcpkg/ports/breakpad/check_getcontext.cc
+        external/imnodes/vcpkg/ports/cgns/cgnsconfig.h
+        external/imnodes/vcpkg/ports/chartdir/chartdir.h
+        external/imnodes/vcpkg/ports/cityhash/config.h
+        external/imnodes/vcpkg/ports/clapack/arith_linux64.h
+        external/imnodes/vcpkg/ports/clapack/arith_osx.h
+        external/imnodes/vcpkg/ports/clapack/arith_win32.h
+        external/imnodes/vcpkg/ports/clapack/arith_win64.h
+        external/imnodes/vcpkg/ports/freeimage/FreeImageConfig-dynamic.h
+        external/imnodes/vcpkg/ports/freeimage/FreeImageConfig-static.h
+        external/imnodes/vcpkg/ports/gettimeofday/gettimeofday.c
+        external/imnodes/vcpkg/ports/gettimeofday/gettimeofday.h
+        external/imnodes/vcpkg/ports/graphicsmagick/magick_types.h
+        external/imnodes/vcpkg/ports/gts/predicates_init.h
+        external/imnodes/vcpkg/ports/igraph/arith_osx.h
+        external/imnodes/vcpkg/ports/igraph/arith_win32.h
+        external/imnodes/vcpkg/ports/igraph/arith_win64.h
+        external/imnodes/vcpkg/ports/libaiff/config.h
+        external/imnodes/vcpkg/ports/libmspack/config.h
+        external/imnodes/vcpkg/ports/libu2f-server/u2f-server-version.h
+        external/imnodes/vcpkg/ports/libuuid/config.linux.h
+        external/imnodes/vcpkg/ports/modp-base64/modp_b64_data.h
+        external/imnodes/vcpkg/ports/openblas/openblas_common.h
+        external/imnodes/vcpkg/ports/ragel/config.h
+        external/imnodes/vcpkg/scripts/test_ports/vcpkg-ci-ankurvdev-embedresource/project/main.cpp
+        external/imnodes/vcpkg/scripts/test_ports/vcpkg-ci-soci/project/main.cpp
+        external/imnodes/imnodes.cpp
+        external/imnodes/imnodes.h
+        external/imnodes/imnodes_internal.h
+        external/vcpkg/ports/alac-decoder/decomp.c
+        external/vcpkg/ports/b64/b64_dynamic_config.h
+        external/vcpkg/ports/b64/b64_static_config.h
+        external/vcpkg/ports/breakpad/check_getcontext.cc
+        external/vcpkg/ports/cgns/cgnsconfig.h
+        external/vcpkg/ports/chartdir/chartdir.h
+        external/vcpkg/ports/cityhash/config.h
+        external/vcpkg/ports/clapack/arith_linux64.h
+        external/vcpkg/ports/clapack/arith_osx.h
+        external/vcpkg/ports/clapack/arith_win32.h
+        external/vcpkg/ports/clapack/arith_win64.h
+        external/vcpkg/ports/foonathan-memory/config_impl.hpp
+        external/vcpkg/ports/freeimage/FreeImageConfig-dynamic.h
+        external/vcpkg/ports/freeimage/FreeImageConfig-static.h
+        external/vcpkg/ports/gettimeofday/gettimeofday.c
+        external/vcpkg/ports/gettimeofday/gettimeofday.h
+        external/vcpkg/ports/gts/predicates_init.h
+        external/vcpkg/ports/igraph/arith_osx.h
+        external/vcpkg/ports/igraph/arith_win32.h
+        external/vcpkg/ports/igraph/arith_win64.h
+        external/vcpkg/ports/libaiff/config.h
+        external/vcpkg/ports/libmspack/config.h
+        external/vcpkg/ports/libodb-boost/config.h
+        external/vcpkg/ports/libu2f-server/u2f-server-version.h
+        external/vcpkg/ports/libuuid/config.linux.h
+        external/vcpkg/ports/modp-base64/modp_b64_data.h
+        external/vcpkg/ports/openblas/openblas_common.h
+        external/vcpkg/ports/openzl/xxhash-wrapper.h
+        external/vcpkg/ports/pdal/h3api.h
+        external/vcpkg/ports/ragel/config.h
+        external/vcpkg/ports/skia/example/skcms.cpp
+        external/vcpkg/ports/skia/example/skpathediting.cpp
+        external/vcpkg/scripts/test_ports/rpath-macho-test-binaries/project/lib.cpp
+        external/vcpkg/scripts/test_ports/rpath-macho-test-binaries/project/main.cpp
+        external/vcpkg/scripts/test_ports/rpath-macho-test-binaries/project/transitive.cpp
+        external/vcpkg/scripts/test_ports/rpath-test-binaries/project/lib.cpp
+        external/vcpkg/scripts/test_ports/rpath-test-binaries/project/main.cpp
+        external/vcpkg/scripts/test_ports/rpath-test-binaries/project/transitive.cpp
+        external/vcpkg/scripts/test_ports/try-compile/try/try-compile.c
+        external/vcpkg/scripts/test_ports/vcpkg-ci-angelscript/project/main.cpp
+        external/vcpkg/scripts/test_ports/vcpkg-ci-ankurvdev-embedresource/project/main.cpp
+        external/vcpkg/scripts/test_ports/vcpkg-ci-asmjit/project/main.cpp
+        external/vcpkg/scripts/test_ports/vcpkg-ci-aurora-au/project/test_au_client.cc
+        external/vcpkg/scripts/test_ports/vcpkg-ci-bgfx/project/main.cpp
+        external/vcpkg/scripts/test_ports/vcpkg-ci-blas/project/main.c
+        external/vcpkg/scripts/test_ports/vcpkg-ci-box2d/project/main.c
+        external/vcpkg/scripts/test_ports/vcpkg-ci-capstone/project/main.cpp
+        external/vcpkg/scripts/test_ports/vcpkg-ci-cmake-toolchain-file/project/main.c
+        external/vcpkg/scripts/test_ports/vcpkg-ci-crashpad/project/main.cpp
+        external/vcpkg/scripts/test_ports/vcpkg-ci-curl/project/main.c
+        external/vcpkg/scripts/test_ports/vcpkg-ci-dartsim/project/main.cpp
+        external/vcpkg/scripts/test_ports/vcpkg-ci-dawn/project/main.cpp
+        external/vcpkg/scripts/test_ports/vcpkg-ci-dawn/project/webgpu_glfw3.cpp
+        external/vcpkg/scripts/test_ports/vcpkg-ci-dbus-cxx/project/main.cpp
+        external/vcpkg/scripts/test_ports/vcpkg-ci-dcmtk/project/main.cpp
+        external/vcpkg/scripts/test_ports/vcpkg-ci-duckdb/project/main.c
+        external/vcpkg/scripts/test_ports/vcpkg-ci-ffmpeg/project/main.c
+        external/vcpkg/scripts/test_ports/vcpkg-ci-fluidsynth/project/main.c
+        external/vcpkg/scripts/test_ports/vcpkg-ci-gmime/project/main.c
+        external/vcpkg/scripts/test_ports/vcpkg-ci-gobject-introspection/project/main.c
+        external/vcpkg/scripts/test_ports/vcpkg-ci-graphicsmagick/project/main.c
+        external/vcpkg/scripts/test_ports/vcpkg-ci-gz-common/project/main.cpp
+        external/vcpkg/scripts/test_ports/vcpkg-ci-hello-imgui/project/main.cpp
+        external/vcpkg/scripts/test_ports/vcpkg-ci-icu/project/main.c
+        external/vcpkg/scripts/test_ports/vcpkg-ci-itk/project/main.cpp
+        external/vcpkg/scripts/test_ports/vcpkg-ci-juce/project/main.cpp
+        external/vcpkg/scripts/test_ports/vcpkg-ci-libaec/project/main.c
+        external/vcpkg/scripts/test_ports/vcpkg-ci-libavif/project/main.c
+        external/vcpkg/scripts/test_ports/vcpkg-ci-libftdi1/project/main.cpp
+        external/vcpkg/scripts/test_ports/vcpkg-ci-libgwenhywfar/project/main.c
+        external/vcpkg/scripts/test_ports/vcpkg-ci-libhat/project/main.cpp
+        external/vcpkg/scripts/test_ports/vcpkg-ci-libheif/project/main.c
+        external/vcpkg/scripts/test_ports/vcpkg-ci-libigl/project/stb_image_implementation.c
+        external/vcpkg/scripts/test_ports/vcpkg-ci-libmem/project/main.cpp
+        external/vcpkg/scripts/test_ports/vcpkg-ci-libmodbus/project/main.c
+        external/vcpkg/scripts/test_ports/vcpkg-ci-libpqxx/project/main.cpp
+        external/vcpkg/scripts/test_ports/vcpkg-ci-libremidi/project/main.cpp
+        external/vcpkg/scripts/test_ports/vcpkg-ci-libressl/project/libressl.c
+        external/vcpkg/scripts/test_ports/vcpkg-ci-libressl/project/openssl.c
+        external/vcpkg/scripts/test_ports/vcpkg-ci-libsrtp/project/main.c
+        external/vcpkg/scripts/test_ports/vcpkg-ci-lief/project/main.cpp
+        external/vcpkg/scripts/test_ports/vcpkg-ci-llama-cpp/project/main.cxx
+        external/vcpkg/scripts/test_ports/vcpkg-ci-mapbox-variant/project/main.cpp
+        external/vcpkg/scripts/test_ports/vcpkg-ci-minc/project/main.c
+        external/vcpkg/scripts/test_ports/vcpkg-ci-mpg123/project/main.c
+        external/vcpkg/scripts/test_ports/vcpkg-ci-msh3/project/main.c
+        external/vcpkg/scripts/test_ports/vcpkg-ci-mysql-connector-cpp/project/jdbc.cpp
+        external/vcpkg/scripts/test_ports/vcpkg-ci-mysql-connector-cpp/project/main.cpp
+        external/vcpkg/scripts/test_ports/vcpkg-ci-mzying2001-sw/project/main.cpp
+        external/vcpkg/scripts/test_ports/vcpkg-ci-nss/project/main.c
+        external/vcpkg/scripts/test_ports/vcpkg-ci-openblas/project/main.c
+        external/vcpkg/scripts/test_ports/vcpkg-ci-openimageio/project/main.cpp
+        external/vcpkg/scripts/test_ports/vcpkg-ci-openvpn3/project/main.cpp
+        external/vcpkg/scripts/test_ports/vcpkg-ci-orange-math/project/main.cpp
+        external/vcpkg/scripts/test_ports/vcpkg-ci-plplot/project/main.c
+        external/vcpkg/scripts/test_ports/vcpkg-ci-podofo/project/main.cxx
+        external/vcpkg/scripts/test_ports/vcpkg-ci-pybind11/project/main.cpp
+        external/vcpkg/scripts/test_ports/vcpkg-ci-python3/project/main.c
+        external/vcpkg/scripts/test_ports/vcpkg-ci-qtwebengine/project/main.cpp
+        external/vcpkg/scripts/test_ports/vcpkg-ci-rest-rpc/project/main.cpp
+        external/vcpkg/scripts/test_ports/vcpkg-ci-rewolf-wow64ext/project/main.cpp
+        external/vcpkg/scripts/test_ports/vcpkg-ci-rtlsdr/project/main.c
+        external/vcpkg/scripts/test_ports/vcpkg-ci-ryu/test.c
+        external/vcpkg/scripts/test_ports/vcpkg-ci-sdl3-image/project/main.c
+        external/vcpkg/scripts/test_ports/vcpkg-ci-sdl3-ttf/project/main.c
+        external/vcpkg/scripts/test_ports/vcpkg-ci-soci/project/main.cpp
+        external/vcpkg/scripts/test_ports/vcpkg-ci-tdlib/project/main.cpp
+        external/vcpkg/scripts/test_ports/vcpkg-ci-tgbot-cpp/project/main.cpp
+        external/vcpkg/scripts/test_ports/vcpkg-ci-tomlplusplus/project/main.cpp
+        external/vcpkg/scripts/test_ports/vcpkg-ci-tree-sitter/project/main.c
+        external/vcpkg/scripts/test_ports/vcpkg-ci-unarr/project/main.c
+        external/vcpkg/scripts/test_ports/vcpkg-ci-unicorn/project/main.c
+        external/vcpkg/scripts/test_ports/vcpkg-ci-unixodbc/project/main.c
+        external/vcpkg/scripts/test_ports/vcpkg-ci-uwebsockets/project/main.cxx
+        external/vcpkg/scripts/test_ports/vcpkg-ci-vcpkg-make/test-cl_cpp_wrapper/source.c
+        external/vcpkg/scripts/test_ports/vcpkg-ci-vxl/project/main.cpp
+        external/vcpkg/scripts/test_ports/vcpkg-ci-whisper-cpp/project/main.cxx
+        external/vcpkg/scripts/test_ports/vcpkg-ci-yandex-disk-cpp-client/project/main.cpp
+        prometheus/window_manager/management_window.cpp
+        prometheus/window_manager/management_window.h
+        prometheus/window_manager/window_manager.cpp
+        prometheus/window_manager/window_manager.h
+        prometheus/window_manager/window_regs.cpp
+        "prometheus/windows/AAA window template.h"
+        prometheus/windows/asset_pack_manager.h
+        prometheus/windows/awful_demo_server.h
+        prometheus/windows/bitconverter_calls.h
+        prometheus/windows/blizzbbqueueq_window.h
+        prometheus/windows/comments_window.h
+        prometheus/windows/component_notes.h
+        prometheus/windows/copy_window.h
+        prometheus/windows/CVD_Edit.h
+        prometheus/windows/CVD_List.h
+        prometheus/windows/CVD_VarbagSelector.h
+        prometheus/windows/cvexpression_viewer.h
+        prometheus/windows/entadmin_compodependencies.h
+        prometheus/windows/entity_bounds_renderer.h
+        prometheus/windows/entity_spawner.h
+        prometheus/windows/entity_window.cpp
+        prometheus/windows/entity_window.h
+        prometheus/windows/entityadmin_systems_window.h
+        prometheus/windows/entityadmin_timing.h
+        prometheus/windows/entityadmin_window.h
+        prometheus/windows/entitydef_explorer.h
+        prometheus/windows/entitydef_list.h
+        prometheus/windows/example_window.h
+        prometheus/windows/filetype_window.h
+        prometheus/windows/freecam_movement_recorder.h
+        prometheus/windows/game_data_window.h
+        prometheus/windows/game_msg_window.h
+        prometheus/windows/hash_display_window.h
+        prometheus/windows/herolineup_creator.h
+        prometheus/windows/imgui_demo_window.h
+        prometheus/windows/ini_settings_window.h
+        prometheus/windows/jam_messagedetail_window.h
+        prometheus/windows/jamprotocol_window.h
+        prometheus/windows/loadlist_visualizer.h
+        prometheus/windows/lobbymap_tester.h
+        prometheus/windows/local_player_component_insights.h
+        prometheus/windows/log_window.h
+        prometheus/windows/logicalbutton_names.h
+        prometheus/windows/manager_4_secrets.h
+        prometheus/windows/manager_infos.h
+        prometheus/windows/message_window.h
+        prometheus/windows/movementsys_editor.h
+        prometheus/windows/movstate_visualizer.h
+        prometheus/windows/name_value_struct.h
+        prometheus/windows/pachimari_creator.h
+        prometheus/windows/player_spawner_deluxe.h
+        prometheus/windows/pvpgame_explorer.h
+        prometheus/windows/radio_selector_window.h
+        prometheus/windows/statescript_fake_logicalbtn.h
+        prometheus/windows/statescript_fuzzer.h
+        prometheus/windows/statescript_graph_window.h
+        prometheus/windows/statescript_info.h
+        prometheus/windows/statescript_list.cpp
+        prometheus/windows/statescript_list.h
+        prometheus/windows/statescript_log_window.h
+        prometheus/windows/statescript_node_search.h
+        prometheus/windows/statescript_registry.h
+        prometheus/windows/statescript_varbag_window.h
+        prometheus/windows/statescript_window.cpp
+        prometheus/windows/statescript_window.h
+        prometheus/windows/string_rep_edit.h
+        prometheus/windows/stu_bslist_edit.h
+        prometheus/windows/stu_explorer.cpp
+        prometheus/windows/stu_explorer.h
+        prometheus/windows/stu_object_edit.h
+        prometheus/windows/stu_primitive_edit.h
+        prometheus/windows/stu_registry.h
+        prometheus/windows/stu_types.h
+        prometheus/windows/STU_Types_window.h
+        prometheus/windows/textedit_window.h
+        prometheus/windows/type_7b_strings.h
+        prometheus/windows/viewmodel_selector.h
+        prometheus/windows/viewmodel_viewer.h
+        prometheus/windows/viewmodel_write_blocker.cpp
+        prometheus/windows/viewmodel_write_blocker.h
+        prometheus/windows/voice_system_triggerer.h
+        prometheus/demo_cammoves.cpp
+        prometheus/dllmain.cpp
+        prometheus/entity_admin.cpp
+        prometheus/entity_admin.h
+        prometheus/ExceptionFormatter.cpp
+        prometheus/ExceptionFormatter.h
+        prometheus/filetype_library.cpp
+        prometheus/filetype_library.h
+        prometheus/framework.h
+        prometheus/game.h
+        prometheus/globals.cpp
+        prometheus/globals.h
+        prometheus/hash_exporter.h
+        prometheus/idadefs.h
+        prometheus/imgui_json.h
+        prometheus/ImguiRenderer.cpp
+        prometheus/ImguiRenderer.h
+        prometheus/JAM.h
+        prometheus/lazy_importer.h
+        prometheus/manager_4_secrets.cpp
+        prometheus/MovementState.h
+        prometheus/pch.cpp
+        prometheus/pch.h
+        prometheus/pe.h
+        prometheus/player_spawner.cpp
+        prometheus/player_spawner.h
+        prometheus/renderer.cpp
+        prometheus/renderer.h
+        prometheus/ResourceManager.h
+        prometheus/search_helper.h
+        prometheus/serialization.cpp
+        prometheus/serialization.h
+        prometheus/state_replicator.cpp
+        prometheus/state_replicator.h
+        prometheus/Statescript.cpp
+        prometheus/Statescript.h
+        prometheus/statescript_logger.h
+        prometheus/StatescriptExpressionParser.h
+        prometheus/StatescriptVar.h
+        prometheus/stringhash_library.cpp
+        prometheus/stringhash_library.h
+        prometheus/STU.cpp
+        prometheus/STU.h
+        prometheus/STU_Editable.cpp
+        prometheus/STU_Editable.h
+        prometheus/stu_resources.cpp
+        prometheus/stu_resources.h
+        prometheus/Viewmodel.h)
+]]

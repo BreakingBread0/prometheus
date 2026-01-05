@@ -1,6 +1,6 @@
-#pragma once
-#include "global.h"
-#include "imgui/imgui.h"
+/*#pragma once
+#include "globals.h"
+#include "imgui.h"
 #include "Math.h"
 class ID3D11ShaderResourceView;
 namespace renderer {
@@ -41,4 +41,4 @@ namespace renderer {
 		//Vector3 WorldToRadar(const Vector3& location, const Vector3& origin, const Vector3& angles, int width, float scale = 16.f);
 		void DrawHealthVertical(const ImVec2& scalepos, float width, float health, float maxHealth, int HealthColor);
 	}
-}
+}*/

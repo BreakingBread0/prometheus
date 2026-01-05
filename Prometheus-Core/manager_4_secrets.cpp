@@ -1,5 +1,5 @@
 #pragma once
-#include "../window_manager/window_manager.h"
+#include "window_manager/window_manager.h"
 
 class template_window : public window {
 	WINDOW_ALLOW_AUTO(json_test_window);

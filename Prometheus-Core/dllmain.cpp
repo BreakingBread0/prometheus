@@ -276,10 +276,10 @@ HRESULT __stdcall PresentHook(IDXGISwapChain* pSwapChain, UINT SyncInterval, UIN
     if (!main_swapchain)
         main_swapchain = pSwapChain;
     if (main_swapchain == pSwapChain) {
-        //fuck fullscreen, all my homies hate fullscreen in 0.8
+        //fuck fullscreen, all my homies hate fullscreen in 0.8 - periodt
         *(int*)(globals::gameBase + 0x17a1123) = 0;
         std::call_once(imgui_init, [&]() {
-            globals::gameWindow = (DWORD_PTR)FindWindow(L"tankWindowClass", NULL);
+            globals::gameWindow = (DWORD_PTR)FindWindowW(L"tankWindowClass", NULL);
             pSwapChain->GetDevice(__uuidof(g_pd3dDevice), (void**)&g_pd3dDevice);
             g_pd3dDevice->GetImmediateContext(&g_pd3dContext);
 
@@ -370,7 +370,7 @@ __int64 __fastcall createwindow_hook(__int64 gameManager) {
     std::thread([]() {
         while (true) {
             Sleep(100);
-            //teEngine ínstance
+            //teEngine ï¿½nstance
             DWORD_PTR render = *(DWORD_PTR*)(globals::gameBase + 0x181e3e0);
             if (!render)
                 continue;

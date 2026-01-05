@@ -32,6 +32,7 @@ bld/
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
+build/
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
@@ -397,7 +398,7 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
-
+.idea/
 
 
 
@@ -405,3 +406,4 @@ FodyWeavers.xsd
 
 vcpkg_installed/
 output/
+/external

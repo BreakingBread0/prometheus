@@ -2,6 +2,8 @@
 #include <sstream>
 #include <string>
 #include <mutex>
+
+#include "windows/message_window.h"
 using namespace std;
 
 ImguiRenderer::ImguiRenderer()
@@ -18,7 +20,7 @@ void ImguiRenderer::Initialize()
 
 void ImguiRenderer::BeginScene()
 {
-	//MessageBoxA(nullptr, "HELLO", "HELLO", 0);
+	MessageBoxA(nullptr, "HELLO", "HELLO", 0);
 	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
 	ImGui::Begin("D3D11_Buffer", 0, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoInputs);
 

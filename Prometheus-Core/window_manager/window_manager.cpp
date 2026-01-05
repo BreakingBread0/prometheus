@@ -428,6 +428,7 @@ window* window::purge_docking_tree() {
 	if (root) {
 		ImGui::DockContextClearNodes(ImGui::GetCurrentContext(), root->im_id, true);
 	}
+	return this;
 }
 
 window* window::dock_item_right(window* other, float size_ratio) {
@@ -441,7 +442,7 @@ window* window::dock_item_down(window* other, float size_ratio) {
 }
 
 window* window::dock_tab_here(window* other) {
-
+	return this;
 }
 
 STUArgumentInfo* argument_info(STUInfo* stu, int name_hash) {

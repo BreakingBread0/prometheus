@@ -1,4 +1,4 @@
-#define NOMINMAX
+/*#define NOMINMAX
 #include "renderer.h"
 #include "memory.h"
 #include <dwmapi.h>
@@ -9,11 +9,11 @@
 #define STB_IMAGE_IMPLEMENTATION //ONLY DEFINE ONCE IN THE PROJECT! @Nusty
 #define STB_IMAGE_RESIZE_IMPLEMENTATION
 
-#include "imgui/imgui_internal.h"
-#include "imgui/imgui_impl_dx11.h"
-#include "imgui/imgui_impl_win32.h"
-#include "imgui/imfont.h"
-#include "imgui/imgui.h"
+#include "imgui_internal.h"
+#include "imgui_impl_dx11.h"
+#include "imgui_impl_win32.h"
+#include "imfont.h"
+#include "imgui.h"
 #include "stb_image.h"
 #include "stb_image_resize.h"
 #include "renderer.h"
@@ -31,7 +31,7 @@ bool renderer::LoadTextureFromFile(const char* filename, void** out_srv, int wan
 	int channels = 0;
 	/*char buf[256];
 	GetCurrentDirectoryA(256, buf);
-	printf("%s\n", buf);*/
+	printf("%s\n", buf);#1#
 	unsigned char* image_unresized_data = stbi_load(filename, &image_width, &image_height, &channels, 4);
 	if (image_unresized_data == NULL) {
 		printf("Image not found: %s. Cannot continue!\n", filename);
@@ -236,7 +236,7 @@ void renderer::initialize() {
 			render_window = FindWindowA("CEF-OSC-WIDGET", nullptr);
 			/*DWORD proc;
 			GetWindowThreadProcessId(render_window, &proc);
-			printf("%d\n", proc);*/
+			printf("%d\n", proc);#1#
 			Sleep(500);
 		}
 	}
@@ -323,7 +323,7 @@ void renderer::initialize() {
 	style->TabBorderSize = 0.000000f;
 	style->MouseCursorScale = 1.000000f;
 	style->CurveTessellationTol = 1.250000f;
-	
+
 	style->Colors[ImGuiCol_Text] = ImVec4(1.000000, 1.000000, 1.000000, 1.000000);
 	style->Colors[ImGuiCol_TextDisabled] = ImVec4(0.680000, 0.710000, 0.740000, 0.800000);
 	style->Colors[ImGuiCol_WindowBg] = ImVec4(0.129412, 0.141176, 0.168627, 1.000000);
@@ -396,11 +396,11 @@ namespace renderer {
 		}
 
 		//old code :)
-		// 
+		//
 		//Vector3 WorldToScreen(Vector3 vec) {
 		//	float w = (Viewmatrix.M14 * vec.X) + (Viewmatrix.M24 * vec.Y) + (Viewmatrix.M34 * vec.Z + Viewmatrix.M44);
 		//	/*if (w < 0.1f)
-		//		return Vector3{};*/
+		//		return Vector3{};#1#
 		//	float y = (Viewmatrix.M12 * vec.X) + (Viewmatrix.M22 * vec.Y) + (Viewmatrix.M32 * vec.Z + Viewmatrix.M42);
 		//	float x = (Viewmatrix.M11 * vec.X) + (Viewmatrix.M21 * vec.Y) + (Viewmatrix.M31 * vec.Z + Viewmatrix.M41);
 		//	Vector3 ret{};
@@ -447,12 +447,12 @@ namespace renderer {
 		void DrawHealth(const ImVec2& scalepos, float width, float health, float maxHealth) {
 			float thickness = 5;
 			/*float health = health + armor + shields;
-			float maxHealth = maxHealth + maxarmor + maxshields;*/
+			float maxHealth = maxHealth + maxarmor + maxshields;#1#
 			float oneSegment = width / maxHealth;
 
 			float segmentHealth = oneSegment * health;
 			/*float segmentArmor = oneSegment * armor;
-			float segmentShield = oneSegment * shields;*/
+			float segmentShield = oneSegment * shields;#1#
 
 			int progress = (int)((float)health / ((float)maxHealth / 100));
 			uint32_t backColor = 0xFF303030;
@@ -485,7 +485,7 @@ namespace renderer {
 			ImGui::SliderFloat("asdasd", &test, 30, 150);
 			ImGui::SliderFloat("asdasd123", &test2, 30, 150);
 			ImGui::End();
-			float asd = test;*/
+			float asd = test;#1#
 			//I have no idea why 33.f is correct and at this point I am too afraid to ask
 			float pxR = tanf(DEGTORAD(radious) / 2) / (2 * tanf(DEGTORAD((float)(renderer::current_fov - 33.f)) / 2)) * (renderer::window_height);
 			DrawCircle(ImVec2(renderer::window_width / 2, renderer::window_height / 2), pxR, 0xFF000000);
@@ -494,13 +494,13 @@ namespace renderer {
 		void DrawHealthVertical(const ImVec2& scalepos, float width, float health, float maxHealth, int HealthColor) {
 			float thickness = 4;
 			/*float actualHealth = health + armor + shields;
-			float actualMaxHealth = maxHealth + maxarmor + maxshields;*/
+			float actualMaxHealth = maxHealth + maxarmor + maxshields;#1#
 			float oneSegment = width / maxHealth;
 
 			float segmentHealth = oneSegment * health;
 			/*float segmentArmor = oneSegment * armor;
 			float segmentShield = oneSegment * shields;
-			float segments = segmentHealth + segmentArmor + segmentShield;*/
+			float segments = segmentHealth + segmentArmor + segmentShield;#1#
 
 			int progress = (int)((float)health / ((float)maxHealth / 100));
 			uint32_t backColor = 0xFF303030;
@@ -548,7 +548,7 @@ namespace renderer {
 
 
 			/*ImGuiWindow* window = ImGui::GetCurrentWindow();
-			window->DrawList->AddRect(from, to, color, 0.0F, -1, thickness);*/
+			window->DrawList->AddRect(from, to, color, 0.0F, -1, thickness);#1#
 		}
 
 
@@ -624,7 +624,7 @@ namespace renderer {
 			}
 
 			return y;
-		}*/
+		}#1#
 
 		void DrawHealthBar(int width, const ImVec2& from, int currentHealth, int maxHealth, int currentArmor, int maxArmor, int currentBarrier, int maxBarrier)
 		{
@@ -703,4 +703,4 @@ namespace renderer {
 			window->DrawList->AddCircleFilled(position, radius, color, (radius / 2 + 6));
 		}
 	}
-};
+};*/

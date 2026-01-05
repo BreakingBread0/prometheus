@@ -136,7 +136,7 @@ public:
 	static inline std::shared_ptr<window> add_window(window* window_reference, window* from = nullptr) {
 		return add_window(std::unique_ptr<window>(window_reference), from);
 	}
-	const static const std::vector<std::shared_ptr<window>> get_window_list() {
+	static const std::vector<std::shared_ptr<window>> get_window_list() {
 		return s_windows;
 	}
 	//static void remove_window(window* window_reference);
@@ -246,8 +246,8 @@ public:
 //Zu faul um alles umzubenennen TODO
 #define WINDOW_DEFINE_2(cls, category, name, allow_auto, isSingleton) \
 public: \
-inline const char* window_name() override { return ##name ; } \
-inline const char* category_name() override { return ##category ; } \
+inline const char* window_name() override { return name ; } \
+inline const char* category_name() override { return category ; } \
 inline window_type get_window_type() override { return #cls ; } \
 inline window* create_self() override { return new cls; } \
 /*inline static cls* get_latest(window* from) { return (cls*)window_manager::get_latest_if_exists<cls>(from).get(); }*/ \
@@ -260,9 +260,9 @@ inline bool is_singleton() override { return isSingleton; }
 #define WINDOW_DEFINE_ARG(cls, category, name, arg) \
 WINDOW_DEFINE_2(cls, category, name, false, false) \
 private: \
-##arg _arg{}; \
+arg _arg{}; \
 public: \
-cls* set(##arg new_arg) { _arg = new_arg; return this; }
+cls* set(arg new_arg) { _arg = new_arg; return this; }
 #define STRUCT_MODIFIABLE(stru, member) imgui_helpers::modifiable(#member, &stru->member, this); 
 
 namespace imgui_helpers {
