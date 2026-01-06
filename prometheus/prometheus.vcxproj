@@ -219,6 +219,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="bsDatStore.h" />
     <ClInclude Include="entity_admin.h" />
     <ClInclude Include="ExceptionFormatter.h" />
     <ClInclude Include="filetype_library.h" />

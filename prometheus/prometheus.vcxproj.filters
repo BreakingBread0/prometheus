@@ -349,6 +349,9 @@
     <ClInclude Include="state_replicator.h">
       <Filter>Source Files\Entity Admin &amp; Systems\Components\MovementState</Filter>
     </ClInclude>
+    <ClInclude Include="bsDatStore.h">
+      <Filter>Source Files\Game</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="window_manager\window_manager.cpp">

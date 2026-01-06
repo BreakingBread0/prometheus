@@ -405,6 +405,9 @@ bool window::open_window(const char* title, int flags, ImVec2 size) {
 			pos.y += 10;
 			ImGui::SetNextWindowPos(pos);
 		}
+		if (modal_force_focus) {
+			ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(255, 0, 255, 255));
+		}
 	}
 	auto state = ImGui::Begin(name.c_str(), &open, flags);
 	if (!open) {
@@ -414,6 +417,9 @@ bool window::open_window(const char* title, int flags, ImVec2 size) {
 		auto window = ImGui::GetCurrentWindowRead();
 		this->_im_id = window->ID;
 		this->_is_focused = ImGui::IsWindowFocused();
+	}
+	if (is_modal && modal_force_focus) {
+		ImGui::PopStyleColor();
 	}
 	return state;
 }

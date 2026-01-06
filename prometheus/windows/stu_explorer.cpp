@@ -2,6 +2,7 @@
 #include "../STU_Editable.h"
 #include "../stu_resources.h"
 #include "stu_primitive_edit.h"
+#include "stu_object_edit.h"
 
 void stu_explorer::navigate_to(STUInfo* info, __int64 instance, StatescriptInstance* ss_inst) {
 	_forward_history.clear();
@@ -66,7 +67,6 @@ inline void stu_explorer::render() {
 		}
 
 		if (_current_item.cls) {
-
 			auto instance = _current_item.cls;
 			STU_Object obj(instance, IsBadReadPtr((void*)_current_item.current_instance, _current_item.cls->instance_size) ? nullptr : (void*)_current_item.current_instance);
 			instance = (obj = obj.get_runtime_root()).struct_info;
@@ -105,11 +105,18 @@ void stu_explorer::render_resref(STUResourceReference* ref) {
 	if (ref->has_resource()) {
 		imgui_helpers::display_type(ref->resource_id, true, true, true);
 		ImGui::PushID("ref_value");
-		if (ref->is_resource_loaded())
+		if (ref->is_resource_loaded()) {
 			display_addr(ref->resource_load_entry->align()->resource_ptr);
+			ImGui::SameLine();
+		}
 		auto stu = stu_resources::GetByID(ref->resource_id);
-		if (stu && ImGui::Button("follow")) {
+		if (stu && imgui_helpers::TooltipButton(EMOJI_FORWARD, "follow")) {
 			navigate_to(stu->to_editable().struct_info, (__int64)stu, nullptr);
+		}
+		ImGui::SameLine();
+		if (ImGui::Button(EMOJI_EDIT)) {
+			STU_Primitive item((void*)&ref->resource_id, STU_NAME::Primitive::u64);
+			window_manager::open_modal<stu_primitive_edit>(this, item);
 		}
 		ImGui::PopID();
 	}
@@ -253,7 +260,19 @@ void stu_explorer::render_stu(STU_Object value) {
 						old.followed = arg->name_hash;
 						old.followed_index = i;
 					}
+					ImGui::SameLine();
+					if (imgui_helpers::TooltipButton(EMOJI_CROSS, "Remove")) {
+						list.remove_at_index(i);
+					}
 					ImGui::PopID();
+				}
+				if (ImGui::Button(" + ")) {
+					if (type == STU_ConstraintType_BSList_InlinedObject) {
+						list.push_back_inlinedObject();
+					}
+					else {
+						window_manager::open_modal<stu_object_edit>(this, stu_object_edit::arg_typ{ value, arg });
+					}
 				}
 				break;
 			}
@@ -266,12 +285,19 @@ void stu_explorer::render_stu(STU_Object value) {
 					ImGui::PushID(i);
 					ImGui::BulletText("%d:", i);
 					ImGui::SameLine();
-					//if (ImGui::Button(EMOJI_EDIT)) {
-					//	window_manager::open_modal<stu_primitive_edit>(this, item);
-					//}
+					if (ImGui::Button(EMOJI_EDIT)) {
+						window_manager::open_modal<stu_primitive_edit>(this, item);
+					}
+					ImGui::SameLine();
+					if (imgui_helpers::TooltipButton(EMOJI_CROSS, "Remove")) {
+						list.remove_at_index(i);
+					}
 					ImGui::SameLine();
 					imgui_helpers::render_primitive(item);
 					ImGui::PopID();
+				}
+				if (ImGui::Button(" + ")) {
+					list.push_back_default();
 				}
 				break;
 			}
@@ -285,7 +311,14 @@ void stu_explorer::render_stu(STU_Object value) {
 					ImGui::BulletText("%d:", i);
 					ImGui::SameLine();
 					render_resref(item);
+					ImGui::SameLine();
+					if (imgui_helpers::TooltipButton(EMOJI_CROSS, "Remove")) {
+						list.remove_at_index(i);
+					}
 					ImGui::PopID();
+				}
+				if (ImGui::Button(" + ")) {
+					list.push_back(0);
 				}
 				break;
 			}

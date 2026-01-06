@@ -20,6 +20,7 @@ public:
 	int window_id = 0;
 	bool is_dependent = false;
 	bool is_modal = false;
+	bool modal_force_focus = false;
 
 	const bool& has_dependents = _has_dependents;
 	const ImGuiID& im_id = _im_id;

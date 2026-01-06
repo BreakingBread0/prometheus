@@ -61,3 +61,4 @@
 #include "../windows/freecam_movement_recorder.h"
 #include "../windows/herolineup_creator.h"
 #include "../windows/stu_primitive_edit.h"
+#include "../windows/stu_object_edit.h"

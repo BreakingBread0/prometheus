@@ -224,11 +224,13 @@ void management_window::render() {
 
 		std::map<ImGuiWindow*, std::pair<std::shared_ptr<window>, window_context>> grouped_windows;
 		if (ImGui::BeginMenuBar()) {
+			bool has_forcemodal = false;
 			for (auto& window : window_manager::get_window_list()) {
 				if (window->im_id == 0)
 					continue;
 				if (window->is_docked)
 					continue;
+				bool has_forcemodal = window->is_modal && window->modal_force_focus;
 				if (window->is_modal)
 					continue;
 
@@ -288,6 +290,14 @@ void management_window::render() {
 					ImGui::PopStyleColor();
 
 				ImGui::PopID();
+			}
+			if (has_forcemodal && ImGui::IsKeyDown(ImGuiKey_Menu)) {
+				if (ImGui::MenuItem("Force Close Modal")) {
+					for (auto& window : window_manager::get_window_list()) {
+						if (window->is_modal && window->modal_force_focus)
+							window->queue_deletion();
+					}
+				}
 			}
 			//If this code makes you cry, you are not alone.
 			//Map: ImGuiWindow -> root window + vector(docked windows)
