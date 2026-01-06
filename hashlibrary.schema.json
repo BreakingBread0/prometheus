@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "type": "object",
+  "properties": {
+    "db": {
+      "type": "object",
+      "description": "Key: string hash, crc32. Value: String"
+    },
+    "comments": {
+      "type": "object",
+      "description": "Key: __int64, hashes and resource IDs, Value: String",
+      "items": {
+        "type": "array",
+        "properties": {},
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "components": {
+      "type": "array",
+      "description": "Component Notes",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "comment": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "add": {
+      "type": "array",
+      "description": "Add to string hashes. Put in strings that will get hashed."
+    }
+  },
+  "required": [
+    "db",
+    "comments",
+    "components"
+  ]
+}

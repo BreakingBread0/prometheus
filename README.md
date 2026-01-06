@@ -1,6 +1,7 @@
 # Prometheus <!-- omit in toc -->
 
 Hey and welcome, thanks for stopping by!
+- [0. Thank you](#0-thank-you)
 - [1. Usage](#1-usage)
   - [Download a Release](#download-a-release)
     - [Optional stuff](#optional-stuff)
@@ -25,7 +26,13 @@ Hey and welcome, thanks for stopping by!
 - [7. Open Source libraries used](#7-open-source-libraries-used)
 - [8. License and Contact](#8-license-and-contact)
 
+# 0. Thank you
+
+As I've said in [my talk](https://media.ccc.de/v/39c3-prometheus-reverse-engineering-overwatch), this was and is a labor of love. Please do not send any hate to current or past Overwatch developers, and please do not harrass them. It is still my favourite multiplayer game, and if you're reading this, chances are it is yours too. It probably wasn't easy to just stomp out a whole new multiplayer game within two years out of the broken shambles of Titan. 0.8, even if still a "beta" version, is very much feature-complete and very stable!
+
 # 1. Usage
+
+This project is more an exploration of all the structures and the general game layout. It is not ready, and you cannot play with other people. A lot of hero abilities don't work, including shooting weapons.
 
 If you havent already, download the 0.8 beta from [archive.org](https://archive.org/details/overwatch-beta-0-8-0-24919) and extract the files somewhere.
 * ⚠️ Make sure that you don't download any malicious executable and verify that GameClientApp.exe is signed by Blizzard. The signature will get broken after applying the patcher.
@@ -43,7 +50,7 @@ If you havent already, download the 0.8 beta from [archive.org](https://archive.
 
 * Download the [MonaspaceXenon](https://monaspace.githubnext.com/) font and put the -regular.otf and -bold.otf in the directory of the game files.
 * Download the [Font Awesome v6](https://fontawesome.com/v6/download) free desktop font files and put the .otf files into the game directory.
-* Once first started, the library will create hashlibrary.json. You can add crc32 strings / elements to hash which will be displayed in various places where applicable. You can just add all the strings from the [overtools github repository](https://github.com/overtools/OWLib/tree/develop/TankLibHelper/DataPreHashChange). To do so add another root JSON element (an array) called "add" and put all your strings there.
+* Once first started, the library will create hashlibrary.json. You can add crc32 strings / elements to hash which will be displayed in various places where applicable. You can just add all the strings from the [overtools github repository](https://github.com/overtools/OWLib/tree/develop/TankLibHelper/DataPreHashChange). To do so add another root JSON element (an array) called "add" and put all your strings there. See the [json schema](hashlibrary.schema.json).
 
 ### Patcher & how it works
 

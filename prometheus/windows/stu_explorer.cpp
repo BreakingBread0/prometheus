@@ -1,6 +1,7 @@
 ﻿#include "stu_explorer.h"
 #include "../STU_Editable.h"
 #include "../stu_resources.h"
+#include "stu_primitive_edit.h"
 
 void stu_explorer::navigate_to(STUInfo* info, __int64 instance, StatescriptInstance* ss_inst) {
 	_forward_history.clear();
@@ -170,7 +171,11 @@ void stu_explorer::render_stu(STU_Object value) {
 				switch (type) {
 				case STU_ConstraintType_Primitive: {
 					auto primitive = value.get_argument_primitive(arg);
-					imgui_helpers::render_primitive(primitive, arg_type_hash);
+					if (ImGui::Button(EMOJI_EDIT)) {
+						window_manager::open_modal<stu_primitive_edit>(this, primitive);
+					}
+					ImGui::SameLine();
+					imgui_helpers::render_primitive(primitive);
 					break;
 				}
 				case STU_ConstraintType_Object:
@@ -261,7 +266,11 @@ void stu_explorer::render_stu(STU_Object value) {
 					ImGui::PushID(i);
 					ImGui::BulletText("%d:", i);
 					ImGui::SameLine();
-					imgui_helpers::render_primitive(item, arg_type_hash);
+					//if (ImGui::Button(EMOJI_EDIT)) {
+					//	window_manager::open_modal<stu_primitive_edit>(this, item);
+					//}
+					ImGui::SameLine();
+					imgui_helpers::render_primitive(item);
 					ImGui::PopID();
 				}
 				break;

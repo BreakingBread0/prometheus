@@ -111,30 +111,6 @@ void window_manager::remove_window_internal(window* window) {
 		dependant->_has_dependents = has_dependents;
 }
 
-
-template <typename modal_window_type, typename arg_type>
-static void window_manager::modal_onrightclick(window* from, arg_type arg) {
-	if (ImGui::IsMouseReleased(ImGuiMouseButton_Right)) {
-		auto new_wind = create_by_type<modal_window_type>(from);
-		owassert(new_wind.get());
-		auto wind_cast = dynamic_cast<modal_window_type*>(new_wind.get());
-		wind_cast->set(arg);
-		new_wind->is_dependent = true;
-		new_wind->is_modal = true;
-		new_wind->set_focus_next_frame(true);
-	}
-}
-
-template <typename modal_window_type>
-static void modal_onrightclick(window* from) {
-	if (ImGui::IsMouseReleased(ImGuiMouseButton_Right)) {
-		auto new_wind = create_by_type<modal_window_type>(from);
-		new_wind->is_dependent = true;
-		new_wind->is_modal = true;
-		new_wind->set_focus_next_frame(true);
-	}
-}
-
 void window_manager::kill_dependents(window* from) {
 	if (!from)
 		return;
@@ -868,9 +844,9 @@ namespace imgui_helpers {
 		ImGui::NewLine();
 	}
 
-	void render_primitive(STU_Primitive value, uint32 hash) {
+	void render_primitive(STU_Primitive value) {
 		__try {
-			switch (hash) {
+			switch (value.type) {
 			case STU_NAME::Primitive::teMtx43A:
 			case STU_NAME::Primitive::teVec3A:
 			case STU_NAME::Primitive::teVec2:
@@ -929,9 +905,9 @@ namespace imgui_helpers {
 		}
 	}
 
-	void editor_primitive(STU_Primitive value, uint32 hash) {
+	void editor_primitive(STU_Primitive value) {
 		ImGui::PushID(value.value);
-		switch (hash) {
+		switch (value.type) {
 		case STU_NAME::Primitive::teMtx43A:
 		case STU_NAME::Primitive::teVec3A:
 		case STU_NAME::Primitive::teVec2:
@@ -973,13 +949,12 @@ namespace imgui_helpers {
 		}
 		}
 		auto storage = ImGui::GetStateStorage();
-		ImGuiID id = ImGui::GetActiveID();
-		auto hex = storage->GetBoolRef(id, false);
-		if (hash != STU_NAME::Primitive::f32 && hash != STU_NAME::Primitive::f64) {
+		auto hex = storage->GetBoolRef(1, false);
+		if (value.type != STU_NAME::Primitive::f32 && value.type != STU_NAME::Primitive::f64) {
 			ImGui::Checkbox("Hex", hex);
 			ImGui::SameLine();
 		}
-		switch (hash) {
+		switch (value.type) {
 		case STU_NAME::Primitive::u8: {
 			int temp = value.get_value<unsigned char>();
 			if (hex ? imgui_helpers::InputHex("", &temp) : ImGui::InputInt("", &temp))

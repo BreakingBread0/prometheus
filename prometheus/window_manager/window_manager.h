@@ -132,10 +132,23 @@ public:
 	static void call_preStartInitialize();
 
 	template <typename modal_window_type, typename arg_type>
-	static void modal_onrightclick(window* from, arg_type arg);
+	static inline void open_modal(window* from, arg_type arg) {
+		auto new_wind = create_by_type<modal_window_type>(from);
+		owassert(new_wind.get());
+		auto wind_cast = dynamic_cast<modal_window_type*>(new_wind.get());
+		wind_cast->set(arg);
+		new_wind->is_dependent = true;
+		new_wind->is_modal = true;
+		new_wind->set_focus_next_frame(true);
+	}
 
 	template <typename modal_window_type>
-	static void modal_onrightclick(window* from);
+	static inline void open_modal(window* from) {
+		auto new_wind = create_by_type<modal_window_type>(from);
+		new_wind->is_dependent = true;
+		new_wind->is_modal = true;
+		new_wind->set_focus_next_frame(true);
+	}
 
 	//not recursive
 	static void kill_dependents(window* from);
@@ -414,8 +427,8 @@ namespace imgui_helpers {
 	void item_path_print(STUConfigVarDynamic* cv);
 	bool display_type(__int64 type, bool color, bool edit = true, bool hash_show = true);
 
-	void render_primitive(STU_Primitive value, uint32 hash);
-	void editor_primitive(STU_Primitive value, uint32 hash);
+	void render_primitive(STU_Primitive value);
+	void editor_primitive(STU_Primitive value);
 }
 
 namespace ImGui {

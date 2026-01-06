@@ -17,6 +17,8 @@ public:
 		owassert(value);
 	}
 
+	STU_Primitive() : value(nullptr), type(0) { }
+
 	template <typename T>
 	T get_value() const {
 		return *(T*)value;
