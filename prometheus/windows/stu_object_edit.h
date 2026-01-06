@@ -48,11 +48,14 @@ public:
 					if (imgui_helpers::TooltipButton(EMOJI_EDIT, "Set / Replace Value"))
 						_replace_value = true;
 					if (_replace_value) {
-						if (ImGui::RadioButton("Base", true))
+						if (ImGui::RadioButton("Base ", false))
 							emplace_object(STU_Object::create(arginfo.struct_info));
 						ImGui::SameLine();
 						imgui_helpers::display_type(_arg.second->constraint->get_stu_type(), true, true, false);
-						
+						if (ImGui::BeginChild("", ImVec2(-10, 250), ImGuiChildFlags_AutoResizeX)) {
+							display_object_recursive(arginfo.struct_info);
+						}
+						ImGui::EndChild();
 					}
 				}
 			}
@@ -93,7 +96,7 @@ private:
 				emplace_object(STU_Object::create(typ));
 			}
 			ImGui::SameLine();
-			imgui_helpers::display_type(_arg.second->constraint->get_stu_type(), true, true, false);
+			imgui_helpers::display_type(typ->name_hash, true, true, false);
 			if (typ->child) {
 				display_object_recursive(typ);
 			}

@@ -933,7 +933,7 @@ namespace imgui_helpers {
 			auto str = value.get_value<const char*>();
 			strcpy_s(buf, str);
 			if (ImGui::InputText("", buf, sizeof(buf)))
-				value.set_value(buf);
+				value.set_value(std::string(buf));
 			ImGui::PopID();
 			return;
 		}
