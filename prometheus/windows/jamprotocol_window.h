@@ -15,7 +15,7 @@ public:
 	static __int64 __fastcall addJamProtocolHook(__int64 linkedList, __int64 dispatchInfo) {
 		__int64 result = addJamProtocolPool_orig(linkedList, dispatchInfo);
 		//printf("ADD JAM: list %p dispatchInfo %p result %p\n", linkedList, dispatchInfo, result);
-		if (jamPoolInstances.contains(dispatchInfo)) {
+		if (jamPoolInstances.find(dispatchInfo) != jamPoolInstances.end()) {
 			//printf("DISPATCH INFO ALREADY EXISTS!\n"); never happens
 		}
 		jamPoolInstances[result] = dispatchInfo;
@@ -113,7 +113,7 @@ public:
 				}
 
 				ImGui::TableNextColumn();
-				if (poolAssociations.contains(vtable->pool_crc())) {
+				if (poolAssociations.find(vtable->pool_crc()) != poolAssociations.end()) {
 					display_addr(poolAssociations[vtable->pool_crc()]);
 				}
 				ImGui::PopID();

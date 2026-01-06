@@ -3,13 +3,17 @@
 #include <format>
 #include "globals.h"
 #include "idadefs.h"
+#include "fmt/format.h"
 
 struct LogicalButtonName // sizeof=0x18
 {
+	LogicalButtonName(__int32 key_id, __int32 _, char* name, __int64 zero) : 
+		key_id(key_id), _(_), name(name), zero(zero) {}
+public:
 	__int32 key_id;
 	__int32 _;
-    char* name;
-    __int64 zero;
+	char* name;
+	__int64 zero;
 }; //globals::gameBase + 0x17c4998
 
 inline LogicalButtonName* LogicalButtonList() {
@@ -155,7 +159,7 @@ inline void copyToClipboard(std::string value) {
 }
 
 inline void copyAddress(__int64 addr) {
-	copyToClipboard(std::format("{:p}", (void*)addr));
+	copyToClipboard(fmt::format("{:p}", (void*)addr));
 }
 
 inline double GetGameRuntimeSecs() {

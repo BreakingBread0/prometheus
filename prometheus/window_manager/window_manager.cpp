@@ -100,7 +100,7 @@ void window_manager::remove_window_internal(window* window) {
 	auto dependant = window->created_by.lock();
 	bool has_dependents = false;
 	auto window_reference = window->this_instance.lock();
-	std::erase_if(s_windows, [&](auto& pObject) {
+	std::remove_if(s_windows.begin(), s_windows.end(), [&](auto& pObject) {
 		if (pObject->is_dependent && dependant && dependant == pObject->created_by.lock())
 			has_dependents = true;
 		return pObject->window_id == window->window_id ||
@@ -152,7 +152,7 @@ ImGuiWindow* get_leftmost_window(window* wind) {
 }
 
 void message_kill_window(window* window) {
-	imgui_helpers::messageBox(std::format("Window {:d} ({:x}) was killed due to too many exceptions.", window->window_id, window->window_id));
+	imgui_helpers::messageBox(fmt::format("Window {:d} ({:x}) was killed due to too many exceptions.", window->window_id, window->window_id));
 }
 
 void window_manager::call_window_render(window* window) {
@@ -352,11 +352,11 @@ bool window::open_window(const char* title, int flags, ImVec2 size) {
 		if (window) {
 			auto size = window->Size;
 			int root_id = _root_dock.lock() ? _root_dock.lock()->window_id : -1;
-			name = std::format("{:s} ({:d}x{:d}) {:d} dock: {:d}###{:x}", title == nullptr ? window_name() : title, (int)size.x, (int)size.y, window_id, root_id, window_id);
+			name = fmt::format("{:s} ({:d}x{:d}) {:d} dock: {:d}###{:x}", title == nullptr ? window_name() : title, (int)size.x, (int)size.y, window_id, root_id, window_id);
 		}
 	}
 	if (name.empty()) {
-		name = std::format("{:s}###{:x}", title == nullptr ? window_name() : title, window_id);
+		name = fmt::format("{:s}###{:x}", title == nullptr ? window_name() : title, window_id);
 	}
 	auto state = ImGui::Begin(name.c_str(), &open, flags | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings);
 	if (!open) {

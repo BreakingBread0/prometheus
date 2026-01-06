@@ -65,7 +65,7 @@ void statescript_list::list_script(StatescriptInstance* script) {
 		script->vfptr->StopScript(script);
 	}
 	ImGui::SameLine();
-	if (ImGui::RadioButton(std::format("({:d}) {:x}", script->instance_id, script->script_id).c_str(), _curr_inst_id == script->instance_id)) {
+	if (ImGui::RadioButton(fmt::format("({:d}) {:x}", script->instance_id, script->script_id).c_str(), _curr_inst_id == script->instance_id)) {
 		_curr_inst_id = script->instance_id;
 		statescript_window::get_latest_or_create(this)->display_instance(script);
 	}

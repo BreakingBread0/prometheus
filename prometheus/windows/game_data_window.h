@@ -86,13 +86,13 @@ class game_data_window : public window {
 			ImGui::Text("Last Assertion: %s", globals::gameBase + 0x18b2130);
 
 			int clientType = *(int*)(globals::gameBase + 0x17a16dc);
-			ImGui::Text("Client Type: %s (%d)", getClientType(clientType), clientType);
+			ImGui::Text("Client Type: %s (%d)", getClientType(clientType).c_str(), clientType);
 			int region = *(int*)(globals::gameBase + 0x17a16e4);
-			ImGui::Text("Client Region: %s (%d)", getRegionString(region), region);
+			ImGui::Text("Client Region: %s (%d)", getRegionString(region).c_str(), region);
 			int locale = *(int*)(globals::gameBase + 0x17a16e8);
-			ImGui::Text("Locale: %s (%d)", getLocaleStr(locale), locale);
+			ImGui::Text("Locale: %s (%d)", getLocaleStr(locale).c_str(), locale);
 			int audlocale = *(int*)(globals::gameBase + 0x17a16ec);
-			ImGui::Text("Audio Locale: %s (%d)", getLocaleStr(audlocale), audlocale);
+			ImGui::Text("Audio Locale: %s (%d)", getLocaleStr(audlocale).c_str(), audlocale);
 
 			ImGui::Checkbox("Tabbing Enabled", (bool*)(globals::gameBase + 0x1859dcc));
 

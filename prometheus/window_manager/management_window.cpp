@@ -73,8 +73,8 @@ std::map<std::string, __int64> get_maps() {
 		__int64 map_id_1 = map_header.get_argument_resource("m_map")->resource_id;
 		//map id 2 seems to be a different platform -> server map low poly / no lighting?
 		//__int64 map_id_2 = map_header.get_argument_resource(0xccf37178)->resource_id;
-		maps.emplace(name_out + std::format(": {:x}", map_id_1), map_id_1);
-		//maps.emplace(name_out + std::format(" (2): {:x}", map_id_2), map_id_2);
+		maps.emplace(name_out + fmt::format(": {:x}", map_id_1), map_id_1);
+		//maps.emplace(name_out + fmt::format(" (2): {:x}", map_id_2), map_id_2);
 	}
 	return maps;
 }
@@ -241,11 +241,11 @@ void management_window::render() {
 					ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
 
 				//if (children.size() > 0) {
-				//	std::string str = std::format("{:s}({:x}) ^^^", window->get_window_type().c_str(), window->window_id);
+				//	std::string str = fmt::format("{:s}({:x}) ^^^", window->get_window_type().c_str(), window->window_id);
 				//	if (ImGui::BeginMenu(str.c_str())) {
 				//		for (auto& child : children) {
 				//			ImGui::PushID(child.get());
-				//			std::string child_str = std::format("{:s}({:x})", child->get_window_type(), child->window_id);
+				//			std::string child_str = fmt::format("{:s}({:x})", child->get_window_type(), child->window_id);
 				//			if (ImGui::MenuItem(child_str.c_str())) {
 				//				window->set_collapsed(!window->is_collapsed);
 				//			}
@@ -264,7 +264,7 @@ void management_window::render() {
 				//	}
 				//}
 				//else {
-					if (ImGui::MenuItem(std::format("{:s}({:x})", window->get_window_type().c_str(), window->window_id).c_str())) {
+					if (ImGui::MenuItem(fmt::format("{:s}({:x})", window->get_window_type().c_str(), window->window_id).c_str())) {
 						window->set_collapsed(!window->is_collapsed);
 						//This code is al dente
 						/*for (auto child : children) {

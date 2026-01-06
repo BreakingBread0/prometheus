@@ -619,6 +619,10 @@ struct STUInfo
 			return this->_current_pos == it._current_pos && this->_info == it._info && this->_include_parents == it._include_parents;
 		}
 
+		bool operator!=(const ArgumentIterator& it) const {
+			return !(*this == it);
+		}
+
 		value_type operator*() const {
 			if (!_info)
 				throw std::out_of_range("Empty iterator called!");

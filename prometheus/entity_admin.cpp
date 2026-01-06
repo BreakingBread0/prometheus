@@ -515,6 +515,9 @@ demo_move s_demo_moves[] = {
 };
 
 struct lineup {
+	lineup(__int64 hero, Vector4 position, Vector4 rotation): 
+		hero(hero), position(position), rotation(rotation) {}
+public:
 	__int64 hero;
 	Vector4 position;
 	Vector4 rotation;
@@ -782,7 +785,7 @@ void PrometheusSystem::OnTick(float tick) {
 								str->actual_size = 0;
 							}
 							else {
-								strcpy(str->get(), std::format("Load Demo {:d}/8", loaded_cnt + 1).c_str());
+								strcpy(str->get(), fmt::format("Load Demo {:d}/8", loaded_cnt + 1).c_str());
 							}
 							SendViewModelPropUpdate(vm, play_enabled);
 						}

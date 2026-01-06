@@ -1,10 +1,11 @@
 #pragma once
 #include <set>
 #include <string>
-#include <format>
+#include "fmt/format.h"
 #include "globals.h"
 #include <imgui.h>
 #include "stringhash_library.h"
+
 
 class search_helper {
 public:
@@ -66,7 +67,7 @@ public:
 	}
 	void haystack_hex(__int64 input) {
 		if (_needs_haystack)
-			_curr_haystack += " " + std::format("{:x}", input);
+			_curr_haystack += " " + fmt::format("{:x}", input);
 	}
 	void haystack_stringhash(__int64 input) {
 		if (!_needs_haystack)

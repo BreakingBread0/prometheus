@@ -230,15 +230,18 @@ struct Component_10_FilterBits {
     }
 
     void FilterBitsMakeFinal() {
-        ((void(*__fastcall)(Component_10_FilterBits*))(globals::gameBase + 0xcbf660))(this);
+        (reinterpret_cast<void(*__fastcall)(Component_10_FilterBits*)>(globals::gameBase + 0xcbf660))(this);
     }
 };
 
 struct View;
 struct OverrideView {
+    OverrideView(View* view_ptr, char is_enabled) :
+        view_ptr(view_ptr), is_enabled(is_enabled) {}
+public:
     View* view_ptr;
     char is_enabled;
-};
+}; 
 
 struct Component_1F_Backref {
     union {
@@ -755,6 +758,11 @@ struct EntityAdminBase {
         bool operator==(const EntityIterator& it) const {
             return it._current_pos == _current_pos && it._ea == _ea;
         }
+
+        bool operator!=(const EntityIterator& it) const {
+            return !(*this == it);
+        }
+
     private:
         EntityAdminBase* _ea = nullptr;
         int _current_pos = 0;

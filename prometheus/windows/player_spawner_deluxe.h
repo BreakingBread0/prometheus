@@ -163,7 +163,7 @@ class player_spawner_deluxe : public window {
 					//if (ImGui::BeginListBox("S", ImVec2(600, 150))) { //auto resize doesnt work here...
 						for (auto skin_id : _selected_hero.get_argument_resreflist("m_skins")) {
 							auto skin = skin_id->get_STU()->to_editable();
-							std::string name = std::format("{:x}", skin_id->resource_id);
+							std::string name = fmt::format("{:x}", skin_id->resource_id);
 							//Dont bother no skin has a name in this version
 							/*auto name1 = skin.get_argument_primitive("m_internalName").get_value<const char*>();
 							auto name2 = skin.get_argument_primitive("m_skinCode").get_value<const char*>();
@@ -176,7 +176,7 @@ class player_spawner_deluxe : public window {
 								name += name3 + std::string(" ");*/
 							for (auto skin_theme_id : skin.get_argument_resreflist("m_skinThemes")) {
 								auto skin_theme = skin_theme_id->get_STU()->to_editable();
-								if (ImGui::RadioButton(std::format("##{:x}", skin_theme_id->resource_id).c_str(), _spawner.model_info.skin_theme_id == skin_theme_id->resource_id)) {
+								if (ImGui::RadioButton(fmt::format("##{:x}", skin_theme_id->resource_id).c_str(), _spawner.model_info.skin_theme_id == skin_theme_id->resource_id)) {
 									_spawner.model_info.skin_theme_id = skin_theme_id->resource_id;
 								}
 								ImGui::SameLine();
@@ -289,7 +289,7 @@ class player_spawner_deluxe : public window {
 			if (ImGui::Button("Spawn Entity Simple")) {
 				auto simple_res = try_load_resource(_spawn_entid);
 				if (!simple_res) {
-					imgui_helpers::messageBox("Failed to load entity " + std::format("{:x}", _spawn_entid), this);
+					imgui_helpers::messageBox("Failed to load entity " + fmt::format("{:x}", _spawn_entid), this);
 					return;
 				}
 				auto loader = EntityLoader::Create(_spawn_entid, simple_res, false, false);

@@ -182,5 +182,6 @@ private:
     static inline std::map<StatescriptInstance*, std::map<int, ScriptState>> s_scriptStates{};
     static inline const LogStruct const EmptyLog{};
     static inline const std::map<int, ScriptState> const EmptyScriptState{};
-    static inline const ScriptState const EmptyNodeState{};
+    // PARALIRA: Needed to initialise the variables here
+    static inline const ScriptState const EmptyNodeState{0, true};
 };

@@ -243,7 +243,7 @@ class loadlist_visualizer : public window {
 				if (entry) {
 					while (entry) {
 						ClonedResourceLoadEntry* clone_inner = new ClonedResourceLoadEntry;
-						memcpy(clone_inner, entry, sizeof ResourceLoadEntry);
+						memcpy(clone_inner, entry, sizeof(ResourceLoadEntry));
 						if (!clone->lists[i].front)
 							clone->lists[i].front = &clone_inner->loaded_entry;
 						if (prev != nullptr)
