@@ -381,7 +381,17 @@ namespace imgui_helpers {
 		modifiable(text, (char*)value, window);
 	}
 	template <typename T>
-	void modifiable(const char* text, teList<T>* value, window* window = nullptr);
+	void modifiable(const char* text, teList<T>* value, window* window) {
+		ImGui::Text("%s array: (%d/%d items)", text, value->num, value->max);
+		int i = 0;
+		ImGui::Indent();
+		for (auto& item : *value) {
+			ImGui::BulletText("%d", i++);
+			ImGui::SameLine();
+			modifiable("", &item, window);
+		}
+		ImGui::Unindent();
+	}
 
 	inline void render_vec4(const char* text, Vector4* vec) {
 		if (text) {

@@ -597,18 +597,6 @@ namespace imgui_helpers {
 		ImGui::Text("%f %f %f %f", value->row_4.X, value->row_4.Y, value->row_4.Z, value->row_4.W);
 	}
 
-	template <typename T>
-	void modifiable(const char* text, teList<T>* value, window* window) {
-		ImGui::Text("%s array: (%d/%d items)", text, value->num, value->max);
-		int i = 0;
-		ImGui::Indent();
-		for (auto& item : *value) {
-			ImGui::BulletText("%d", i++);
-			ImGui::SameLine();
-			modifiable("", &item, window);
-		}
-		ImGui::Unindent();
-	}
 
 	bool display_cv(STUConfigVar* cv, StatescriptInstance* ss, STUArgumentInfo* arg_info, bool display_logicalButton) {
 		ImGui::PushID(cv);
