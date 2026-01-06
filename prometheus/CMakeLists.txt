@@ -144,6 +144,7 @@ set(HEADERS
         window_manager/management_window.h
         window_manager/window_manager.h
         mingw_compat/ow_excpt.h
+        mingw_compat/ow_return_address.cpp
 )
 
 # Create the DLL
