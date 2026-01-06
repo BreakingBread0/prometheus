@@ -62,7 +62,7 @@ public:
 	STUInfo* struct_info;
 
 	STU_Object(STUInfo* struct_info, void* value = nullptr) : struct_info(struct_info), value(value) {}
-	STU_Object() : struct_info(GetSTUInfoByHash(stringHash("STUTestClass"))), value(nullptr) {}
+	STU_Object() : struct_info(nullptr), value(nullptr) {}
 
 	//Always valid if this object is valid
 	DEFINE_ACCESSOR_FUNC(STU_Primitive, get_argument_primitive);
@@ -72,7 +72,7 @@ public:
 	DEFINE_ACCESSOR_FUNC(STU_ObjectList, get_argument_objectlist);
 	//Child object is always valid
 	DEFINE_ACCESSOR_FUNC(STU_PrimitiveList, get_argument_primitivelist);
-	//Child object is always valid (but may not have a resource)
+	//Child object is always valid (but may not have a resource / resource id)
 	DEFINE_ACCESSOR_FUNC(STU_ResourceRefList, get_argument_resreflist);
 	//Always valid if this object is valid
 	DEFINE_ACCESSOR_FUNC(STUResourceReference*, get_argument_resource);
