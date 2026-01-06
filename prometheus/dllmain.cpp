@@ -45,6 +45,8 @@
 //Who needs a build system?
 #include <imnodes/imnodes.cpp>
 
+#include "mingw_compat/ow_excpt.h"
+
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ImVec2, x, y);
 
 struct memmgr;
@@ -70,10 +72,10 @@ __int64 ow_memalloc(int size) {
 
 void ow_dealloc(__int64 address) {
     auto memmgr = get_memmgr();
-    __try1 (EXCEPTION_EXECUTE_HANDLER) {
+    __ow_try (EXCEPTION_EXECUTE_HANDLER) {
         return memmgr->vfptr->deallocate(memmgr, address);
     }
-    __except1 {
+    __ow_except {
         printf("failed ow_dealloc for %p\n", address);
     }
 }

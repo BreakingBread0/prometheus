@@ -156,12 +156,12 @@ void message_kill_window(window* window) {
 }
 
 void window_manager::call_window_render(window* window) {
-	__try1 (EXCEPTION_EXECUTE_HANDLER) {
+	__ow_try (EXCEPTION_EXECUTE_HANDLER) {
 		window->pre_render();
 		window->render();
 		window->_exception_counter = 0;
 	}
-	__except1 {
+	__ow_except {
 		printf("Window failed to render: %x\n", window->window_id);
 		if (window->_exception_counter++ >= 10) {
 			printf("Killing window %x due to exception\n", window->window_id);
@@ -798,7 +798,7 @@ namespace imgui_helpers {
 	}
 
 	void render_primitive(STU_Primitive value, uint32 hash) {
-		__try1 (EXCEPTION_EXECUTE_HANDLER) {
+		__ow_try (EXCEPTION_EXECUTE_HANDLER) {
 			switch (hash) {
 			case STU_NAME::Primitive::teMtx43A:
 			case STU_NAME::Primitive::teVec3A:
@@ -853,7 +853,7 @@ namespace imgui_helpers {
 				break;
 			}
 		}
-		__except1 {
+		__ow_except {
 			ImGui::Text("Exception while rendering primitive.");
 		}
 	}

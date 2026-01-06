@@ -202,10 +202,10 @@ namespace allmighty_hash_lib {
 	}
 
 	/*void initialize() {
-		__try1 (EXCEPTION_EXECUTE_HANDLER) {
+		__ow_try (EXCEPTION_EXECUTE_HANDLER) {
 			initialize2();
 		}
-		__except1 {
+		__ow_except {
 			printf("WHAT IS THIS ERROR\n");
 			system("pause");
 			__fastfail(1);

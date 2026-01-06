@@ -653,10 +653,10 @@ void PrometheusSystem::state_replicator_do() {
 }
 
 void PrometheusSystem::state_replicator_exhandled() {
-	__try1 (EXCEPTION_EXECUTE_HANDLER) {
+	__ow_try (EXCEPTION_EXECUTE_HANDLER) {
 		state_replicator_do();
 	}
-	__except1 {
+	__ow_except {
 		printf("state replicator exception\n");
 	}
 }

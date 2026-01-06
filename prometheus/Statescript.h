@@ -322,10 +322,10 @@ struct STUConfigVar {
 	}
 
 	char get_value(StatescriptInstance* ss, StatescriptPrimitive* out_var) {
-		__try1 (EXCEPTION_EXECUTE_HANDLER)  {
+		__ow_try (EXCEPTION_EXECUTE_HANDLER)  {
 			return cv_impl->vfptr->GetConfigVarValue(cv_impl, ss, this, out_var);
 		}
-		__except1 {
+		__ow_except {
 			printf("CV read failed %p!\n", ss);
 		}
 	}
