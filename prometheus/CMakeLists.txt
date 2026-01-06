@@ -5,6 +5,12 @@ project(prometheus VERSION 1.0.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# TODO remove !important!
+# afaik fpermissive treats most things the same as msvc,
+# but realistically this should not be here
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -save-temps")
+
 # adjust the default behavior of the FIND_XXX() commands:
 # search programs in the host environment
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
@@ -209,9 +215,18 @@ else()
             $<$<CONFIG:Release>:-s>  # Strip symbols
             $<$<CONFIG:Release>:-flto>
     )
-
-    include_directories(SYSTEM /usr/x86_64-w64-mingw32/include)
 endif()
+
+
+macro(replace_list_item LIST OLD_VALUE NEW_VALUE)
+    list(FIND ${LIST} ${OLD_VALUE} OLD_VALUE_INDEX)
+    if(OLD_VALUE_INDEX GREATER_EQUAL 0)
+        list(REMOVE_AT ${LIST} ${OLD_VALUE_INDEX})
+        list(INSERT ${LIST} ${OLD_VALUE_INDEX} ${NEW_VALUE})
+    endif()
+endmacro()
+
+
 
 
 find_path(FAST_CPP_CSV_PARSER_INCLUDE_DIRS "fast-cpp-csv-parser/csv.h")
@@ -229,6 +244,13 @@ target_link_libraries(prometheus PRIVATE minhook::minhook)
 find_package(nlohmann_json CONFIG REQUIRED)
 target_link_libraries(prometheus PRIVATE nlohmann_json::nlohmann_json)
 
+find_package(ixwebsocket CONFIG REQUIRED)
+target_link_libraries(prometheus PRIVATE ixwebsocket::ixwebsocket)
+
+# Replace incorrectly-cased crypt32 version
+get_target_property(LIBS ixwebsocket::ixwebsocket INTERFACE_LINK_LIBRARIES)
+replace_list_item(LIBS "$<LINK_ONLY:Crypt32>" "$<LINK_ONLY:crypt32>")
+set_target_properties(ixwebsocket::ixwebsocket PROPERTIES INTERFACE_LINK_LIBRARIES "${LIBS}")
 
 # Install rules
 install(TARGETS prometheus
