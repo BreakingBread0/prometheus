@@ -476,7 +476,7 @@ void statescript_window::print_node_location(STUStatescriptBase* node) {
 }
 
 bool statescript_window::is_graph_valid(StatescriptInstance* ss) {
-    __try {
+    __ow_try (EXCEPTION_EXECUTE_HANDLER) {
         if (IsBadReadPtr(ss->graph, 8))
             return false;
         assert(ss->graph->m_nodes.count() < 0x1000);
@@ -486,7 +486,7 @@ bool statescript_window::is_graph_valid(StatescriptInstance* ss) {
         if (ss->graph->m_states.count() > ss->graph->m_nodes.count())
             return false;
     }
-    __except (EXCEPTION_EXECUTE_HANDLER) {
+    __ow_except {
         return false;
     }
     return true;

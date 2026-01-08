@@ -1,4 +1,6 @@
 #include "STU.h"
+
+#include "mingw_compat/ow_excpt.h"
 #include "STU_Editable.h"
 #include "stu_resources.h"
 
@@ -39,7 +41,7 @@ namespace STURegistryData {
 	void initialize() {
 		STURegistry* header = GetSTURegistry();
 		while (header) {
-			__try {
+			__ow_try (EXCEPTION_EXECUTE_HANDLER) {
 				auto instance = header->info->create_instance_fn();
 				if (instance && instance->vfptr) {
 				/*	printf("Invalid instance (%x): %p\n", header->info->name_hash, instance);
@@ -49,7 +51,7 @@ namespace STURegistryData {
 				}
 				//instance->vfptr->rtti.VM_Destructor((__int64)instance, true);
 			}
-			__except (EXCEPTION_EXECUTE_HANDLER) {
+			__ow_except {
 				printf("Failed to instantiate %x!\n", header->info->name_hash);
 			}
 			header = header->next;
@@ -58,6 +60,7 @@ namespace STURegistryData {
 	}
 }
 
+template<>
 STU_Object STUBase<>::to_editable() {
 	return STU_Object(vfptr_stubase->GetSTUInfo(), this);
 }

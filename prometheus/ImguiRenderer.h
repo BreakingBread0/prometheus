@@ -2,6 +2,7 @@
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <string>
+#include <stdint.h>
 #undef DrawText
 
 //thanks to that random guy from UC ;)

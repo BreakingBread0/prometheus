@@ -5,12 +5,14 @@
    the type library 'GameClientApp_dump_SCY.exetreated.exe'
 */
 
-#include <Windows.h>
+#include <windows.h>
+#include <stdint.h>
 #include "idadefs.h"
 #include "globals.h"
 #include <set>
 #include <stdexcept>
 #include "game.h"
+#include "mingw_compat/ow_excpt.h"
 
 //rtti addresses
 namespace STU_RTTI {
@@ -404,7 +406,7 @@ struct STUBullshitMapFull {
 	}
 };
 
-/// Benützt bei allen value containern geladen aus CASC. Sollte die Basis für alle statescript sachen sein.
+/// Benï¿½tzt bei allen value containern geladen aus CASC. Sollte die Basis fï¿½r alle statescript sachen sein.
 struct STUBase_vt
 {
 	void(__fastcall* SomeNullsub)();
@@ -789,19 +791,19 @@ inline STUInfo* GetSTUInfoByHash(int hash) {
 
 //can return empty, not a resload-struct but getting already loaded resource ptr
 inline __int64 try_load_resource(__int64 stu_id) {
-	__try {
+	__ow_try (EXCEPTION_EXECUTE_HANDLER) {
 		auto load_ent2 = (__int64(__fastcall*)(__int64))(globals::gameBase + 0x9c6470);
 
 		return load_ent2(stu_id);
 	}
-	__except (EXCEPTION_EXECUTE_HANDLER) {
+	__ow_except {
 		printf("Exception suppressd while loading resource %p!\n", stu_id);
 	}
 	return 0;
 }
 
 inline MisalignedResourceLoadEntry* try_load_resource_2(__int64 stu_id) {
-	__try {
+	__ow_try (EXCEPTION_EXECUTE_HANDLER) {
 		typedef int (*fn)(MisalignedResourceLoadEntry**, __int64);
 		fn resource_load = (fn)(globals::gameBase + 0x9c8330);
 
@@ -809,7 +811,7 @@ inline MisalignedResourceLoadEntry* try_load_resource_2(__int64 stu_id) {
 		__int64 entity_def = resource_load(&result_var, stu_id);
 		return result_var;
 	}
-	__except (EXCEPTION_EXECUTE_HANDLER) {
+	__ow_except{
 		printf("Exception suppressd while loading (2) resource %p!\n", stu_id);
 	}
 	return 0;

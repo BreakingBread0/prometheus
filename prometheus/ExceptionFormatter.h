@@ -1,4 +1,5 @@
-#include <Windows.h>
+#pragma once
+#include <windows.h>
 #include <string>
 
 namespace ExceptionFormatter {

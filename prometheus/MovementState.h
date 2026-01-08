@@ -87,9 +87,10 @@ struct MovementState {
 		STRUCT_PLACE(char, field_268, 0x268);
 	};
 
-	MovementState() {
-		((void(*)(MovementState*))(globals::gameBase + 0xc1de50))(this); //God doesnt exist
-	}
+	// TODO with `create` this calls the method at `globals::gameBase + 0xc1de50` twice? this seems really wrong.
+	// MovementState() {
+	// 	((void(*)(MovementState*))(globals::gameBase + 0xc1de50))(this); //God doesnt exist
+	// }
 
 	static MovementState* create() {
 		auto result = new MovementState{};

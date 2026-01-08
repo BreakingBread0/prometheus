@@ -1,4 +1,4 @@
-#include "stringhash_library.h";
+#include "stringhash_library.h"
 #include <imgui.h>
 #include <nlohmann/json.hpp>
 #include <fstream>
@@ -202,10 +202,10 @@ namespace allmighty_hash_lib {
 	}
 
 	/*void initialize() {
-		__try {
+		__ow_try (EXCEPTION_EXECUTE_HANDLER) {
 			initialize2();
 		}
-		__except (EXCEPTION_EXECUTE_HANDLER) {
+		__ow_except {
 			printf("WHAT IS THIS ERROR\n");
 			system("pause");
 			__fastfail(1);

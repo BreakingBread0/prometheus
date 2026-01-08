@@ -1,8 +1,9 @@
 ﻿ #pragma once
 #include "intrin.h"
 #include "string"
-#include <Windows.h>
+#include <windows.h>
 #include <algorithm>
+#include <cmath>
 
 #define owassert(expr) if (!(expr)) { printf("%s:%d\n", "FAILED ASSERTION:\nAssertion: " #expr "\nAt: " __FILE__, __LINE__); }
 
@@ -99,30 +100,6 @@ struct Vector4 {
 	float Y;
 	float Z;
 	float W;
-
-	Vector4() :
-		X(0),
-		Y(0),
-		Z(0),
-		W(0)
-	{
-	}
-
-	Vector4(float values) :
-		X(values),
-		Y(values),
-		Z(values),
-		W(values)
-	{
-	}
-
-	Vector4(float x, float y, float z, float w) :
-		X(x),
-		Y(y),
-		Z(z),
-		W(w)
-	{
-	}
 };
 
 struct Matrix4x4 {

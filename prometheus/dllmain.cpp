@@ -6,19 +6,14 @@
 #define LAZY_IMPORTER_CASE_INSENSITIVE
 #include "lazy_importer.h"
 #include <mutex>
-#include <TlHelp32.h>
+#include <tlhelp32.h>
 #include <thread>
-#include <string>
 #include <locale>
 #include <codecvt>
 #include "ExceptionFormatter.h"
 #include <winternl.h>
-#include <algorithm>
 #include <vector>
-#include <set>
-#include <string>
 #include <format>
-#include <thread>
 #include <nlohmann/json.hpp>
 #include <d3d11.h>
 #include "pe.h"
@@ -50,6 +45,8 @@
 //Who needs a build system?
 #include <imnodes/imnodes.cpp>
 
+#include "mingw_compat/ow_excpt.h"
+
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ImVec2, x, y);
 
 struct memmgr;
@@ -75,10 +72,10 @@ __int64 ow_memalloc(int size) {
 
 void ow_dealloc(__int64 address) {
     auto memmgr = get_memmgr();
-    __try {
+    __ow_try (EXCEPTION_EXECUTE_HANDLER) {
         return memmgr->vfptr->deallocate(memmgr, address);
     }
-    __except (EXCEPTION_EXECUTE_HANDLER) {
+    __ow_except {
         printf("failed ow_dealloc for %p\n", address);
     }
 }
@@ -370,7 +367,7 @@ __int64 __fastcall createwindow_hook(__int64 gameManager) {
     std::thread([]() {
         while (true) {
             Sleep(100);
-            //teEngine ínstance
+            //teEngine ï¿½nstance
             DWORD_PTR render = *(DWORD_PTR*)(globals::gameBase + 0x181e3e0);
             if (!render)
                 continue;
@@ -392,7 +389,7 @@ __int64 __fastcall createwindow_hook(__int64 gameManager) {
             render = *(DWORD_PTR*)(render + 0x40);
             if (!render)
                 continue;
-            MH_VERIFY(MH_CreateHook((DWORD_PTR*)render, PresentHook, reinterpret_cast<void**>(&phookD3D11Present)));
+            MH_VERIFY(MH_CreateHook((DWORD_PTR*)render, (PVOID*)PresentHook, reinterpret_cast<void**>(&phookD3D11Present)));
             MH_VERIFY(MH_EnableHook((DWORD_PTR*)render));
             break;
         }
@@ -648,7 +645,7 @@ __int64 afterdatapackload_hook(__int64 a1, __int64 a2, __int64 a3, int a4, int a
             afterdatapackload_fn(a1, pack, a3, 0, 5);
         }
 
-        char ret_1[] = { 0xB0, 0x01, 0xC3 };
+        static constexpr unsigned char ret_1[] = { 0xB0, 0x01, 0xC3 };
         memcpy((void*)(globals::gameBase + 0xc7c960), ret_1, sizeof(ret_1));
         printf("Force chat enabled\n"); //Must be done after data packs loaded
     }
@@ -789,7 +786,7 @@ void __cdecl StartHook(void*) {
     printf("hello monsieur\n");
     atexit(exit_handler);
 
-    char orig[] = { 0x7E, 0x41, 0xDB, 0xB6, 0x8F, 0x68, 0x93, 0x42, 0x09, 0xC8, 0x5F, 0x4A };
+    static constexpr unsigned char orig[] = { 0x7E, 0x41, 0xDB, 0xB6, 0x8F, 0x68, 0x93, 0x42, 0x09, 0xC8, 0x5F, 0x4A };
     memcpy((void*)(globals::gameBase + Start_Addr), orig, sizeof(orig));
     printf("restored game start.\n");
 
@@ -809,7 +806,7 @@ void __cdecl StartHook(void*) {
     }
     printf("called text decryptor (veh)\n");
 
-    char verify[] = { 0x48, 0x83, 0xEC, 0x28, 0xE8, 0xFF, 0xD8, 0x00, 0x00 };
+    static constexpr unsigned char verify[] = { 0x48, 0x83, 0xEC, 0x28, 0xE8, 0xFF, 0xD8, 0x00, 0x00 };
     for (int i = 0; i < sizeof(verify); i++) {
         if (*(char*)(globals::gameBase + Start_Addr + i) != verify[i]) {
             printf(".text decryption failed!\n");
@@ -824,44 +821,44 @@ void __cdecl StartHook(void*) {
     printf("patched debugger trap 1 (illegal isntruction)\n");
 
     //ud2
-    MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0x5abd00), DebuggerTrapHook, 0));
+    MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0x5abd00), (PVOID*)DebuggerTrapHook, 0));
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0x5abd00)));
     //basically same debugger trap here but __debugbreak()
-    MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0x5abd30), DebuggerTrapHook, 0));
+    MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0x5abd30), (PVOID*)DebuggerTrapHook, 0));
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0x5abd30)));
     //ame but ud2 again
-    MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0x808b90), DebuggerTrapHook, 0));
+    MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0x808b90), (PVOID*)DebuggerTrapHook, 0));
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0x808b90)));
     //ud2
-    MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0x7e1710), DebuggerTrapHook, 0));
+    MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0x7e1710), (PVOID*)DebuggerTrapHook, 0));
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0x7e1710)));
     //crash_me__
-    MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0x1130960), DebuggerTrapHook, 0));
+    MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0x1130960), (PVOID*)DebuggerTrapHook, 0));
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0x1130960)));
 
-    MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0x8fc240), createwindow_hook, (PVOID*)&createwindow_orig));
+    MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0x8fc240), (PVOID*)createwindow_hook, (PVOID*)&createwindow_orig));
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0x8fc240)));
 
-    char return_zero[] = { 0x31, 0xC0, 0xC3 };
+    static constexpr unsigned char return_zero[] = { 0x31, 0xC0, 0xC3 };
     memcpy((void*)(globals::gameBase + 0x804740), return_zero, sizeof(return_zero));
     printf("patched debugger trap 2 (return value check)\n");
 
-    MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0x5ac130), regedit_initialize, (PVOID*)&regedit_initialize_orig));
+    MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0x5ac130), (PVOID*)regedit_initialize, (PVOID*)&regedit_initialize_orig));
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0x5ac130)));
     printf("patched regedit launch options\n");
 
-    MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0x80f7c0), emplace_entity_hook, (PVOID*)&emplace_entity_orig));
+    MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0x80f7c0), (PVOID*)emplace_entity_hook, (PVOID*)&emplace_entity_orig));
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0x80f7c0)));
     printf("emplace entity hook\n");
 
-    MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xf3eb10), afterdatapackload_hook, (PVOID*)&afterdatapackload_fn));
+    MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xf3eb10), (PVOID*)afterdatapackload_hook, (PVOID*)&afterdatapackload_fn));
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0xf3eb10)));
     printf("after data pack load hook\n");
 
-    MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xa00450), componen1_oncreate_hook, (PVOID*)&component_1_oncreate_orig));
+    MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xa00450), (PVOID*)componen1_oncreate_hook, (PVOID*)&component_1_oncreate_orig));
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0xa00450)));
 
-    /*MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xbff460), testVIGSTickHook, (PVOID*)&VigsTickOrig));
+    /*MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xbff460), (PVOID*)testVIGSTickHook, (PVOID*)&VigsTickOrig));
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0xbff460)));*/
 
     memcpy((void*)(globals::gameBase + 0x000000000137F061), std::array<unsigned char, 5>{0xe9, 0x57, 0x20, 0x0, 0x0}.data(), 0x5);
@@ -1049,29 +1046,29 @@ void __cdecl StartHook(void*) {
     printf("patched veh set trap\n");
 
     printf("casc log hook\n");
-    MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xba00e0), cascLogHook, (LPVOID*)&cascLogHook_orig));
+    MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xba00e0), (PVOID*)cascLogHook, (LPVOID*)&cascLogHook_orig));
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0xba00e0)));
 
-    MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xf4dff0), statescript_load_hook, (LPVOID*)&statescript_load_orig));
+    MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xf4dff0), (PVOID*)statescript_load_hook, (LPVOID*)&statescript_load_orig));
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0xf4dff0)));
 
-    MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xb2ae70), stuux_string_hash_hook, (LPVOID*)&stuux_string_hash_orig));
+    MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xb2ae70), (PVOID*)stuux_string_hash_hook, (LPVOID*)&stuux_string_hash_orig));
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0xb2ae70)));
     printf("stuux string hash uxlink\n");
 
-    MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0x9c3500), manager_14_init_hook, (LPVOID*)&manager_14_orig));
+    MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0x9c3500), (PVOID*)manager_14_init_hook, (LPVOID*)&manager_14_orig));
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0x9c3500)));
     printf("Manager 14 initialization hook\n");
 
-    MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xcd0590), dataflow_bugfix_fn, (LPVOID*)&dataflow_bugfix_orig));
+    MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xcd0590), (PVOID*)dataflow_bugfix_fn, (LPVOID*)&dataflow_bugfix_orig));
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0xcd0590)));
     printf("filterbits dataflow fix\n");
 
-    MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xc541c0), Construct_GameEntityAdmin_fn, (LPVOID*)&Construct_GameEntityAdmin_orig));
+    MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xc541c0), (PVOID*)Construct_GameEntityAdmin_fn, (LPVOID*)&Construct_GameEntityAdmin_orig));
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0xc541c0)));
     printf("gameEA initialize hook\n");
 
-    char ret_1[] = { 0xB0, 0x01, 0xC3 };
+    static constexpr unsigned char ret_1[] = { 0xB0, 0x01, 0xC3 };
     memcpy((void*)(globals::gameBase + 0xf4c920), ret_1, sizeof(ret_1)); //Debug Statescript log enabled
     memcpy((void*)(globals::gameBase + 0xcfd740), ret_1, sizeof(ret_1)); //Force Enable all heroes
     memset((void*)(globals::gameBase + 0x7e1f69), 0x90, 8);
@@ -1081,11 +1078,11 @@ void __cdecl StartHook(void*) {
     memset((void*)(globals::gameBase + 0xcc6110), 0x90, 0xcc67f5 - 0xcc6110);
     memset((void*)(globals::gameBase + 0xcc57d3), 0x90, 0xcc5f92 - 0xcc57d3);
 
-    MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xc43a40), selectiveResLoad_hook, (PVOID*)&selectiveResLoad_orig));
+    MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xc43a40), (PVOID*)selectiveResLoad_hook, (PVOID*)&selectiveResLoad_orig));
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0xc43a40)));
     printf("selectiveResLoad_hook\n");
 
-    MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xc43ab0), System63_hook, (PVOID*)&System63_orig));
+    MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xc43ab0), (PVOID*)System63_hook, (PVOID*)&System63_orig));
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0xc43ab0)));
     printf("system63 bugfix\n"); 
 
@@ -1176,21 +1173,21 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 
         MH_VERIFY(MH_Initialize());
 
-        MH_VERIFY(MH_CreateHook(ExitProcess, ExitProcessHook, (LPVOID*)&ExitProcess_orig));
-        MH_VERIFY(MH_EnableHook(ExitProcess));
+        MH_VERIFY(MH_CreateHook((PVOID*)ExitProcess, (PVOID*)ExitProcessHook, (LPVOID*)&ExitProcess_orig));
+        MH_VERIFY(MH_EnableHook((PVOID*)ExitProcess));
 
         auto addVeh = GetProcAddress(LoadLibraryA("ntdll.dll"), "RtlAddVectoredExceptionHandler");
-        MH_VERIFY(MH_CreateHook(addVeh, AddVehHook, (LPVOID*)&AddVeh_orig));
-        MH_VERIFY(MH_EnableHook(addVeh));
+        MH_VERIFY(MH_CreateHook((PVOID*)addVeh, (PVOID*)AddVehHook, (LPVOID*)&AddVeh_orig));
+        MH_VERIFY(MH_EnableHook((PVOID*)addVeh));
 
-        MH_VERIFY(MH_CreateHook(IsDebuggerPresent, CheckDebuggerPresentHook, 0));
-        MH_VERIFY(MH_EnableHook(IsDebuggerPresent));
+        MH_VERIFY(MH_CreateHook((PVOID*)IsDebuggerPresent, (PVOID*)CheckDebuggerPresentHook, 0));
+        MH_VERIFY(MH_EnableHook((PVOID*)IsDebuggerPresent));
 
-        MH_VERIFY(MH_CreateHook(CheckRemoteDebuggerPresent, CheckDebuggerPresentHook, 0));
-        MH_VERIFY(MH_EnableHook(CheckRemoteDebuggerPresent));
+        MH_VERIFY(MH_CreateHook((PVOID*)CheckRemoteDebuggerPresent, (PVOID*)CheckDebuggerPresentHook, 0));
+        MH_VERIFY(MH_EnableHook((PVOID*)CheckRemoteDebuggerPresent));
 
         printf("Creating WinMain Hook...\n");
-        char starthook[] = {
+        static constexpr unsigned char starthook[] = {
             0x48, 0xB8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, //mov rax,0
             0xFF, 0xE0 //jmp rax
         };

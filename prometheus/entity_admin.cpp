@@ -653,10 +653,10 @@ void PrometheusSystem::state_replicator_do() {
 }
 
 void PrometheusSystem::state_replicator_exhandled() {
-	__try {
+	__ow_try (EXCEPTION_EXECUTE_HANDLER) {
 		state_replicator_do();
 	}
-	__except (EXCEPTION_EXECUTE_HANDLER) {
+	__ow_except {
 		printf("state replicator exception\n");
 	}
 }
@@ -698,19 +698,19 @@ void PrometheusSystem::OnTick(float tick) {
 		if (!_applied_demo) {
 			_applied_demo = true;
 
-			MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0x8537c0), get_displayString_func, (PVOID*)&get_displayString_orig));
+			MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0x8537c0), (PVOID*)get_displayString_func, (PVOID*)&get_displayString_orig));
 			MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0x8537c0)));
 
-			MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xc87220), play_game_btn, (PVOID*)0));
+			MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xc87220), (PVOID*)play_game_btn, (PVOID*)0));
 			MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0xc87220)));
 
-			MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xd774b0), SendHeroSelection, (PVOID*)0));
+			MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xd774b0), (PVOID*)SendHeroSelection, (PVOID*)0));
 			MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0xd774b0)));
 
-			MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xd94930), matchmaking_cv, (PVOID*)0));
+			MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xd94930), (PVOID*)matchmaking_cv, (PVOID*)0));
 			MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0xd94930)));
 
-			MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xc45400), hookSwitchCam, (PVOID*)&origSwitchCam));
+			MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xc45400), (PVOID*)hookSwitchCam, (PVOID*)&origSwitchCam));
 			MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0xc45400)));
 
 			auto lobby_ss = LobbyEntityAdmin()->getSingletonComponent<Component_23_Statescript>(0x23);
@@ -1210,7 +1210,7 @@ PrometheusSystem* PrometheusSystem::create(EntityAdminBase* ea) {
 	ea->GameEA_mapfunc_arr.emplace_item((mapsystem_callback_vt**)&sys->_mapfunc);
 	s_instance = sys;
 
-	MH_VERIFY_RET(MH_CreateHook((PVOID)(globals::gameBase + 0xcfe920), deallocate_view_hook, (LPVOID*)&deallocate_view_orig), nullptr);
+	MH_VERIFY_RET(MH_CreateHook((PVOID)(globals::gameBase + 0xcfe920), (PVOID*)deallocate_view_hook, (LPVOID*)&deallocate_view_orig), nullptr);
 	MH_VERIFY_RET(MH_EnableHook((PVOID)(globals::gameBase + 0xcfe920)), nullptr);
 	return sys;
 }
