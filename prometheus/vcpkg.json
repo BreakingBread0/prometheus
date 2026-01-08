@@ -14,7 +14,8 @@
     "freetype",
     "nlohmann-json",
     "fast-cpp-csv-parser",
-    "ixwebsocket"
+    "ixwebsocket",
+    "fmt"
   ],
   "builtin-baseline": "c5ff0f76a2212d49e92f02b510cc7509e7e119ef"
 }

@@ -9,7 +9,7 @@
 void statescript_window::render() {
     std::string title;
     if (!_instance_invalid)
-        title = std::format("{:x} on Entity {:x}", _curr_instance->script_id, _curr_instance->ss_inner->component_ref->base.entity_backref->entity_id);
+        title = fmt::format("{:x} on Entity {:x}", _curr_instance->script_id, _curr_instance->ss_inner->component_ref->base.entity_backref->entity_id);
     else
         title = "Invalid Statescript Graph";
     if (open_window(title.c_str(), ImGuiWindowFlags_MenuBar, ImVec2(1500, 800))) {
@@ -180,7 +180,7 @@ void statescript_window::render() {
                     plug_name = allmighty_hash_lib::hashes[out_node.first];
                 }
                 else {
-                    plug_name = std::format("{:x}", out_node.first);
+                    plug_name = fmt::format("{:x}", out_node.first);
                 }
                 if (allmighty_hash_lib::comments.find(out_node.first) != allmighty_hash_lib::comments.end()) {
                     plug_name += " (" + allmighty_hash_lib::comments[out_node.first] + ")";
@@ -382,7 +382,7 @@ void statescript_window::emplace_row(int row_id, std::vector<std::vector<STUStat
     if (row_id != 0) {
         for (int i = 0; i < row_id; i++) {
             auto& row = rows[i];
-            std::erase(row, item);
+            row.erase(std::remove(row.begin(), row.end(), item), row.end());
         }
     }
     while (rows.size() <= row_id) {

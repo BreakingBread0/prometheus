@@ -25,7 +25,7 @@ class hash_display_window : public window {
 
 			if (imgui_helpers::beginTable("Hashes", { "Hash", "Meaning" })) {
 				for (auto& hash : allmighty_hash_lib::hashes) {
-					std::string searchFor = hash.second + std::format("{:x}", (uint)hash.first);
+					std::string searchFor = hash.second + fmt::format("{:x}", (uint)hash.first);
 					if (strlen(filter) > 0 && !icontains(searchFor, filter))
 						continue;
 

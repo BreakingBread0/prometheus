@@ -24,7 +24,7 @@ class herolineup_creator : public window {
 						if (copy) {
 							auto res = hero.ent->resload_entry->align()->resource_id;
 							auto scenerendering = hero.ent->getById<Component_1_SceneRendering>(1);
-							str << std::format("lineup(0x{:x}, Vector4({:f}, {:f}, {:f}, 0), Vector4({:f}, {:f}, {:f}, 0)),",
+							str << fmt::format("lineup(0x{:x}, Vector4({:f}, {:f}, {:f}, 0), Vector4({:f}, {:f}, {:f}, 0)),",
 								res,
 								scenerendering->position.X, scenerendering->position.Y, scenerendering->position.Z,
 								scenerendering->rotation.X, scenerendering->rotation.Y, scenerendering->rotation.Z) << std::endl;
@@ -43,7 +43,7 @@ class herolineup_creator : public window {
 						auto potg_res = hero.hero.get_argument_resource(0xdf68b9e6)->resource_id;
 						auto simple_res = try_load_resource(potg_res);
 						if (!simple_res) {
-							imgui_helpers::messageBox("Failed to load entity " + std::format("{:x}", potg_res), this);
+							imgui_helpers::messageBox("Failed to load entity " + fmt::format("{:x}", potg_res), this);
 							return;
 						}
 						auto loader = EntityLoader::Create(potg_res, simple_res, false, false);

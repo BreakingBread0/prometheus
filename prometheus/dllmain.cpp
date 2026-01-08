@@ -47,7 +47,7 @@
 #include "entity_admin.h"
 #include <array>
 
-//Who needs a build system?
+//Who needs a build system? TODO
 #include <imnodes/imnodes.cpp>
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ImVec2, x, y);
@@ -370,7 +370,7 @@ __int64 __fastcall createwindow_hook(__int64 gameManager) {
     std::thread([]() {
         while (true) {
             Sleep(100);
-            //teEngine ínstance
+            //teEngine ï¿½nstance
             DWORD_PTR render = *(DWORD_PTR*)(globals::gameBase + 0x181e3e0);
             if (!render)
                 continue;
@@ -648,7 +648,9 @@ __int64 afterdatapackload_hook(__int64 a1, __int64 a2, __int64 a3, int a4, int a
             afterdatapackload_fn(a1, pack, a3, 0, 5);
         }
 
-        char ret_1[] = { 0xB0, 0x01, 0xC3 };
+        // PARALIRA: Found "byte", maybe this type
+        // fits better for what this is?
+        byte ret_1[] = { 0xB0, 0x01, 0xC3 };
         memcpy((void*)(globals::gameBase + 0xc7c960), ret_1, sizeof(ret_1));
         printf("Force chat enabled\n"); //Must be done after data packs loaded
     }
@@ -789,7 +791,7 @@ void __cdecl StartHook(void*) {
     printf("hello monsieur\n");
     atexit(exit_handler);
 
-    char orig[] = { 0x7E, 0x41, 0xDB, 0xB6, 0x8F, 0x68, 0x93, 0x42, 0x09, 0xC8, 0x5F, 0x4A };
+    byte orig[] = { 0x7E, 0x41, 0xDB, 0xB6, 0x8F, 0x68, 0x93, 0x42, 0x09, 0xC8, 0x5F, 0x4A };
     memcpy((void*)(globals::gameBase + Start_Addr), orig, sizeof(orig));
     printf("restored game start.\n");
 
@@ -809,7 +811,7 @@ void __cdecl StartHook(void*) {
     }
     printf("called text decryptor (veh)\n");
 
-    char verify[] = { 0x48, 0x83, 0xEC, 0x28, 0xE8, 0xFF, 0xD8, 0x00, 0x00 };
+    byte verify[] = { 0x48, 0x83, 0xEC, 0x28, 0xE8, 0xFF, 0xD8, 0x00, 0x00 };
     for (int i = 0; i < sizeof(verify); i++) {
         if (*(char*)(globals::gameBase + Start_Addr + i) != verify[i]) {
             printf(".text decryption failed!\n");
@@ -842,7 +844,7 @@ void __cdecl StartHook(void*) {
     MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0x8fc240), createwindow_hook, (PVOID*)&createwindow_orig));
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0x8fc240)));
 
-    char return_zero[] = { 0x31, 0xC0, 0xC3 };
+    byte return_zero[] = { 0x31, 0xC0, 0xC3 };
     memcpy((void*)(globals::gameBase + 0x804740), return_zero, sizeof(return_zero));
     printf("patched debugger trap 2 (return value check)\n");
 
@@ -1071,7 +1073,7 @@ void __cdecl StartHook(void*) {
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0xc541c0)));
     printf("gameEA initialize hook\n");
 
-    char ret_1[] = { 0xB0, 0x01, 0xC3 };
+    byte ret_1[] = { 0xB0, 0x01, 0xC3 };
     memcpy((void*)(globals::gameBase + 0xf4c920), ret_1, sizeof(ret_1)); //Debug Statescript log enabled
     memcpy((void*)(globals::gameBase + 0xcfd740), ret_1, sizeof(ret_1)); //Force Enable all heroes
     memset((void*)(globals::gameBase + 0x7e1f69), 0x90, 8);
@@ -1104,10 +1106,13 @@ void __cdecl StartHook(void*) {
     pFunc();
 }
 
+// PARALIRA: Clang has __builtin_return_address(), 
+// not _ReturnAddress(). I hope they function
+// similar enough...
 __int64 AddVehHook(__int64 old, __int64 func) {
-    if ((DWORD_PTR)_ReturnAddress() > globals::gameBase && (DWORD_PTR)_ReturnAddress() < globals::gameBase + globals::gameSize)
+    if ((DWORD_PTR)__builtin_return_address(0) > globals::gameBase && (DWORD_PTR)__builtin_return_address(0) < globals::gameBase + globals::gameSize)
         return AddVeh_orig(old, func);
-    printf("Caught RtlAddVectoredExceptionHandler %d %p ret: %p\n", old, func, _ReturnAddress());
+    printf("Caught RtlAddVectoredExceptionHandler %d %p ret: %p\n", old, func, __builtin_return_address(0));
     return 0;
 }
 
@@ -1190,7 +1195,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
         MH_VERIFY(MH_EnableHook(CheckRemoteDebuggerPresent));
 
         printf("Creating WinMain Hook...\n");
-        char starthook[] = {
+        byte starthook[] = {
             0x48, 0xB8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, //mov rax,0
             0xFF, 0xE0 //jmp rax
         };

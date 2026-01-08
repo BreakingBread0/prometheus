@@ -25,7 +25,7 @@ class freecam_movement_recorder : public window {
 				ImGui::Text("Pos: %f %f %f", curr_pos->X, curr_pos->Y, curr_pos->Z);
 				ImGui::SameLine();
 				if (ImGui::Button(EMOJI_COPY)) {
-					imgui_helpers::openCopyWindow(std::format("cammove(Vector4({:f}, {:f}, {:f}, 0), Vector4({:f}, {:f}, {:f}, 0))", 
+					imgui_helpers::openCopyWindow(fmt::format("cammove(Vector4({:f}, {:f}, {:f}, 0), Vector4({:f}, {:f}, {:f}, 0))", 
 						curr_pos->X, curr_pos->Y, curr_pos->Z,
 						curr_rot->X, curr_rot->Y, curr_rot->Z));
 				}
@@ -39,7 +39,7 @@ class freecam_movement_recorder : public window {
 				std::stringstream stream{};
 				stream << "std::map<double, cammove> {" << std::endl;
 				for (auto movement : _movements) {
-					stream << "{ " << std::format("{:f}, cammove(Vector4({:f}, {:f}, {:f}, 0), Vector4({:f}, {:f}, {:f}, 0))", 
+					stream << "{ " << fmt::format("{:f}, cammove(Vector4({:f}, {:f}, {:f}, 0), Vector4({:f}, {:f}, {:f}, 0))", 
 						movement.first, 
 						movement.second.first.X, movement.second.first.Y, movement.second.first.Z,
 						movement.second.second.X, movement.second.second.Y, movement.second.second.Z) << " }," << std::endl;

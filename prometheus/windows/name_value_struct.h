@@ -127,9 +127,9 @@ class name_value_struct : public window {
 				for (int i = 0; i < item.second.size(); i++) {
 					NamedItem* namedItem = item.second[i];
 					std::string searchFor = namedItem->item_name.get();
-					searchFor += std::format("{:x}", (uint)namedItem->item_hash_xored_with_smth) + " ";
-					searchFor += std::format("{:x}", (uint)(namedItem->item_hash_xored_with_smth ^ namedItem->item_name.hash)) + " ";
-					searchFor += std::format("{:x}", (uint)namedItem->item_name.hash);
+					searchFor += fmt::format("{:x}", (uint)namedItem->item_hash_xored_with_smth) + " ";
+					searchFor += fmt::format("{:x}", (uint)(namedItem->item_hash_xored_with_smth ^ namedItem->item_name.hash)) + " ";
+					searchFor += fmt::format("{:x}", (uint)namedItem->item_name.hash);
 					if (!bufStr.empty() && !icontains(searchFor, bufStr))
 						continue;
 					//printNamedItem(item.second[i]);

@@ -107,7 +107,7 @@ public:
 		std::string get_cv_formatted() override {
 			auto cv = get_cv();
 			std::string cv_str = cv ? cv->get_value_str() : "INVALID";
-			return std::format("[{}] {}", get_cv_origin(), cv_str);
+			return fmt::format("[{}] {}", get_cv_origin(), cv_str);
 		}
 	};
 
@@ -541,7 +541,7 @@ public:
 			opcassert(cvd);
 			char result = _context.parser->_ss->vfptr->CVD_Satisfies_InterceptorArr(_context.parser->_ss, cvd, &value);
 
-			ImGui::Text("TVA-%d = interceptor([CVD-%d] %s) (Interceptor Res: %d)", new_context.tva_index, cv_index, value.get_value_str(), result);
+			ImGui::Text("TVA-%d = interceptor([CVD-%d] %s) (Interceptor Res: %d)", new_context.tva_index, cv_index, value.get_value_str().c_str(), result);
 
 			_context.parser->display_next(new_context, _context.opc_index + get_size());
 			return true;

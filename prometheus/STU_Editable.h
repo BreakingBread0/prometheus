@@ -129,14 +129,20 @@ public:
 			return *this;
 		}
 
+		/* PARALIRA: Currently not used so I hope it won't bite
 		ListIteratorBase operator++(int) {
 			ListIteratorBase tmp = *this;
 			++(*this);
 			return tmp;
 		}
+		*/
 
 		bool operator==(const ListIteratorBase& it) const {
 			return it._current_pos == _current_pos && it._list == _list;
+		}
+
+		bool operator!=(const ListIteratorBase& it) const {
+			return !(*this == it);
 		}
 
 		virtual value_type operator*() const = 0;
@@ -404,6 +410,10 @@ public:
 		bool operator==(const MapIterator& it) const {
 			return it._current_pos == _current_pos && it._list == _list;
 		}
+
+		bool operator!=(const MapIterator& it) const {
+            return !(*this == it);
+        }
 	private:
 		STU_Map* _list = nullptr;
 		int _current_pos = 0;

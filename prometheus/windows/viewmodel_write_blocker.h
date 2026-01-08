@@ -11,17 +11,17 @@ class viewmodel_write_blocker : public window {
 	void add_block(ViewModel* vm, __int64 key);
 	void render() override;
 
-
+// PARALIRA: Trial & Error removed ## until it compiled, please check this!
 #define BlockHook(viewmodel_proptyp) \
-static inline ViewModelProperty*(__fastcall* VMP_SetOrig_##viewmodel_proptyp##)(ViewModel*, __int64, __int64 a3, __int64 a4); \
-static ViewModelProperty* VMP_Set_##viewmodel_proptyp##(ViewModel* vm, __int64 key, __int64 a3, __int64 a4) { \
-	__int64 retaddr = (__int64)_ReturnAddress(); \
+static inline ViewModelProperty*(__fastcall* VMP_SetOrig_##viewmodel_proptyp)(ViewModel*, __int64, __int64 a3, __int64 a4); \
+static ViewModelProperty* VMP_Set_##viewmodel_proptyp(ViewModel* vm, __int64 key, __int64 a3, __int64 a4) { \
+	__int64 retaddr = (__int64)__builtin_return_address(0); \
 	auto result = block_behaviour(vm, key, a3, a4, retaddr); \
-	if (!result.second) return VMP_SetOrig_##viewmodel_proptyp##(vm, key, a3, a4); \
+	if (!result.second) return VMP_SetOrig_##viewmodel_proptyp(vm, key, a3, a4); \
 	return result.first; \
 }
 #define DefineBlock(viewmodel_proptyp, addr) \
-MH_VERIFY(MH_CreateHook((DWORD_PTR*)(globals::gameBase + addr), (LPVOID)VMP_Set_##viewmodel_proptyp##, (PVOID*)&VMP_SetOrig_##viewmodel_proptyp##)); \
+MH_VERIFY(MH_CreateHook((DWORD_PTR*)(globals::gameBase + addr), (LPVOID)VMP_Set_##viewmodel_proptyp, (PVOID*)&VMP_SetOrig_##viewmodel_proptyp)); \
 MH_VERIFY(MH_EnableHook((DWORD_PTR*)(globals::gameBase + addr))); \
 s_proptypes_declared.push_back(viewmodel_proptyp);
 
