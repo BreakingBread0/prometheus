@@ -54,7 +54,7 @@ protected:
 	void display_addr(__int64 addr, const char* prepend = nullptr);
 	void display_text(char* text, const char* prepend = nullptr);
 
-	//F�r window registrar
+	//For window registrar
 	virtual window* create_self() = 0;
 	virtual const char* category_name() = 0;
 	virtual const char* window_name() = 0;

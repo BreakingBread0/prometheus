@@ -17,7 +17,7 @@
 //local entity muss team haben in filter bits
 //mov attach == local ent??? maybe, crasht nicht
 //local ent muss camera stuff (c20) haben
-//Component mit 2f muss c20 haben und wird benützt
+//Component mit 2f muss c20 haben und wird benotzt
 
 //SPECTATE:
 //Entity mit C20 muss filterbits 0x400000 haben

@@ -372,7 +372,7 @@ __int64 __fastcall createwindow_hook(__int64 gameManager) {
     std::thread([]() {
         while (true) {
             Sleep(100);
-            //teEngine �nstance
+            //teEngine instance
             DWORD_PTR render = *(DWORD_PTR*)(globals::gameBase + 0x181e3e0);
             if (!render)
                 continue;

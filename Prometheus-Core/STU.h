@@ -404,7 +404,7 @@ struct STUBullshitMapFull {
 	}
 };
 
-/// Benützt bei allen value containern geladen aus CASC. Sollte die Basis für alle statescript sachen sein.
+/// Benotzt bei allen value containern geladen aus CASC. Sollte die Basis for alle statescript sachen sein.
 struct STUBase_vt
 {
 	void(__fastcall* SomeNullsub)();
