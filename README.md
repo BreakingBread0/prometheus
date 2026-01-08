@@ -185,6 +185,8 @@ Also dont look into the window manager. Its an abomination. You have been warned
 * [nlohmann_json](https://github.com/nlohmann/json)
 * [ixwebsocket](https://github.com/machinezone/IXWebSocket)
 * [freetype](https://github.com/freetype/freetype)
+* [spdlog](https://github.com/gabime/spdlog)
+* [fmt](https://github.com/fmtlib/fmt)
 * [Monaspace Xenon](https://monaspace.githubnext.com/) (optional)
 * [Font Awesome](https://fontawesome.com) (optional)
 
