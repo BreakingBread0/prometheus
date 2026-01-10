@@ -3,6 +3,7 @@
 Hey and welcome, thanks for stopping by!
 - [1. Usage](#1-usage)
   - [Download a Release](#download-a-release)
+    - [Linux instructions](#linux-instructions)
     - [Optional stuff](#optional-stuff)
     - [Patcher \& how it works](#patcher--how-it-works)
   - [Compilation](#compilation)
@@ -33,10 +34,24 @@ If you havent already, download the 0.8 beta from [archive.org](https://archive.
 ## Download a Release
 
 * Download a release.zip. Extract all files to the game directory.
-* Rename prometheus.dll into inject.dll
 * Execute patcher.exe. It will ask for an input GameClientApp.exe, select the one you have downloaded and verified.
   * The patcher will write a GameClientApp.patched.exe file into the same directory. The only thing this patched executable does is load inject.dll before running the game code itself.
+  * You only need to do this once, this patch is version-independent.
+* Rename prometheus.dll into inject.dll
 * Congratulations, you're done :) Have a cookie 🍪
+
+### Linux instructions
+
+* Set the Windows verison of the Wine prefix to Windows 10.
+  * `WINEPREFIX=~/.wine64/ WINEARCH=win64 winecfg`
+* Install the .NET 8 runtime. (For patcher only)
+  * `WINEPREFIX=~/.wine64/ WINEARCH=win64 winetricks dotnet8`
+* Install the .NET 8 desktop framework. (For patcher only)
+  * `WINEPREFIX=~/.wine64/ WINEARCH=win64 winetricks dotnetdesktop8`
+* Select the unpatched executable.
+  * `WINEPREFIX=~/.wine64/ WINEARCH=win64 wine patcher.exe`
+* Download Proton from [GloriousEggroll](https://github.com/GloriousEggroll/proton-ge-custom) and install [umu-launcher](https://github.com/Open-Wine-Components/umu-launcher). Launch the patched executable using umu.
+  * `WINEPREFIX=~/.wine64/ WINEARCH=win64 PROTONPATH="/home/tracer/GE-Proton10-25/" umu-run GameClientApp.patched.exe`
 
 ### Optional stuff
 
@@ -192,8 +207,7 @@ Also dont look into the window manager. Its an abomination. You have been warned
 
 # 8. License and Contact
 
-MIT License. Contact me for any questions at contact@breakingbread.at or open a discussion thread <3
-
-
+AGPL License. Contact me for any questions at contact@breakingbread.at or open a discussion thread <3
+NOTE: The license was changed from MIT. AGPL ensures that this is a project made by the community, for the community.
 
 ![prometheus logo](images/prometheus.png)
