@@ -88,6 +88,7 @@ void statescript_registry::render() {
 bool statescript_registry::CanShowRTTI(StatescriptRTTI* rtti, STURegistry* header)
 {
 	if (_search.needs_haystack()) {
+		//will retrigger another hash-name lookup but its only when the lookup is dirty so... not a big deal
 		_search.haystack_stringhash(header->info->name_hash);
 	}
 

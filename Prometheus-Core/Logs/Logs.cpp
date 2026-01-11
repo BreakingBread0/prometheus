@@ -12,6 +12,8 @@
 #include <spdlog/sinks/dist_sink.h>
 #include <spdlog/sinks/basic_file_sink.h>
 
+#include "globals.h"
+
 namespace Logs
 {
     const std::string logPath       = "Prometheus/Logs/";
@@ -35,6 +37,10 @@ namespace Logs
         logger->info("-   {} Log Initialized 💅 - v{}", name, VERSION_STRING);
         logger->info("-   ");
         logger->info("====================================================================");
+        logger->info(" ");
+        logger->info(" Module Base: {:#x} {:#x}", globals::modBase, globals::modSize);
+        logger->info(" Game Base: {:#x} {:#x}", globals::gameBase, globals::gameSize);
+        logger->info(" Main Thread: {}", GetCurrentThreadId());
         logger->info(" ");
 
         logger->set_pattern("[%T:%e] %-12!s%4# | %-3!l << %v");

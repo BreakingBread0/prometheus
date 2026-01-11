@@ -1160,7 +1160,6 @@ BOOL APIENTRY DllMain(HMODULE hModule,
         case DLL_PROCESS_ATTACH:
             std::call_once(entrypoint_mutex, [] {
                 globals::ensure_console_allocated();
-                Logs::Initialize(); //soz i defo shouldnt be putting this inside dllmain but like idk where else to put it rn
                 
                 printf("Hello World!\n");
 
@@ -1182,6 +1181,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
                 memcpy((void*)tlsCallback, TlsCallback_0, sizeof(TlsCallback_0));
 
                 MH_VERIFY(MH_Initialize());
+                Logs::Initialize(); //soz i defo shouldnt be putting this inside dllmain but like idk where else to put it rn
 
                 MH_VERIFY(MH_CreateHook(ExitProcess, ExitProcessHook, (LPVOID*)&ExitProcess_orig));
                 MH_VERIFY(MH_EnableHook(ExitProcess));
