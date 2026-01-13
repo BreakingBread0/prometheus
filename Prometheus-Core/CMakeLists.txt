@@ -39,6 +39,10 @@ add_library(Prometheus-Core SHARED
         "statescript_logger.h"
         "state_replicator.h"
         "stringhash_library.h"
+        "STUConfigVar_Custom.cpp"
+        "STUConfigVar_Custom.h"
+        "STUConfigVarDynamic_Custom.cpp"
+        "STUConfigVarDynamic_Custom.h"
         "STU.h"
         "STU_Editable.h"
         "stu_resources.h"
@@ -139,8 +143,8 @@ add_library(Prometheus-Core SHARED
         "windows/viewmodel_write_blocker.cpp"
         "window_manager/management_window.cpp"
         "window_manager/window_manager.cpp"
-        Logs/Logs.cpp
-        Logs/Logs.h
+        "Logs/Logs.cpp"
+        "Logs/Logs.h"
 )
 target_include_directories(Prometheus-Core PRIVATE ${PROJECT_SOURCE_DIR}/)
 
