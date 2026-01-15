@@ -20,3 +20,7 @@ class Component
     protected:
         ~Component() = default;
 };
+
+
+//vtbl
+//0x230 == OnInstantiated?
