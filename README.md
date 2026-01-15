@@ -147,7 +147,8 @@ The most important thing is the list of MovementState in component 12. It holds 
 # 3. Broken stuff and why it's broken
 
 * "Press H to select Hero" will always be displayed once spawning a hero: This is controlled by the server by setting a boolean flag in component 
-* Weapons don't shoot: I have no idea, did not look into that yet. Probably a system which needs to be explored first or a statescript var that needs to be set.
+* ****Weapons don't shoot: I have no idea, did not look into that yet. Probably a system which needs to be explored first or a statescript var that needs to be set.
+    * this is partially fixed with the 3rd bit being flagged on ss_instance exec flags for weapon scripts. This flag may be server controlled.  
 * Main Menu buttons don't work: Main menu buttons only send JAM messages to the server saying "hey i want to join a game". So that needs to be implemented
 * Some abilities do not work: Some stuff does depend on the server sending you stuff and acknowledging. This is a TODO for the future.
 * Practice Range does not give you hero selection screen: This is because the server spawns Tracer for you automatically. Use the Player Spawner Deluxe.
