@@ -85,7 +85,7 @@ void player_spawner::modify_ent(spawn_info info, Entity* ent) {
 			auto entity_def = stu_resources::GetByID(info.resource_id)->to_editable();
 			auto component_map = entity_def.get_argument_map("m_componentMap");
 			auto weapon_comp = ((STUBase<>*)component_map.value->get_by_key(stringHash("STUWeaponComponent"))->value)->to_editable(); //
-			statescript->loadScript(weapon_comp.get_argument_resource("m_managerScript")->resource_id);
+			statescript->loadScript(weapon_comp.get_argument_resource("m_managerScript")->resource_id, 0x8, ent->entity_id);
 
 			//filler stub for the entry to 0x0D8000000000001D (valid weapon idxs dict)
 			const StatescriptPrimitive wpnDictionaryBotox{0, StatescriptPrimitive_INT};
@@ -94,7 +94,7 @@ void player_spawner::modify_ent(spawn_info info, Entity* ent) {
 			auto weaponId = 1;
 			for (auto weapon : weapon_comp.get_argument_objectlist("m_weapons")) {
 				if (auto script = weapon.get_argument_resource("m_script"); script->has_resource()) {
-					statescript->loadScript(script->resource_id);
+					statescript->loadScript(script->resource_id, 0x8, ent->entity_id);
 
 					if (auto inst = statescript->ss_inner.getByResourceId(script->resource_id)) {
 						LOG_CORE(Info, "Successfully created weapon script: {:#x} (inst: {:#x}) with TargetID {}", script->resource_id, reinterpret_cast<int64>(inst), weaponId);

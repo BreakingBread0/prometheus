@@ -846,7 +846,8 @@ struct StatescriptSyncMgr
 struct Component_23_Statescript;
 struct Statescript_vt {
 	union {
-		STRUCT_PLACE_CUSTOM(load_graph, 0x58, __int64(__fastcall* load_statescript_script)(Component_23_Statescript* a1, __int64 resource_id, char zero, uint32 ent_id));
+		STRUCT_PLACE_CUSTOM(load_graph, 0x58, __int64(__fastcall* load_statescript_script)(Component_23_Statescript* a1, __int64 resource_id, uint8 bit13, uint32 ent_id));
+		STRUCT_PLACE_CUSTOM(load_graph_bit3, 0x60, __int64(__fastcall* load_statescript_script_bit3)(Component_23_Statescript* a1, __int64 resource_id, uint8 bit13, uint32 ent_id));
 	};
 };
 
@@ -857,8 +858,12 @@ struct Component_23_Statescript {
 		STRUCT_PLACE(StatescriptSyncMgr, ss_inner, 0xC0);
 	};
 
-	void loadScript(__int64 resource_id) {
-		vfptr->load_statescript_script(this, resource_id, 0, 0);
+	void loadScript(const int64 resource_id, const uint64 exec_flags = 0, const uint32 ent_id = 0) {
+		if (exec_flags & 0x8)
+			vfptr->load_statescript_script_bit3(this, resource_id, (exec_flags & 0x2000u) != 0, ent_id);
+		else {
+			vfptr->load_statescript_script(this, resource_id, (exec_flags & 0x2000u) != 0, ent_id);
+		}
 	}
 };
 
