@@ -31,8 +31,16 @@ class statescript_info : public window {
 			display_addr(inner->ontick_updates_enabled, "tick_updates_enabled");
 			display_addr(inner->field_36C, "field_36C");
 			display_addr(inner->field_370, "field_370");
-			ImGui::NewLine();
 
+			ImGui::NewLine();
+			ImGui::Text("Exec Flags:");
+			ImGui::CheckboxFlags("IsActive", &ss->execution_flags, 0x1);
+			ImGui::CheckboxFlags("WantsFinishState", &ss->execution_flags, 0x2);
+			ImGui::CheckboxFlags("StartedSelf", &ss->execution_flags, 0x4);
+			ImGui::CheckboxFlags("0x8", &ss->execution_flags, 0x8);
+			ImGui::CheckboxFlags("HasVMUpdate", &ss->execution_flags, 0x80);
+
+			ImGui::NewLine();
 			ImGui::Checkbox("flag_374", &inner->flag_374);
 			ImGui::Checkbox("is_instantiating", &inner->is_instantiating);
 			ImGui::Checkbox("has_clientonly_scripts", &inner->has_clientonly_scripts);
