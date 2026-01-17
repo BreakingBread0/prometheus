@@ -3,7 +3,7 @@
 #include <string>
 #include <mutex>
 
-#include "windows/message_window.h"
+#include "UI/windows/message_window.h"
 using namespace std;
 
 ImguiRenderer::ImguiRenderer()

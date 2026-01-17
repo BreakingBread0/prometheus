@@ -10,7 +10,7 @@ struct component_info {
 	std::string comment;
 };
 
-namespace allmighty_hash_lib {
+namespace stringhash_library {
 	extern std::map<int, std::string> hashes;
 	extern std::map<__int64, std::string> comments;
 	extern std::map<int, component_info> components;

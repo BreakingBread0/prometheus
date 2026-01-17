@@ -27,6 +27,10 @@
 #define MH_VERIFY(returnVal) { auto mh_ret = returnVal; if (mh_ret != 0) { printf(#returnVal " failed! (status code: %d)\n", mh_ret); return; } }
 #define MH_VERIFY_RET(returnVal, retError) { auto mh_ret = returnVal; if (mh_ret != 0) { printf(#returnVal " failed! (status code: %d)\n", mh_ret); return retError; } }
 
+#define GetUniqueHash(addr) static_cast<int32>((static_cast<uint32>(addr) + 2u 								\
++ (static_cast<uint32>(ImGui::TableGetRowIndex()) * static_cast<uint32>(ImGui::GetColumnIndex()))		\
++ ImGui::GetItemID()))
+
 __int64 ow_memalloc(int size); //dllmain
 void ow_dealloc(__int64 address);
 

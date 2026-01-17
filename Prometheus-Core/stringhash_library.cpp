@@ -5,11 +5,12 @@
 #include <filesystem>
 #include "globals.h"
 #include "game.h"
-#include "window_manager/window_manager.h"
 #include <thread>
 #include <mutex>
 
-namespace allmighty_hash_lib {
+#include "UI/imgui_helpers.h"
+
+namespace stringhash_library {
 	std::map<int, std::string> hashes{};
 	std::map<__int64, std::string> comments{};
 	std::map<int, component_info> components{};

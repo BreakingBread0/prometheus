@@ -1,9 +1,11 @@
 #include "player_spawner.h"
-#include "window_manager/window_manager.h"
+#include "UI/window_manager/window_manager.h"
+#include "UI/imgui_helpers.h"
 #include "stu_resources.h"
 #include "Statescript.h"
 #include "StatescriptVar.h"
 #include "Logs/Logs.h"
+#include "STU_Editable.h"
 
 void player_spawner::modify_ent(spawn_info info, Entity* ent) {
 	auto game_ea = GameEntityAdmin();
