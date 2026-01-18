@@ -24,8 +24,9 @@ namespace stringhash_library {
 			ImGui::Text("%s ", prepend);
 			ImGui::SameLine();
 		}
-		if (hashes.find(hash) != hashes.end()) {
-			ImGui::Text("%x (%s)", hash, hashes[hash].c_str());
+		auto it = hashes.find(hash);
+		if (it != hashes.end()) {
+			ImGui::Text("%x (%s)", hash, it->second.c_str());
 		}
 		else {
 			ImGui::Text("%x", hash);
@@ -48,7 +49,7 @@ namespace stringhash_library {
 		}
 	}
 
-	void add_comment(__int64 key, std::string value, bool force_override) {
+	void add_comment(__int64 key, const std::string& value, bool force_override) {
 		std::unique_lock lock(mut);
 		if (comments.find(key) == comments.end()) {
 			comments.emplace(key, value);
@@ -75,6 +76,7 @@ namespace stringhash_library {
 		if (save_thread.joinable()) {
 			return;
 		}
+		//this is for debouncing
 		save_thread = std::thread([] {
 			std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 			std::unique_lock lock(mut);

@@ -170,6 +170,7 @@ DWORD GetMainThreadId() {
     {
         if (tEntry.th32OwnerProcessID == currentPID) {
             result = tEntry.th32ThreadID;
+            break;
         }
     }
     CloseHandle(snapshot);
@@ -259,18 +260,30 @@ const char* getClipboard(void*) {
     string_rep out{};
     clipboard_fn fn = (clipboard_fn)(globals::gameBase + 0x8ab990);
     if (fn(0, &out)) {
-        printf("GetClipboard succeessful\n");
-        char* str = new char[strlen(out.get())];
+        LOG_CORE(Debug, "GetClipboard succeessful\n");
+        size_t len = strlen(out.get());
+        char* str = new char[len + 1];
         strcpy(str, out.get());
         return str;
     }
-    else
-        printf("GetClipboard failed\n");
+    LOG_CORE(Warn, "GetClipboard failed\n");
     return new char[0];
 }
 
 IDXGISwapChain* main_swapchain = nullptr;
 bool ui_invisible = false;
+
+ImFont* tryLoadFont(const char* file) {
+    auto& io = ImGui::GetIO();
+    if (std::filesystem::exists(file)) {
+        auto font = io.Fonts->AddFontFromFileTTF(file, 13);
+        if (font)
+            return font;
+    }
+    LOG_CORE(Warn, "Failed to load font {}. Using default font.", file);
+    return io.FontDefault;
+}
+
 HRESULT __stdcall PresentHook(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
 {
     if (!main_swapchain)
@@ -295,10 +308,9 @@ HRESULT __stdcall PresentHook(IDXGISwapChain* pSwapChain, UINT SyncInterval, UIN
             cfg.MergeMode = true;
             cfg.FontBuilderFlags |= ImGuiFreeTypeBuilderFlags_LoadColor;
             auto& io = ImGui::GetIO();
-
-            imgui_helpers::BoldFont = io.Fonts->AddFontFromFileTTF("MonaspaceXenon-ExtraBold.otf", 13);
-            io.Fonts->AddFontFromFileTTF("MonaspaceXenon-Regular.otf", 13/*, &cfg, ImGui::GetIO().Fonts->GetGlyphRangesDefault()*/);
-            io.FontDefault = ImGui::GetIO().Fonts->AddFontFromFileTTF("Font Awesome 6 Free-Solid-900.otf", 13, &cfg, ranges);
+            imgui_helpers::BoldFont = tryLoadFont("MonaspaceXenon-ExtraBold.otf");
+            tryLoadFont("MonaspaceXenon-Regular.otf");
+            io.FontDefault = tryLoadFont("Font Awesome 6 Free-Solid-900.otf"); //TODO: Is this right?
 
             io.ConfigFlags |= ImGuiConfigFlags_DockingEnable /*| ImGuiConfigFlags_ViewportsEnable*/; //TODO: Viewports
             io.ConfigDockingWithShift = true;
@@ -368,7 +380,10 @@ __int64 __fastcall createwindow_hook(__int64 gameManager) {
     printf("window handle: %x\n", handle);
     globals::gameWindow = handle;
     std::thread([]() {
-        while (true) {
+        constexpr int max_attempts = 100;  // Timeout after ~10 seconds
+        int attempts = 0;
+
+        while (attempts++ < max_attempts) {
             Sleep(100);
             //teEngine instance
             DWORD_PTR render = *(DWORD_PTR*)(globals::gameBase + 0x181e3e0);
@@ -394,8 +409,10 @@ __int64 __fastcall createwindow_hook(__int64 gameManager) {
                 continue;
             MH_VERIFY(MH_CreateHook((DWORD_PTR*)render, PresentHook, reinterpret_cast<void**>(&phookD3D11Present)));
             MH_VERIFY(MH_EnableHook((DWORD_PTR*)render));
-            break;
+            return;
         }
+        LOG_CORE(Error, "Failed to hook Present! Will terminate application.");
+        MessageBoxA(nullptr, "Failed to hook Present. This may indicate that rendering has not properly started within the timeout period or an external overlay prevented hooking.", "Prometheus", MB_OK | MB_ICONERROR);
         }).detach();
     return handle;
 }
@@ -648,7 +665,7 @@ __int64 afterdatapackload_hook(__int64 a1, __int64 a2, __int64 a3, int a4, int a
             afterdatapackload_fn(a1, pack, a3, 0, 5);
         }
 
-        char ret_1[] = { 0xB0, 0x01, 0xC3 };
+        unsigned char ret_1[] = { 0xB0, 0x01, 0xC3 };
         memcpy((void*)(globals::gameBase + 0xc7c960), ret_1, sizeof(ret_1));
         printf("Force chat enabled\n"); //Must be done after data packs loaded
     }
@@ -789,7 +806,7 @@ void __cdecl StartHook(void*) {
     printf("hello monsieur\n");
     atexit(exit_handler);
 
-    char orig[] = { 0x7E, 0x41, 0xDB, 0xB6, 0x8F, 0x68, 0x93, 0x42, 0x09, 0xC8, 0x5F, 0x4A };
+    unsigned char orig[] = { 0x7E, 0x41, 0xDB, 0xB6, 0x8F, 0x68, 0x93, 0x42, 0x09, 0xC8, 0x5F, 0x4A };
     memcpy((void*)(globals::gameBase + Start_Addr), orig, sizeof(orig));
     printf("restored game start.\n");
 
@@ -809,7 +826,7 @@ void __cdecl StartHook(void*) {
     }
     printf("called text decryptor (veh)\n");
 
-    char verify[] = { 0x48, 0x83, 0xEC, 0x28, 0xE8, 0xFF, 0xD8, 0x00, 0x00 };
+    unsigned char verify[] = { 0x48, 0x83, 0xEC, 0x28, 0xE8, 0xFF, 0xD8, 0x00, 0x00 };
     for (int i = 0; i < sizeof(verify); i++) {
         if (*(char*)(globals::gameBase + Start_Addr + i) != verify[i]) {
             printf(".text decryption failed!\n");
@@ -842,7 +859,7 @@ void __cdecl StartHook(void*) {
     MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0x8fc240), createwindow_hook, (PVOID*)&createwindow_orig));
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0x8fc240)));
 
-    char return_zero[] = { 0x31, 0xC0, 0xC3 };
+    unsigned char return_zero[] = { 0x31, 0xC0, 0xC3 };
     memcpy((void*)(globals::gameBase + 0x804740), return_zero, sizeof(return_zero));
     printf("patched debugger trap 2 (return value check)\n");
 
@@ -1071,7 +1088,7 @@ void __cdecl StartHook(void*) {
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0xc541c0)));
     printf("gameEA initialize hook\n");
 
-    char ret_1[] = { 0xB0, 0x01, 0xC3 };
+    unsigned char ret_1[] = { 0xB0, 0x01, 0xC3 };
     memcpy((void*)(globals::gameBase + 0xf4c920), ret_1, sizeof(ret_1)); //Debug Statescript log enabled
     memcpy((void*)(globals::gameBase + 0xcfd740), ret_1, sizeof(ret_1)); //Force Enable all heroes
     memset((void*)(globals::gameBase + 0x7e1f69), 0x90, 8);
@@ -1196,7 +1213,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
                 MH_VERIFY(MH_EnableHook(CheckRemoteDebuggerPresent));
 
                 printf("Creating WinMain Hook...\n");
-                char starthook[] = {
+                unsigned char starthook[] = {
                     0x48, 0xB8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, //mov rax,0
                     0xFF, 0xE0 //jmp rax
                 };

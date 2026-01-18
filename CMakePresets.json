@@ -1,11 +1,10 @@
 {
-  "version": 10,
+  "version": 9,
   "cmakeMinimumRequired": {
     "major": 3,
     "minor": 31,
     "patch": 0
   },
-  "$comment": "Prometheus CMake Presets",
   "include": [],
   "configurePresets": [
     {

@@ -18,7 +18,7 @@ namespace stringhash_library {
 	void display_component(int component_id);
 	void display_hash(int hash, const char* prepend = nullptr);
 	void add_hash(const std::string str);
-	void add_comment(__int64 key, std::string value, bool force_override = false);
+	void add_comment(__int64 key, const std::string& value, bool force_override = false);
 	void initialize();
 	void save_all();
 }

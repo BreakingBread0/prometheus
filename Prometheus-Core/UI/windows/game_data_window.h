@@ -23,28 +23,6 @@ class game_data_window : public window {
 		return "CLIENTTYPE Unknown (" + std::to_string(input) + ")"; 
 	}
 
-	/*std::string getClientMode(int input) {
-		switch (input) {
-		case 0:
-			return "CLIENTMODE_DEV";
-		case 1:
-			return "CLIENTMODE_WIN";
-		case 2:
-			return "CLIENTMODE_WINLF";
-		}
-		return "CLIENTMODE Unknown (" + std::to_string(input) + ")";
-	}*/
-
-	/*std::string getClientState(int input) {
-		switch (input) {
-		case 0:
-			return "CLIENTSTATE_DEV";
-		case 1:
-			return "CLIENTSTATE_EXT";
-		}
-		return "CLIENTSTATE Unknown (" + std::to_string(input) + ")";
-	}*/
-
 	__int64 __fastcall FLIP_BITS(unsigned __int64 a1)
 	{
 		unsigned __int64 v1; // rdx
@@ -77,23 +55,20 @@ class game_data_window : public window {
 		return "REGION Unknown (" + std::to_string(type) + ")";
 	}
 
-	std::map<__int64, __int64> _mapheaders;
-
-	inline void render() override {
+	void render() override {
 		if (open_window()) {
-			typedef char* (__fastcall* getEngineState_fn)();
-			getEngineState_fn getEngineState = (getEngineState_fn)(globals::gameBase + 0x7d88d0);
+			auto getEngineState = (char* (__fastcall*)())(globals::gameBase + 0x7d88d0);
 			ImGui::Text("Game Engine State: %s (%d)\n", getEngineState(), *(int*)(globals::gameBase + 0x18582ec));
 			ImGui::Text("Last Assertion: %s", globals::gameBase + 0x18b2130);
 
 			int clientType = *(int*)(globals::gameBase + 0x17a16dc);
-			ImGui::Text("Client Type: %s (%d)", getClientType(clientType), clientType);
+			ImGui::Text("Client Type: %s (%d)", getClientType(clientType).c_str(), clientType);
 			int region = *(int*)(globals::gameBase + 0x17a16e4);
-			ImGui::Text("Client Region: %s (%d)", getRegionString(region), region);
+			ImGui::Text("Client Region: %s (%d)", getRegionString(region).c_str(), region);
 			int locale = *(int*)(globals::gameBase + 0x17a16e8);
-			ImGui::Text("Locale: %s (%d)", getLocaleStr(locale), locale);
+			ImGui::Text("Locale: %s (%d)", getLocaleStr(locale).c_str(), locale);
 			int audlocale = *(int*)(globals::gameBase + 0x17a16ec);
-			ImGui::Text("Audio Locale: %s (%d)", getLocaleStr(audlocale), audlocale);
+			ImGui::Text("Audio Locale: %s (%d)", getLocaleStr(audlocale).c_str(), audlocale);
 
 			ImGui::Checkbox("Tabbing Enabled", (bool*)(globals::gameBase + 0x1859dcc));
 
@@ -101,9 +76,9 @@ class game_data_window : public window {
 				hash_exporter::export_hashes();
 			}
 
-			ImGui::Text("");
-			ImGui::Text("");
-			ImGui::Text("");
+			ImGui::NewLine();
+			ImGui::NewLine();
+			ImGui::NewLine();
 			if (ImGui::Button("Test")) {
 				*(__int64*)(globals::gameBase + 0x18af678) = 0x080000000000005B;
 				typedef char* (__fastcall* testcall_fn)(void);
@@ -411,16 +386,6 @@ class game_data_window : public window {
 							printf("Found- replaced\n");
 						}
 					}
-					/*for (auto state : inst->m_nodes) {
-						if (state->graph_node.base.vfptr->GetSTUInfo()->name_hash == STU_NAME::STUStatescriptStateUXHeroSelectScreen) {
-							state->graph_node.base.vfptr = (STUBase_vt*)(globals::gameBase + 0x1509020);
-							auto create_res_cv = (__int64(__fastcall*)(void))(globals::gameBase + 0x746ab0);
-							auto res_cv = create_res_cv();
-							*(__int64*)(res_cv + 0x10) = 0x400000000000001;
-							*(__int64*)((__int64)state + 0x150) = res_cv;
-							printf("Found- replaced 2\n");
-						}
-					}*/
 				}
 				else {
 					imgui_helpers::messageBox("Failed to replace state: Could not find graph", this);

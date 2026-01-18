@@ -3,6 +3,7 @@
 #include "string"
 #include <Windows.h>
 #include <algorithm>
+#include <format>
 
 #define owassert(expr) if (!(expr)) { printf("%s:%d\n", "FAILED ASSERTION:\nAssertion: " #expr "\nAt: " __FILE__, __LINE__); }
 
@@ -201,9 +202,7 @@ namespace globals {
 
 namespace std {
 	inline std::string to_string_hex(int input) {
-		char buf[16];
-		sprintf_s(buf, "%x", input);
-		return buf;
+		return std::format("{:x}", input);
 	}
 }
 
