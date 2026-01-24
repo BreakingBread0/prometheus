@@ -162,6 +162,9 @@ Pro_SetOutput(Prometheus-Core ${DIR_BIN} ${DIR_LIB})
 set_target_properties(Prometheus-Core PROPERTIES OUTPUT_NAME "PrometheusCore")
 target_link_options(Prometheus-Core PRIVATE /ILK:${DIR_LIB}/Prometheus-Core.ilk)
 
+# Dependencies
+target_link_libraries(Prometheus-Generator PRIVATE Prometheus-Generation)
+
 # Packages
 find_package(minhook CONFIG REQUIRED)
 #add_library(minhook)

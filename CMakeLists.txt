@@ -10,6 +10,18 @@ include_directories(external)
 include(CMake/Configure.cmake)
 include(CMake/Version.cmake)
 
+#Atlas
+add_subdirectory(Prometheus-Atlas)
+
+#Atlas-Ida
+add_subdirectory(Prometheus-Atlas/Ida)
+
+##Generation
+add_subdirectory(Prometheus-Generation)
+
+##Generator
+add_subdirectory(Prometheus-Generation/Generator)
+
 #Core
 add_subdirectory(Prometheus-Core)
 
@@ -20,6 +32,3 @@ add_custom_target("Prometheus-Patcher"
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Prometheus-Patcher
         COMMENT "Building patcher..."
 )
-
-#IDA
-add_subdirectory(Prometheus-Typing)

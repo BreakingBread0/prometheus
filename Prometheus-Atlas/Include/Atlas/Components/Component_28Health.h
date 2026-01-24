@@ -5,10 +5,15 @@
 #include "Base/Creator.h"
 
 /**
- *  <b> STUHealthComponentCreator </b>
+ *  <b> STUHealthComponentCreator </b> \n
+ *      Description TBC
+ *
+ *
+ *  \n
  *  \n  Size:           0x38 (56)
  *  \n  Factory:        0xCC3E50
  *  \n  VT:             0x15C5B10
+ *  \n
  */
 class ComponentCreator28_STU_HEALTH_COMPONENT : public ComponentCreator
 {
@@ -18,9 +23,14 @@ class ComponentCreator28_STU_HEALTH_COMPONENT : public ComponentCreator
 };
 
 /**
- *  <b> HealthComponent28 </b>
+ *  <b> HealthComponent28 </b> \n
+ *      Description TBC
+ *
+ *
+ *  \n
  *  \n  Size:           0x490 (1168)
  *  \n  Factory:        0x
  *  \n  VT:             0x
  *  \n  Dependencies:
+ *  \n
  */

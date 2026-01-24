@@ -1,7 +1,7 @@
 // Hazno - 2026
 
 #pragma once
-#include "Common.h"
+#include "Atlas/Common.h"
 
 class Component
 {

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Common.h"
+#include "Atlas/Common.h"
 
 class ComponentCreator
 {

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.31)
 
-message("Prometheus-Typing")
+message("Prometheus-Atlas-IDA")
 
 message(CHECK_START "Finding IDAClang")
 if(NOT DEFINED ENV{IDAPATH})
@@ -20,35 +20,37 @@ endif()
 
 message(CHECK_PASS "Found")
 
-project(Prometheus-Typing
-        DESCRIPTION "Project typing & IDA Til Generation."
+project(Prometheus-Atlas-IDA
+        DESCRIPTION "IDA Til Generation."
         HOMEPAGE_URL "https://github.com/BreakingBread0/prometheus"
         LANGUAGES C CXX)
 
 string(TOLOWER "x86_64-pc-${CMAKE_SYSTEM_NAME}" IDACLANG_TUPLE)
 
-message("Configuring target: Prometheus-Typing with options:")
+message("Configuring target: Prometheus-Atlas-IDA with options:")
 message(STATUS "Using Environments IDAPATH  : '$ENV{IDAPATH}'")
 message(STATUS "Using IDAClang              : '${IDACLANG}'")
 message(STATUS "Target Triple               : '${IDACLANG_TUPLE}'")
 
 #Dummy project, this doesn't actually compile anything. Just fixes ide's being annoying
-add_library(Prometheus-Typing SHARED Include.h Include.cpp)
-set_target_properties(Prometheus-Typing PROPERTIES LINKER_LANGUAGE CXX)
-target_include_directories(Prometheus-Typing PRIVATE ${PROJECT_SOURCE_DIR}/)
+add_library(Prometheus-Atlas-IDA SHARED Include.h Include.cpp)
+set_target_properties(Prometheus-Atlas-IDA PROPERTIES LINKER_LANGUAGE CXX)
+target_include_directories(Prometheus-Atlas-IDA PRIVATE ${PROJECT_SOURCE_DIR}/)
+target_link_libraries(Prometheus-Atlas-IDA PRIVATE Prometheus-Atlas)
 
 #IDA TIL gen
-add_custom_command(TARGET Prometheus-Typing POST_BUILD
+add_custom_command(TARGET Prometheus-Atlas-IDA POST_BUILD
         COMMAND ${IDACLANG}
             -x c++
             -target ${IDACLANG_TUPLE}
             --idaclang-tilname "PrometheusIDA"
             --idaclang-tildesc "Prometheus Overwatch 0.8 Library"
+            --include-directory="${CMAKE_SOURCE_DIR}/Prometheus-Atlas/Include"
             Include.h
         COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/bin/ida"
-        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/Prometheus-Typing/PrometheusIDA.til" "${CMAKE_BINARY_DIR}/bin/ida/PrometheusIDA.til"
-        COMMAND ${CMAKE_COMMAND} -E rm "${CMAKE_SOURCE_DIR}/Prometheus-Typing/PrometheusIDA.til"
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Prometheus-Typing
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/Prometheus-Atlas/Ida/PrometheusIDA.til" "${CMAKE_BINARY_DIR}/bin/ida/PrometheusIDA.til"
+        COMMAND ${CMAKE_COMMAND} -E rm "${CMAKE_SOURCE_DIR}/Prometheus-Atlas/Ida/PrometheusIDA.til"
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Prometheus-Atlas/Ida
         BYPRODUCTS ${CMAKE_BINARY_DIR}/bin/ida/PrometheusIDA.til
         COMMENT "Building IDA TIL..."
 )
