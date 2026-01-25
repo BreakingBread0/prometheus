@@ -1,21 +1,23 @@
-if(!MSVC)
-    message(FATAL_ERROR "Prometheus only supports building with MSVC and MinGW with LLVM on Windows.")
+if(!MinGW OR NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    message(FATAL_ERROR "Prometheus only supports building with MSVC and LLVM MinGW on Windows.")
 endif()
 
-set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<$<CONFIG:Debug,RelWithDebInfo,Release>:ProgramDatabase>")
-set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+add_compile_options("$<$<CONFIG:Debug,RelWithDebInfo,Release>:-gcodeview>")
+set(CMAKE_SHARED_LINKER_FLAGS "-shared-libgcc -rtlib=compiler-rt")
 set(CMAKE_SYSTEM_NAME Windows)
 
 function(Pro_ApplyPlatform TargetName)
     set(TARGET_COMPILE_OPTIONS
-            /W0 /Gy /Oi /GS- /std:c++20 /Zc:preprocessor /permissive-
-            $<$<CONFIG:Release>:/Zi>
-            $<$<CONFIG:Debug>:/EHa- /EHs- /EHc- /EHr->
+            -w -ffunction-sections -fdata-sections -fbuiltin
+            -fno-stack-protector -std=c++20 -fms-extensions
+            $<$<CONFIG:Release>:-gcodeview>
+            $<$<CONFIG:Debug>:-fno-exceptions -fno-asynchronous-unwind-tables>
     )
 
     set(TARGET_COMPILE_DEFS
-            _WINDOWS _WINSOCKAPI_ prometheus_EXPORTS NOGDI _USRDLL
+            _WINDOWS _WIN32 _WINSOCKAPI_ prometheus_EXPORTS NOGDI _USRDLL
             SPDLOG_FMT_EXTERNAL IMGUI_DEFINE_MATH_OPERATORS IMGUI_USE_WCHAR32
+            WINVER=0x0A00 _WIN32_WINNT=0x0A00
             $<$<CONFIG:Release>:WIN32_LEAN_AND_MEAN NDEBUG _CRT_SECURE_NO_WARNINGS>
     )
 
@@ -24,7 +26,7 @@ function(Pro_ApplyPlatform TargetName)
     )
 
     set(TARGET_LINK_OPTIONS
-            /DLL /DEBUG
+            -shared -Wl,--gc-sections
     )
 
     message("Configuring target: ${TargetName} with options:")

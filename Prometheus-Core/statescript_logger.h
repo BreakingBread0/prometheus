@@ -21,22 +21,22 @@ public:
     };
 
     static void Initialize() {
-        MH_CreateHook((PVOID)(globals::gameBase + 0xf4f600), TickScript, (PVOID*)&TickScript_orig);
+        MH_CreateHook((PVOID)(globals::gameBase + 0xf4f600), (LPVOID)TickScript, (PVOID*)&TickScript_orig);
         MH_EnableHook((PVOID)(globals::gameBase + 0xf4f600));
 
-        MH_CreateHook((PVOID)(globals::gameBase + 0xd146a0), OnNodeStateEntry, (PVOID*)&StateEntry_orig);
+        MH_CreateHook((PVOID)(globals::gameBase + 0xd146a0), (LPVOID)OnNodeStateEntry, (PVOID*)&StateEntry_orig);
         MH_EnableHook((PVOID)(globals::gameBase + 0xd146a0));
 
-        MH_CreateHook((PVOID)(globals::gameBase + 0xd14850), OnNodeStateFinished, (PVOID*)&StateFinish_orig);
+        MH_CreateHook((PVOID)(globals::gameBase + 0xd14850), (LPVOID)OnNodeStateFinished, (PVOID*)&StateFinish_orig);
         MH_EnableHook((PVOID)(globals::gameBase + 0xd14850));
 
-        MH_CreateHook((PVOID)(globals::gameBase + 0xd14a20), OnNodeActionEntry, (PVOID*)&ActionEntry_orig);
+        MH_CreateHook((PVOID)(globals::gameBase + 0xd14a20), (LPVOID)OnNodeActionEntry, (PVOID*)&ActionEntry_orig);
         MH_EnableHook((PVOID)(globals::gameBase + 0xd14a20));
 
-        MH_CreateHook((PVOID)(globals::gameBase + 0xf47800), OnScriptEntry, (PVOID*)&ScriptEntry_orig);
+        MH_CreateHook((PVOID)(globals::gameBase + 0xf47800), (LPVOID)OnScriptEntry, (PVOID*)&ScriptEntry_orig);
         MH_EnableHook((PVOID)(globals::gameBase + 0xf47800));
 
-        MH_CreateHook((PVOID)(globals::gameBase + 0xd73a80), Deallocate, (PVOID*)&Deallocate_orig);
+        MH_CreateHook((PVOID)(globals::gameBase + 0xd73a80), (LPVOID)Deallocate, (PVOID*)&Deallocate_orig);
         MH_EnableHook((PVOID)(globals::gameBase + 0xd73a80));
     }
 

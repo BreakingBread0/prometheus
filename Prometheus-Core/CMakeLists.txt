@@ -160,7 +160,9 @@ Pro_SetOutput(Prometheus-Core ${DIR_BIN} ${DIR_LIB})
 
 # Dll Config
 set_target_properties(Prometheus-Core PROPERTIES OUTPUT_NAME "PrometheusCore")
-target_link_options(Prometheus-Core PRIVATE /ILK:${DIR_LIB}/Prometheus-Core.ilk)
+if(MSVC)
+    target_link_options(Prometheus-Core PRIVATE /ILK:${DIR_LIB}/Prometheus-Core.ilk)
+endif ()
 
 # Dependencies
 target_link_libraries(Prometheus-Generator PRIVATE Prometheus-Generation)
@@ -190,6 +192,8 @@ target_link_libraries(Prometheus-Core PRIVATE fmt::fmt-header-only)
 
 find_package(spdlog CONFIG REQUIRED)
 target_link_libraries(Prometheus-Core PRIVATE spdlog::spdlog_header_only)
+
+target_link_libraries(Prometheus-Core PRIVATE d3dcompiler dwmapi)
 #get_target_property(IMGUI_INCLUDE_DIRS imgui::imgui
 #        INTERFACE_INCLUDE_DIRECTORIES
 #)

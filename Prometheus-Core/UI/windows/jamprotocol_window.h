@@ -34,9 +34,9 @@ public:
 	}
 
 	inline void preStartInitialize() override {
-		MH_CreateHook((void*)(globals::gameBase + 0x8a27d0), addJamProtocolHook, (void**)(&addJamProtocolPool_orig));
+		MH_CreateHook((void*)(globals::gameBase + 0x8a27d0), (LPVOID)addJamProtocolHook, (void**)(&addJamProtocolPool_orig));
 		MH_EnableHook((void*)(globals::gameBase + 0x8a27d0));
-		MH_CreateHook((void*)(globals::gameBase + 0xf25ba0), associatePoolHook, (void**)(&associatePool_orig));
+		MH_CreateHook((void*)(globals::gameBase + 0xf25ba0), (LPVOID)associatePoolHook, (void**)(&associatePool_orig));
 		MH_EnableHook((void*)(globals::gameBase + 0xf25ba0));
 	}
 

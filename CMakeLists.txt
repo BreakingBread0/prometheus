@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.31)
-include(CMake/Platform/${PRO_PLATFORM}.cmake)
 
 project(Prometheus
         DESCRIPTION "Research and Reverse-Engineering project of Overwatch!"
@@ -7,6 +6,7 @@ project(Prometheus
 
 include_directories(external)
 
+include(CMake/Platform/${PRO_PLATFORM}.cmake)
 include(CMake/Configure.cmake)
 include(CMake/Version.cmake)
 
