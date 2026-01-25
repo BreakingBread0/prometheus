@@ -3,7 +3,7 @@ if(!MinGW OR NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 add_compile_options("$<$<CONFIG:Debug,RelWithDebInfo,Release>:-gcodeview>")
-set(CMAKE_SHARED_LINKER_FLAGS "-shared-libgcc -rtlib=compiler-rt")
+set(CMAKE_SHARED_LINKER_FLAGS "-static-libgcc -static-libstdc++")
 set(CMAKE_SYSTEM_NAME Windows)
 
 function(Pro_ApplyPlatform TargetName)
@@ -17,7 +17,7 @@ function(Pro_ApplyPlatform TargetName)
     set(TARGET_COMPILE_DEFS
             _WINDOWS _WIN32 _WINSOCKAPI_ prometheus_EXPORTS NOGDI _USRDLL
             SPDLOG_FMT_EXTERNAL IMGUI_DEFINE_MATH_OPERATORS IMGUI_USE_WCHAR32
-            WINVER=0x0A00 _WIN32_WINNT=0x0A00
+            WINVER=0x0601 _WIN32_WINNT=0x0601
             $<$<CONFIG:Release>:WIN32_LEAN_AND_MEAN NDEBUG _CRT_SECURE_NO_WARNINGS>
     )
 

@@ -62,7 +62,7 @@ class CVD_Edit : public window {
                         _out_type.value = parsed;
                     }
                     else if (_out_type.type == StatescriptPrimitive_Type::StatescriptPrimitive_FLT) {
-                        float value = _strtof_l(_value, nullptr, nullptr);
+                        float value = strtof(_value, nullptr);
                         if (errno == EINVAL) {
                             return;
                         }
@@ -71,14 +71,14 @@ class CVD_Edit : public window {
                 }
                 if (_out_type.type == StatescriptPrimitive_Type::StatescriptPrimitive_VEC3) {
                     if (ImGui::InputText("Value2", _value2, 256)) {
-                        float value = _strtof_l(_value2, nullptr, nullptr);
+                        float value = strtof(_value2, nullptr);
                         if (errno == EINVAL) {
                             return;
                         }
                         *(float*)((__int64)&_out_type.value + 4) = value;
                     }
                     if (ImGui::InputText("Value3", _value3, 256)) {
-                        float value = _strtof_l(_value3, nullptr, nullptr);
+                        float value = strtof(_value3, nullptr);
                         if (errno == EINVAL) {
                             return;
                         }
