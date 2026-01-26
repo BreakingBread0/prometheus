@@ -828,8 +828,8 @@ void __cdecl StartHook(void*) {
 
     unsigned char verify[] = { 0x48, 0x83, 0xEC, 0x28, 0xE8, 0xFF, 0xD8, 0x00, 0x00 };
     for (int i = 0; i < sizeof(verify); i++) {
-        if (*(char*)(globals::gameBase + Start_Addr + i) != verify[i]) {
-            printf(".text decryption failed!\n");
+        if (*(unsigned char*)(globals::gameBase + Start_Addr + i) != verify[i]) {
+            printf(".text decryption failed! expected: %02x got: %02x at offset %x\n", verify[i], *(char*)(globals::gameBase + Start_Addr + i), i);
             system("pause");
         }
     }
