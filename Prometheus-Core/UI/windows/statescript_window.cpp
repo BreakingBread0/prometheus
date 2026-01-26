@@ -140,7 +140,7 @@ void statescript_window::render() {
             }
             print_node_location(node);
             ImGui::SameLine();
-            imgui_helpers::display_type(stu->name_hash, false, true, true);
+            imgui_helpers::display_type(stu->Hash, false, true, true);
             if (node->m_isState && node->graph_node.base.vfptr->rtti.base.rtti_assignable_to((__int64)node, reinterpret_cast<InheritanceInfo*>(globals::gameBase + STU_RTTI::STUStatescriptStateUXBase))) {
                 ImGui::PushFont(imgui_helpers::BoldFont);
                 ImGui::SameLine();
@@ -200,13 +200,13 @@ void statescript_window::render() {
                 auto plug_type = out_node.second.front()->base.to_editable().struct_info;
                 bool plug_has_color = false;
                 ImNodes::PushColorStyle(ImNodesCol_LinkSelected, IM_COL32(180, 180, 180, 255));
-                if (plug_type->assignable_to_hashes({ STU_NAME::Subgraph_Plug_, STU_NAME::Subgraph_Plug_2_ })) {
+                if (plug_type->AssignableToHashes({ STU_NAME::Subgraph_Plug_, STU_NAME::Subgraph_Plug_2_ })) {
                     plug_has_color = true;
                     int col = IM_COL32(110, 70, 70, 255);
-                    if (plug_type->assignable_to_hashes({ STU_NAME::ClientOnly_Subgraph_Plug_, STU_NAME::ClientOnly_Subgraph_Plug_2_ })) {
+                    if (plug_type->AssignableToHashes({ STU_NAME::ClientOnly_Subgraph_Plug_, STU_NAME::ClientOnly_Subgraph_Plug_2_ })) {
                         col = IM_COL32(0, 120, 0, 255);
                     }
-                    else if (plug_type->assignable_to_hashes({STU_NAME::ServerOnly_Subgraph_Plug_})) {
+                    else if (plug_type->AssignableToHashes({STU_NAME::ServerOnly_Subgraph_Plug_})) {
                         col = IM_COL32(255, 20, 220, 255);
                     }
                     ImNodes::PushColorStyle(ImNodesCol_Link, col);
@@ -264,15 +264,14 @@ void statescript_window::render() {
                 }
             }
             if (_display_settings.stu_args) {
-                for (auto arg_info : *node->graph_node.base.vfptr->GetSTUInfo()) {
-                    if (arg_info.first->name_hash == STU_NAME::STUStatescriptState ||
-                        arg_info.first->name_hash == STU_NAME::STUStatescriptAction)
+                for (auto [info, arg] : node->graph_node.base.vfptr->GetSTUInfo()->RangeArgs()) {
+                    if (info->Hash == STU_NAME::STUStatescriptState ||
+                        info->Hash == STU_NAME::STUStatescriptAction)
                         break;
-                    auto arg = arg_info.second;
-                    if (arg->constraint->get_type_flag() == STU_ConstraintType_Object) {
-                        auto arg_typ = GetSTUInfoByHash(arg->constraint->get_stu_type());
-                        if (arg_typ && arg_typ->assignable_to_hash(STU_NAME::STUConfigVar)) {
-                            STUConfigVar* cv = *(STUConfigVar**)((__int64)node + arg->offset);
+                    if (arg->Constraint->ToConstraintType() == STU_ConstraintType_Object) {
+                        auto arg_typ = STURegistry::Get()->GetSTUInfoByHash(arg->Constraint->GetSTUType());
+                        if (arg_typ && arg_typ->AssignableToHash(STU_NAME::STUConfigVar)) {
+                            STUConfigVar* cv = *(STUConfigVar**)((__int64)node + arg->Offset);
                             if (cv) {
                                 ImGui::PushID(cv);
                                 imgui_helpers::display_cv(cv, _curr_instance, arg, false);

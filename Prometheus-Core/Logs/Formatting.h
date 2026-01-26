@@ -4,8 +4,8 @@
 
 #include <fmt/format.h>
 
-#include "Utility/Modules.h"
 #include "idadefs.h"
+#include "AtlasExt/Utility/Modules.h"
 
 //
 // Avoid including this file directly, include "Logs.h" instead.
@@ -64,7 +64,7 @@ namespace fmt
                 }
 
                 if (show_module) {
-                    if (const auto m = Utility::Modules::FindModuleForAddress(addr)) {
+                    if (const auto m = Atlas::Utility::Modules::FindModuleForAddress(addr)) {
                         end = format_to(out, " ({}+0x{:08X})", m->Name(), m->RVA(addr));
                     }
                 }

@@ -13,6 +13,7 @@ set(DIR_BIN ${CMAKE_BINARY_DIR}/bin/core)
 set(DIR_LIB ${CMAKE_BINARY_DIR}/lib/core)
 
 add_library(Prometheus-Core SHARED
+        $<TARGET_OBJECTS:Prometheus-Atlas-Extensions-Obj>
         "Common.h"
         "entity_admin.h"
         "ExceptionFormatter.h"
@@ -145,7 +146,6 @@ add_library(Prometheus-Core SHARED
         "UI/windows/statescript_registry.cpp"
         "Logs/Logs.cpp"
         "Logs/Detail.cpp"
-        "Utility/Modules.cpp"
         "Utility/Exception.cpp"
         "UI/imgui_helpers.cpp"
         "UI/imgui_helpers.h"
@@ -165,7 +165,9 @@ if(MSVC)
 endif ()
 
 # Dependencies
-target_link_libraries(Prometheus-Generator PRIVATE Prometheus-Generation)
+target_link_libraries(Prometheus-Core PRIVATE Prometheus-Atlas-Extensions)
+
+target_link_libraries(Prometheus-Core PRIVATE Prometheus-Generation)
 
 # Packages
 find_package(minhook CONFIG REQUIRED)

@@ -1,4 +1,5 @@
-﻿#include "stu_explorer.h"
+﻿#include "Atlas/STU/RTTI/STURegistry.h"
+#include "stu_explorer.h"
 #include "STU_Editable.h"
 #include "stu_resources.h"
 
@@ -67,25 +68,25 @@ inline void stu_explorer::render() {
 		if (_current_item.cls) {
 
 			auto instance = _current_item.cls;
-			STU_Object obj(instance, IsBadReadPtr((void*)_current_item.current_instance, _current_item.cls->instance_size) ? nullptr : (void*)_current_item.current_instance);
+			STU_Object obj(instance, IsBadReadPtr((void*)_current_item.current_instance, _current_item.cls->InstanceSize) ? nullptr : (void*)_current_item.current_instance);
 			instance = (obj = obj.get_runtime_root()).struct_info;
 			int children = 0;
-			auto child = _current_item.cls->child;
+			auto child = _current_item.cls->Child;
 			while (child) {
 				children++;
-				child = child->sibling;
+				child = child->Sibling;
 			}
-			ImGui::Text("Arguments (top): %d - Size: %x - Children %d - Hash: ", _current_item.cls->argument_count, _current_item.cls->instance_size, children);
+			ImGui::Text("Arguments (top): %d - Size: %x - Children %d - Hash: ", _current_item.cls->ArgsCount, _current_item.cls->InstanceSize, children);
 			ImGui::SameLine();
 			while (instance) {
 				//__try {
-				imgui_helpers::display_type(instance->name_hash, true, true, true);
+				imgui_helpers::display_type(instance->Hash, true, true, true);
 				if (render_table()) {
 					render_stu(obj);
 					ImGui::EndTable();
 				}
 
-				if (instance->base_stu) {
+				if (instance->Parent) {
 					ImGui::Text("Next:");
 					ImGui::SameLine();
 				}
@@ -93,7 +94,7 @@ inline void stu_explorer::render() {
 				__except (EXCEPTION_EXECUTE_HANDLER) {
 					ImGui::Text("Exception while rendering");
 				}*/
-				obj = STU_Object(instance = instance->base_stu, obj.value);
+				obj = STU_Object(instance = instance->Parent, obj.value);
 			}
 		}
 	}
@@ -118,27 +119,30 @@ void stu_explorer::render_resref(STUResourceReference* ref) {
 }
 
 void stu_explorer::render_stu(STU_Object value) {
-	for (int i = 0; i < value.struct_info->argument_count; i++) {
+	const auto reg = STURegistry::Get();
+
+	for (int i = 0; i < value.struct_info->ArgsCount; i++) {
 		ImGui::PushID(value.struct_info);
-		auto arg = &value.struct_info->arguments[i];
-		auto type = arg->constraint->get_type_flag();
-		auto arg_type_hash = arg->constraint->get_stu_type();
-		ImGui::PushID(arg->name_hash);
+		auto arg = &value.struct_info->Args[i];
+		auto type = arg->Constraint->ToConstraintType();
+		auto arg_type_hash = arg->Constraint->GetSTUType();
+		ImGui::PushID(arg->Hash);
 		ImGui::TableNextRow();
 
 		ImGui::TableNextColumn();
-		imgui_helpers::display_type(arg->name_hash, false, true, false);
+		imgui_helpers::display_type(arg->Hash, false, true, false);
 
 		ImGui::TableNextColumn();
-		bool* expand_list = ImGui::GetStateStorage()->GetBoolRef(arg->name_hash, false);
+		bool* expand_list = ImGui::GetStateStorage()->GetBoolRef(arg->Hash, false);
 		if (value.valid()) {
-			if (arg->constraint->is_list()) {
-				auto list = (STUBullshitListFull<__int64>*)((__int64)value.value + arg->offset);
+
+			if (arg->Constraint->IsList()) {
+				auto list = (STUBullshitListFull<__int64>*)((__int64)value.value + arg->Offset);
 				if (list->valid()) {
 					if (imgui_helpers::TooltipButton(EMOJI_FORWARD, "Follow without address")) {
-						navigate_to(GetSTUInfoByHash(arg_type_hash), 0, 0);
+						navigate_to(reg->GetSTUInfoByHash(arg_type_hash), 0, 0);
 						auto& old = _history.back();
-						old.followed = arg->name_hash;
+						old.followed = arg->Hash;
 					}
 					ImGui::SameLine();
 					ImGui::Text("Count: %d", list->count());
@@ -153,9 +157,9 @@ void stu_explorer::render_stu(STU_Object value) {
 				auto list = value.get_argument_map(arg);
 				if (list.valid()) {
 					if (imgui_helpers::TooltipButton(EMOJI_FORWARD, "Follow without address")) {
-						navigate_to(GetSTUInfoByHash(arg_type_hash), 0, 0);
+						navigate_to(reg->GetSTUInfoByHash(arg_type_hash), 0, 0);
 						auto& old = _history.back();
-						old.followed = arg->name_hash;
+						old.followed = arg->Hash;
 					}
 					ImGui::SameLine();
 					ImGui::Text("Count: %d", list.count());
@@ -179,7 +183,7 @@ void stu_explorer::render_stu(STU_Object value) {
 					if (imgui_helpers::TooltipButton(EMOJI_FORWARD, "Follow")) {
 						navigate_to(object.struct_info, (__int64)object.value, _current_item.ss);
 						auto& old = _history.back();
-						old.followed = arg->name_hash;
+						old.followed = arg->Hash;
 					}
 					if (!object.value) {
 						ImGui::SameLine();
@@ -202,23 +206,23 @@ void stu_explorer::render_stu(STU_Object value) {
 			}
 		}
 		else {
-			if (type == STU_ConstraintType_Object || type == STU_ConstraintType_InlinedObject || arg->constraint->is_list()) {
+			if (type == STU_ConstraintType_Object || type == STU_ConstraintType_InlinedObject || arg->Constraint->IsList()) {
 				if (imgui_helpers::TooltipButton(EMOJI_FORWARD, "Follow")) {
-					navigate_to(GetSTUInfoByHash(arg_type_hash), 0, 0);
+					navigate_to(reg->GetSTUInfoByHash(arg_type_hash), 0, 0);
 					auto& old = _history.back();
-					old.followed = arg->name_hash;
+					old.followed = arg->Hash;
 				}
 			}
 		}
 
 		ImGui::TableNextColumn();
-		ImGui::TextUnformatted(STU_ConstraintType_ToString(type).data());
+		ImGui::TextUnformatted(STUConstraintType_ToString(type));
 
 		ImGui::TableNextColumn();
 		imgui_helpers::display_type(arg_type_hash, true, true, false);
 
 		ImGui::TableNextColumn();
-		ImGui::Text("%x", arg->offset);
+		ImGui::Text("%x", arg->Offset);
 
 		ImGui::PopID();
 		ImGui::PopID();
@@ -227,7 +231,7 @@ void stu_explorer::render_stu(STU_Object value) {
 			ImGui::EndTable();
 
 			ImGui::PushID(value.struct_info);
-			ImGui::PushID(arg->name_hash);
+			ImGui::PushID(arg->Hash);
 			switch (type) {
 			case STU_ConstraintType_BSList_InlinedObject:
 			case STU_ConstraintType_BSList_Object: {
@@ -240,12 +244,12 @@ void stu_explorer::render_stu(STU_Object value) {
 					ImGui::SameLine();
 					display_addr((__int64)item.value);
 					ImGui::SameLine();
-					imgui_helpers::display_type(item.get_runtime_root().struct_info->name_hash, true, true, false);
+					imgui_helpers::display_type(item.get_runtime_root().struct_info->Hash, true, true, false);
 					ImGui::SameLine();
 					if (imgui_helpers::TooltipButton(EMOJI_FORWARD, "Follow")) {
 						navigate_to(item.struct_info, (__int64)item.value, _current_item.ss);
 						auto& old = _history.back();
-						old.followed = arg->name_hash;
+						old.followed = arg->Hash;
 						old.followed_index = i;
 					}
 					ImGui::PopID();
@@ -291,12 +295,12 @@ void stu_explorer::render_stu(STU_Object value) {
 					imgui_helpers::display_type(item.first, false, true, true);
 					display_addr((__int64)item.second.value);
 					ImGui::SameLine();
-					imgui_helpers::display_type(item.second.get_runtime_root().struct_info->name_hash, true, true, false);
+					imgui_helpers::display_type(item.second.get_runtime_root().struct_info->Hash, true, true, false);
 					ImGui::SameLine();
 					if (imgui_helpers::TooltipButton(EMOJI_FORWARD, "Follow")) {
 						navigate_to(item.second.struct_info, (__int64)item.second.value, _current_item.ss);
 						auto& old = _history.back();
-						old.followed = arg->name_hash;
+						old.followed = arg->Hash;
 						old.followed_index = i;
 					}
 					ImGui::PopID();

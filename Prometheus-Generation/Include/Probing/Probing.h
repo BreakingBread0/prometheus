@@ -3,7 +3,7 @@
 #pragma once
 #include "Atlas/Common.h"
 
-namespace Probing
+namespace Generation::Probing
 {
     struct ProbeData_STUProbe
     {
@@ -23,5 +23,5 @@ namespace Probing
         ProbeData_STUProbe STU[];
     };
 
-    //ProbeResult GenerateResult();
+    ProbeResult ProbeData();
 }

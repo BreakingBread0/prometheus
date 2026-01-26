@@ -12,6 +12,11 @@
 #include <stdexcept>
 #include "game.h"
 
+#include "Atlas/STU/RTTI/STUInfo.h"
+#include "Atlas/STU/RTTI/STURegistry.h"
+
+using namespace Atlas::STU::RTTI;
+
 //rtti addresses
 namespace STU_RTTI {
 	//base Types
@@ -148,59 +153,8 @@ namespace STU_NAME {
 	const uint STUIdentifier = 0x34D7F9EE;
 };
 
-enum STUConstraintType {
-	STU_ConstraintType_Primitive = 0x0,
-	STU_ConstraintType_BSList_Primitive = 0x1, // List of values
-	STU_ConstraintType_Object = 0x2,
-	STU_ConstraintType_BSList_Object = 0x3,
-	STU_ConstraintType_InlinedObject = 0x4,
-	STU_ConstraintType_BSList_InlinedObject = 0x5, // List of values, not pointers
-	STU_ConstraintType_Map = 0x7,
-	STU_ConstraintType_Enum = 0x8, //has a size of 4
-	STU_ConstraintType_BSList_Enum = 0x9,
-	STU_ConstraintType_NonSTUResourceRef = 0xA,
-	STU_ConstraintType_BSList_NonSTUResourceRef = 0xB,
-	STU_ConstraintType_ResourceRef = 0xC,
-	STU_ConstraintType_BSList_ResourceRef = 0xD, //inlined list von resourceref
-};
-
-inline std::string STU_ConstraintType_ToString(STUConstraintType type) {
-	switch (type) {
-	case STU_ConstraintType_Primitive:
-		return "Primitive";
-	case STU_ConstraintType_BSList_Primitive:
-		return "List: Primitive";
-	case STU_ConstraintType_Object:
-		return "Object";
-	case STU_ConstraintType_BSList_Object:
-		return "List: Object";
-	case STU_ConstraintType_InlinedObject:
-		return "InlinedObject";
-	case STU_ConstraintType_BSList_InlinedObject:
-		return "List: InlinedObject";
-	case STU_ConstraintType_Map:
-		return "Map";
-	case STU_ConstraintType_Enum:
-		return "Enum";
-	case STU_ConstraintType_BSList_Enum:
-		return "List: Enum";
-	case STU_ConstraintType_NonSTUResourceRef:
-		return "NonSTUResourceRef";
-	case STU_ConstraintType_BSList_NonSTUResourceRef:
-		return "List: NonSTUResourceRef";
-	case STU_ConstraintType_ResourceRef:
-		return "ResourceRef";
-	case STU_ConstraintType_BSList_ResourceRef:
-		return "List: ResourceRef";
-	default:
-		return "Unknown: " + std::to_string(type);
-	}
-}
 
 struct string_rep;
-struct InheritanceInfo;
-struct STUInfo;
-struct STUArgumentInfo;
 struct StatescriptStateWait;
 struct STUEntityDefinition;
 struct STUBase_vt;
@@ -454,40 +408,6 @@ struct STUBase {
 	STU_Object to_editable();
 };
 
-struct STUConstraint;
-struct STUConstrant_vt {
-	union {
-		STRUCT_PLACE_CUSTOM(get_namehash, 0x30, __int64(*get_stu_name_hash_with_x200000000)(STUConstraint*));
-		STRUCT_PLACE_CUSTOM(get_name, 0x60, const char* (*get_name)(STUConstraint*));
-	};
-};
-
-struct STUConstraint {
-	STUConstrant_vt* vfptr;
-
-	__int64 get_stu_type() {
-		return vfptr->get_stu_name_hash_with_x200000000(this) & 0xFFFFFFFF;
-	}
-
-	STUConstraintType get_type_flag() {
-		return (STUConstraintType)((vfptr->get_stu_name_hash_with_x200000000(this) >> 32) & 0xFFFFFFFF);
-	}
-
-	bool is_primitive() {
-		return get_type_flag() == STU_ConstraintType_Primitive && STU_NAME::Primitive::_all.find(get_stu_type()) != STU_NAME::Primitive::_all.end();
-	}
-
-	bool is_list() {
-		auto type = get_type_flag();
-		return
-			type == STU_ConstraintType_BSList_Primitive ||
-			type == STU_ConstraintType_BSList_Object ||
-			type == STU_ConstraintType_BSList_InlinedObject ||
-			type == STU_ConstraintType_BSList_Enum ||
-			type == STU_ConstraintType_BSList_ResourceRef ||
-			type == STU_ConstraintType_BSList_NonSTUResourceRef;
-	}
-};
 
 struct STUEnumValueDefinition {
 	char* value_name;
@@ -528,178 +448,6 @@ inline STUEnumDefinition* STUFindEnum(uint32 hash) {
 	}
 	return nullptr;
 }
-
-/* 490 */
-//many field names are still unknown
-//and many also seem to be unions :(
-struct STUArgumentInfo
-{
-	union {
-		char* name;
-		STRUCT_MIN_SIZE(0xA0);
-		STRUCT_PLACE(uint, name_hash, 8);
-		STRUCT_PLACE(int, offset, 0xc);
-		STRUCT_PLACE(STUConstraint*, constraint, 0x10);
-		STRUCT_PLACE(__int32, field_18, 0x18);
-		STRUCT_PLACE(__int32, field_1C, 0x1c);
-		STRUCT_PLACE(__int64, field_20, 0x20);
-		STRUCT_PLACE(__int32, doesnt_need_resetvalue, 0x28);
-		STRUCT_PLACE(__int32, field_2C, 0x2C);
-		STRUCT_PLACE(__int64, field_30, 0x30);
-		STRUCT_PLACE(__int64, default_value_mby, 0x38);
-		STRUCT_PLACE(__int64, field_40, 0x40);
-		STRUCT_PLACE(__int64, field_48, 0x48);
-		STRUCT_PLACE(__int32, field_50, 0x50);
-		STRUCT_PLACE(__int32, field_54, 0x54);
-
-		STRUCT_PLACE(__int64, field_60, 0x60);
-		STRUCT_PLACE(__int64, field_68, 0x68);
-
-		STRUCT_PLACE(__int32, field_70, 0x70);
-		STRUCT_PLACE(__int32, field_74, 0x74);
-		STRUCT_PLACE(__int32, field_78, 0x78);
-		STRUCT_PLACE(__int32, field_7c, 0x7c);
-		STRUCT_PLACE(__int32, field_80, 0x80);
-		STRUCT_PLACE(__int32, field_84, 0x84);
-		STRUCT_PLACE(__int32, field_88, 0x88);
-	};
-};
-
-/* 434 */
-struct STUInfo
-{
-	union {
-		char* name_str;
-		STRUCT_PLACE(InheritanceInfo*, rtti_info, 8);
-		STRUCT_PLACE(STUInfo*, child, 0x10); //start of siblings, stu's that all have the same base_stu
-		STRUCT_PLACE(STUInfo*, sibling, 0x18); //next item with same base_stu
-		STRUCT_PLACE(STUInfo*, base_stu, 0x20);
-		STRUCT_PLACE(STUArgumentInfo*, arguments, 0x28);
-		STRUCT_PLACE(int, argument_count, 0x54);
-		STRUCT_PLACE(uint, name_hash, 0x50);
-		STRUCT_PLACE(int, instance_size, 0x5C);
-		STRUCT_PLACE_CUSTOM(create_inst_fn, 0x40, STUBase<STUBase_vt>* (*create_instance_fn)());
-		STRUCT_PLACE_CUSTOM(clear_instance_fn, 0x48, STUBase<STUBase_vt>*(*clear_instance_fn)(__int64));
-		STRUCT_PLACE(int, is_array_if_0, 0x58);
-	};
-
-	struct ArgumentIterator {
-	public:
-		using iterator_category = std::forward_iterator_tag;
-		using value_type = std::pair<STUInfo*, STUArgumentInfo*>;
-		using difference_type = std::ptrdiff_t;
-
-		ArgumentIterator(STUInfo* info) :
-			_info(info),
-			_include_parents(true),
-			_current_pos(-1) {
-			this->operator++();
-		}
-		ArgumentIterator() = default;
-
-		ArgumentIterator& operator++() {
-			_current_pos++;
-			if (!_info)
-				return *this;
-			if (_info->argument_count <= _current_pos) {
-				_info = _include_parents ? _info->base_stu : nullptr;
-				_current_pos = -1;
-				return this->operator++();
-			}
-			return *this;
-		}
-
-		ArgumentIterator operator++(int) {
-			ArgumentIterator tmp = *this;
-			++(*this);
-			return tmp;
-		}
-
-		bool operator==(const ArgumentIterator& it) const {
-			return this->_current_pos == it._current_pos && this->_info == it._info && this->_include_parents == it._include_parents;
-		}
-
-		value_type operator*() const {
-			if (!_info)
-				throw std::out_of_range("Empty iterator called!");
-			if (_info->argument_count <= _current_pos)
-				throw std::out_of_range("Iterator called on invalid position!");
-			return { _info, &_info->arguments[_current_pos] };
-		}
-	private:
-		STUInfo* _info;
-		int _current_pos;
-		bool _include_parents;
-	};
-
-	ArgumentIterator begin() {
-		return ArgumentIterator(this);
-	}
-	ArgumentIterator end() {
-		return ArgumentIterator(nullptr);
-	}
-
-	bool assignable_to_hash(__int64 assign) {
-		STUInfo* stu = this;
-		while (stu) {
-			if (stu->name_hash == assign)
-				return true;
-			stu = stu->base_stu;
-		}
-		return false;
-	}
-
-	bool assignable_to_hashes(std::initializer_list<__int64> assign) {
-		for (auto hash : assign) {
-			if (assignable_to_hash(hash))
-				return true;
-		}
-		return false;
-	}
-
-	//rva
-	bool assignable_to_rtti(__int64 assign) {
-		STUInfo* stu = this;
-		while (stu) {
-			if ((__int64)stu->rtti_info - globals::gameBase == assign)
-				return true;
-			stu = stu->base_stu;
-		}
-		return false;
-	}
-
-	bool assignable_to_rtti(InheritanceInfo* rtti) {
-		STUInfo* stu = this;
-		while (stu) {
-			if (stu->rtti_info == rtti)
-				return true;
-			stu = stu->base_stu;
-		}
-		return false;
-	}
-
-	STUArgumentInfo* argumentByHash(uint hash, bool search_parents = true) {
-		if (search_parents) {
-			for (auto arg : *this) {
-				if (arg.second->name_hash == hash)
-					return arg.second;
-			}
-		}
-		else {
-			for (int i = 0; i < argument_count; i++) {
-				if (arguments[i].name_hash == hash)
-					return &arguments[i];
-			}
-		}
-		return nullptr;
-	}
-};
-
-struct STURegistry
-{
-	STURegistry* next;
-	STUInfo* info;
-};
 
 struct STUResourceReference {
 	MisalignedResourceLoadEntry* resource_load_entry;
@@ -772,20 +520,6 @@ struct STUResourceReference {
 //		STRUCT_PLACE(STUResourceReference<__int64>, stu_progresstion_unlocks, 0x110)
 //	};
 //};
-
-inline STURegistry* GetSTURegistry() {
-	return *(STURegistry**)(globals::gameBase + 0x18f74e0);
-}
-
-inline STUInfo* GetSTUInfoByHash(int hash) {
-	STURegistry* header = GetSTURegistry();
-	while (header) {
-		if (header->info->name_hash == hash)
-			return header->info;
-		header = header->next;
-	}
-	return nullptr;
-}
 
 //can return empty, not a resload-struct but getting already loaded resource ptr
 inline __int64 try_load_resource(__int64 stu_id) {

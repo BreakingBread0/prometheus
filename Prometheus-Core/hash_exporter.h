@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include "stringhash_library.h"
+#include "Atlas/STU/RTTI/STURegistry.h"
 
 class hash_exporter {
 public:
@@ -16,13 +17,13 @@ public:
 		}
 		out_file << std::hex;
 
-		STURegistry* reg = GetSTURegistry();
+		STURegistry* reg = STURegistry::Get();
 		while (reg) {
-			out_file << std::format("{:08x}", reg->info->name_hash) << ":00000000" << std::endl;
-			for (int i = 0; i < reg->info->argument_count; i++) {
-				out_file << std::format("{:08x}", reg->info->arguments[i].name_hash) << ":00000000" << std::endl;
+			out_file << std::format("{:08x}", reg->Info->Hash) << ":00000000" << std::endl;
+			for (int i = 0; i < reg->Info->ArgsCount; i++) {
+				out_file << std::format("{:08x}", reg->Info->Args[i].Hash) << ":00000000" << std::endl;
 			}
-			reg = reg->next;
+			reg = reg->Next;
 		}
 
 		STU_EnumRegistry* ereg = STUEnumRegistry();

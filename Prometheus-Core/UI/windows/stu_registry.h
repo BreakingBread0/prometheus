@@ -10,15 +10,15 @@ class stu_registry : public window {
 	WINDOW_DEFINE(stu_registry, "STU", "STU Registry", true);
 
 	inline void add_search_recursive(STU_Object obj, std::set<void*>& visited_nodes) {
-		_search.haystack_stringhash(obj.struct_info->name_hash);
+		_search.haystack_stringhash(obj.struct_info->Hash);
 		if (visited_nodes.find(obj.value) != visited_nodes.end())
 			return;
 		visited_nodes.insert(obj.value);
-		for (auto arg : *obj.struct_info) {
-			switch (arg.second->constraint->get_type_flag()) {
+		for (auto [info, arg] : obj.struct_info->RangeArgs()) {
+			switch (arg->Constraint->ToConstraintType()) {
 			case STU_ConstraintType_BSList_InlinedObject:
 			case STU_ConstraintType_BSList_Object: {
-				for (auto item : obj.get_argument_objectlist(arg.second)) {
+				for (auto item : obj.get_argument_objectlist(arg)) {
 					if (item.valid())
 						add_search_recursive(item.get_runtime_root(), visited_nodes);
 				}
@@ -26,13 +26,13 @@ class stu_registry : public window {
 				break;
 			case STU_ConstraintType_InlinedObject:
 			case STU_ConstraintType_Object: {
-				auto child = obj.get_argument_object(arg.second);
+				auto child = obj.get_argument_object(arg);
 				if (child.valid())
 					add_search_recursive(child.get_runtime_root(), visited_nodes);
 			}
 				break;
 			case STU_ConstraintType_Map:
-				for (auto item : obj.get_argument_map(arg.second)) {
+				for (auto item : obj.get_argument_map(arg)) {
 					if (item.second.valid())
 						add_search_recursive(item.second.get_runtime_root(), visited_nodes);
 				}
@@ -56,7 +56,7 @@ class stu_registry : public window {
 					}
 					if (_search.needs_haystack()) {
 						_search.haystack_stringhash(info.first);
-						_search.haystack_stringhash(info.second->vfptr->GetSTUInfo()->name_hash);
+						_search.haystack_stringhash(info.second->vfptr->GetSTUInfo()->Hash);
 						if (_search_recursive) {
 							std::set<void*> vec{};
 							add_search_recursive(info.second->to_editable().get_runtime_root(), vec);

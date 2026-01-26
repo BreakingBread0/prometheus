@@ -28,6 +28,7 @@ namespace Utility::Exception
                 return EXCEPTION_CONTINUE_SEARCH;
             if (exception->ExceptionRecord->ExceptionCode == 0xc0000008)
                 return EXCEPTION_CONTINUE_EXECUTION;
+
             LOG_CORE_e(exception);
             return EXCEPTION_CONTINUE_SEARCH;
         }
@@ -64,7 +65,30 @@ namespace Utility::Exception
             case EXCEPTION_SINGLE_STEP:                 return "Single debug step. One instruction has been executed.";
             case EXCEPTION_STACK_OVERFLOW:              return "Stack overflow.";
             case MS_VC_EXCEPTION:                       return "Caller raised to set a thread name on the Visual Studio debugger.";
+            case EXCEPTION_UNCAUGHT_CXX_EXCEPTION:      return "Uncaught C++ EH exception.";
             default:                                    return "Unknown exception code.";
+        }
+    }
+
+    const char* CXXErrorToString(const uintptr_t thrownPtr)
+    {
+        thread_local char buffer[1024];
+        __try {
+            auto* e = reinterpret_cast<const std::exception*>(thrownPtr);
+            if (!e) {
+                return nullptr;
+            }
+
+            const char* p = e->what();
+            if (!p) {
+                return nullptr;
+            }
+
+            strncpy_s(buffer, p, sizeof(buffer) - 1);
+            buffer[sizeof(buffer) - 1] = '\0';
+            return _strdup(buffer);
+        } __except (EXCEPTION_EXECUTE_HANDLER) {
+            return nullptr;
         }
     }
 }

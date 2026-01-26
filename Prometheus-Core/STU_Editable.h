@@ -1,6 +1,13 @@
 #pragma once
-#include "STU.h"
+
 #include <nlohmann/json.hpp>
+
+#include "STU.h"
+
+#include "Atlas/STU/RTTI/STUInfo.h"
+#include "Atlas/STU/RTTI/STURegistry.h"
+using namespace Atlas::STU::RTTI;
+
 using json = nlohmann::json;
 
 class STU_ObjectList;
@@ -92,9 +99,9 @@ public:
 
 	inline STU_Object get_runtime_root() {
 		//ghetts... How can you differentiate between STUs with and without vfptrs?
-		if (valid() && struct_info->instance_size >= 8) {
-			for (auto arg : *struct_info) {
-				if (arg.second->offset == 0)
+		if (valid() && struct_info->InstanceSize >= 8) {
+			for (auto [inf, arg] : struct_info->RangeArgs()) {
+				if (arg->Offset == 0)
 					return *this;
 			}
 			auto base = (STUBase<>*)value;
@@ -197,14 +204,14 @@ public:
 	};
 
 	STU_ObjectList(STUArgumentInfo* argument, void* value = nullptr) : STU_ListBase(argument, value) {
-		_type = argument->constraint->get_type_flag();
+		_type = argument->Constraint->ToConstraintType();
 		owassert(_type == STU_ConstraintType_BSList_InlinedObject || _type == STU_ConstraintType_BSList_Object);
-		owassert(_list_type = GetSTUInfoByHash(argument->constraint->get_stu_type()));
+		owassert(_list_type = STURegistry::Get()->GetSTUInfoByHash(argument->Constraint->GetSTUType()));
 	}
 
 	STU_Object operator[](int pos) {
 		if (_type == STU_ConstraintType_BSList_InlinedObject)
-			return STU_Object(_list_type, (void*)((__int64)value->list() + _list_type->instance_size * pos));
+			return STU_Object(_list_type, (void*)((__int64)value->list() + _list_type->InstanceSize * pos));
 		return STU_Object(_list_type, (void*)(value->list()[pos]));
 	}
 
@@ -234,8 +241,8 @@ public:
 	STU_Object push_back_inlinedObject() {
 		owassert(valid());
 		owassert(_type == STU_ConstraintType_BSList_InlinedObject);
-		int old_size = value->count() * _list_type->instance_size;
-		__int64 new_buf = ow_memalloc(old_size + _list_type->instance_size);
+		int old_size = value->count() * _list_type->InstanceSize;
+		__int64 new_buf = ow_memalloc(old_size + _list_type->InstanceSize);
 		memcpy((void*)new_buf, value->list(), old_size);
 
 		STU_Object new_object(_list_type, (void*)(new_buf + old_size));
@@ -252,7 +259,7 @@ public:
 	//example: STUStatescriptGraph->m_nodes and STUStatescriptGraph->m_graph->m_items
 	void remove_at_index(int index) {
 		if (_type == STU_ConstraintType_BSList_InlinedObject) {
-			STU_ListBase::remove_at_index(index, _list_type->instance_size);
+			STU_ListBase::remove_at_index(index, _list_type->InstanceSize);
 		}
 		else {
 			STU_ListBase::remove_at_index(index, 8);
@@ -277,9 +284,9 @@ public:
 	};
 
 	STU_PrimitiveList(STUArgumentInfo* argument, void* value = nullptr) : STU_ListBase(argument, value) {
-		auto type = argument->constraint->get_type_flag();
+		auto type = argument->Constraint->ToConstraintType();
 		owassert(type == STU_ConstraintType_BSList_Primitive || type == STU_ConstraintType_BSList_Enum);
-		auto stu_type = argument->constraint->get_stu_type();
+		auto stu_type = argument->Constraint->ToConstraintType();
 		if (type == STU_ConstraintType_BSList_Primitive)
 			_item_size = STU_NAME::Primitive::_primitive_size(stu_type);
 		else
@@ -346,7 +353,7 @@ public:
 	};
 
 	STU_ResourceRefList(STUArgumentInfo* argument, void* value = nullptr) : STU_ListBase(argument, value) {
-		auto type = argument->constraint->get_type_flag();
+		auto type = argument->Constraint->ToConstraintType();
 		owassert(type == STU_ConstraintType_BSList_NonSTUResourceRef || type == STU_ConstraintType_BSList_ResourceRef);
 	}
 
@@ -419,12 +426,12 @@ public:
 	}
 
 	STU_Map(STUArgumentInfo* argument, void* map) :
-		_list_value_type(GetSTUInfoByHash(argument->constraint->get_stu_type())),
+		_list_value_type(STURegistry::Get()->GetSTUInfoByHash(argument->Constraint->GetSTUType())),
 		value((STUBullshitMapFull<void*>*)map)
 	{
 		if (!valid() || !value->valid())
 			value = nullptr;
-		owassert(argument->constraint->get_type_flag() == STU_ConstraintType_Map);
+		owassert(argument->Constraint->ToConstraintType() == STU_ConstraintType_Map);
 	}
 
 	MapIterator begin() {

@@ -4,7 +4,11 @@ macro(Pro_ProjectVersion Target Major Minor Patch Tweak)
             SOVERSION ${Major}
     )
 
+    string(TOUPPER "${Target}" TARGET_DEF)
+    string(REPLACE "-" "_" TARGET_DEF "${TARGET_DEF}")
+
     target_compile_definitions(${Target} PRIVATE
+            ${TARGET_DEF}=1
             VERSION=${Major},${Minor},${Patch},${Tweak}
             VERSION_STRING="${Major}.${Minor}.${Patch}.${Tweak}"
             VERSION_MAJOR=${Major}
@@ -13,7 +17,8 @@ macro(Pro_ProjectVersion Target Major Minor Patch Tweak)
             VERSION_TWEAK=${Tweak}
             BUILD_TYPE="${CMAKE_BUILD_TYPE}")
 
-    set(    VERSION=${Major},${Minor},${Patch},${Tweak}
+    set(    ${TARGET_DEF}=1
+            VERSION=${Major},${Minor},${Patch},${Tweak}
             VERSION_STRING="${Major}.${Minor}.${Patch}.${Tweak}"
             VERSION_MAJOR=${Major}
             VERSION_MINOR=${Minor}

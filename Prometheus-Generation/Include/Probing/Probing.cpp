@@ -2,7 +2,14 @@
 
 #include "Probing.h"
 
-namespace Probing
+namespace Generation::Probing
 {
+    ProbeResult ProbeData()
+    {
+        ProbeResult result{};
 
+
+
+        return result;
+    }
 }

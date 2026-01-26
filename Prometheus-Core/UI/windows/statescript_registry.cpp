@@ -43,7 +43,7 @@ void statescript_registry::render() {
 				ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(6.0f, 6.0f));
 
 				ImGui::SameLine();
-				stringhash_library::display_hash(header->info->name_hash);
+				stringhash_library::display_hash(header->Info->Hash);
 
 				ImGui::TableNextColumn();
 				if (rtti->field_8 - (__int64)rtti != 0x10) {
@@ -90,7 +90,7 @@ bool statescript_registry::CanShowRTTI(StatescriptRTTI* rtti, STURegistry* heade
 {
 	if (_search.needs_haystack()) {
 		//will retrigger another hash-name lookup but its only when the lookup is dirty so... not a big deal
-		_search.haystack_stringhash(header->info->name_hash);
+		_search.haystack_stringhash(header->Info->Hash);
 	}
 
 	return _search.found_needle(rtti);
@@ -100,10 +100,10 @@ STURegistry* statescript_registry::FindRegistryForRTTI(const StatescriptRTTI* rt
 {
 	auto cur = headerBase;
 	while (cur != nullptr) {
-		if (cur->info->rtti_info == rtti->stuclass_inherit) {
+		if (cur->Info->RTTI_Info == rtti->stuclass_inherit) {
 			return cur;
 		}
-		cur = cur->next;
+		cur = cur->Next;
 	}
 	return nullptr;
 }

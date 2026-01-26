@@ -442,12 +442,12 @@ window* window::dock_tab_here(window* other) {
 
 int argument_offset(STUInfo* stu, int name_hash) {
 	while (stu) {
-		for (int i = 0; i < stu->argument_count; i++) {
-			auto arg = stu->arguments[i];
-			if (arg.name_hash == name_hash)
-				return arg.offset;
+		for (int i = 0; i < stu->ArgsCount; i++) {
+			auto arg = stu->Args[i];
+			if (arg.Hash == name_hash)
+				return arg.Offset;
 		}
-		stu = stu->base_stu;
+		stu = stu->Parent;
 	}
 	return 0;
 }

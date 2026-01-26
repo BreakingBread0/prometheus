@@ -13,6 +13,9 @@ include(CMake/Version.cmake)
 #Atlas
 add_subdirectory(Prometheus-Atlas)
 
+#Atlas-Extensions
+add_subdirectory(Prometheus-Atlas/Extensions)
+
 #Atlas-Ida
 add_subdirectory(Prometheus-Atlas/Ida)
 

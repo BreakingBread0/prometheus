@@ -109,12 +109,11 @@ StatescriptPrimitive StatescriptPrimitive::clone() {
 
 std::map<__int64, std::vector<STUGraphPlug*>> STUStatescriptBase::get_output_plugs() {
 	std::map<__int64, std::vector<STUGraphPlug*>> result{};
-	for (auto arg_it : *this->graph_node.base.vfptr->GetSTUInfo()) {
-		auto arg = arg_it.second;
-		auto arg_typ = arg->constraint->get_type_flag();
+	for (auto [info, arg] : this->graph_node.base.vfptr->GetSTUInfo()->RangeArgs()) {
+		auto arg_typ = arg->Constraint->ToConstraintType();
 		if (arg_typ == STU_ConstraintType_Object || arg_typ == STU_ConstraintType_BSList_Object) {
-			auto arg_info = GetSTUInfoByHash(arg->constraint->get_stu_type());
-			if (arg_info->assignable_to_hash(STU_NAME::STUStatescriptOutputPlug)) {
+			auto arg_info = STURegistry::Get()->GetSTUInfoByHash(arg->Constraint->GetSTUType());
+			if (arg_info->AssignableToHash(STU_NAME::STUStatescriptOutputPlug)) {
 				std::vector<STUGraphPlug*> plugs{};
 				if (arg_typ == STU_ConstraintType_Object) {
 					plugs.push_back((STUGraphPlug*)graph_node.base.to_editable().get_argument_object(arg).value);
@@ -124,7 +123,7 @@ std::map<__int64, std::vector<STUGraphPlug*>> STUStatescriptBase::get_output_plu
 						plugs.push_back((STUGraphPlug*)item.value);
 					}
 				}
-				result[arg->name_hash] = plugs;
+				result[arg->Hash] = plugs;
 			}
 		}
 	}
@@ -132,7 +131,7 @@ std::map<__int64, std::vector<STUGraphPlug*>> STUStatescriptBase::get_output_plu
 }
 
 STUConfigVarDynamic_Editable::STUConfigVarDynamic_Editable(std::vector<__int64> ids) {
-	GetSTUInfoByHash(stringHash("STUConfigVarDynamic"))->clear_instance_fn((__int64)this);
+	STURegistry::Get()->GetSTUInfoByHash(stringHash("STUConfigVarDynamic"))->ClearInstance((__int64)this);
 	//printf("%p\n", cv_base.base.vfptr);
 	cv_base.base.to_editable().initialize_configVar();
 	list = new fake_list;

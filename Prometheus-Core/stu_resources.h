@@ -4,6 +4,9 @@
 #include <MinHook.h>
 #include <map>
 
+#include "Atlas/STU/RTTI/STUInfo.h"
+using namespace Atlas::STU::RTTI;
+
 class stu_resources {
 public:
 	static inline void initialize() {
@@ -31,7 +34,7 @@ public:
 	static inline std::map<__int64, STUBase<>*> GetIfAssignableTo(uint hash) {
 		std::map<__int64, STUBase<>*> result{};
 		for (auto& item : _constructed_stus) {
-			if (item.second->valid() && item.second->vfptr_stubase->GetSTUInfo()->assignable_to_hash(hash)) {
+			if (item.second->valid() && item.second->vfptr_stubase->GetSTUInfo()->AssignableToHash(hash)) {
 				result.insert(item);
 			}
 		}

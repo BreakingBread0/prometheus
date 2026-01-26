@@ -48,7 +48,7 @@
 
 #include "Logs/Logs.h"
 #include "Utility/Exception.h"
-#include "Utility/Modules.h"
+#include "AtlasExt/Utility/Modules.h"
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ImVec2, x, y);
 
@@ -273,10 +273,10 @@ const char* getClipboard(void*) {
 IDXGISwapChain* main_swapchain = nullptr;
 bool ui_invisible = false;
 
-ImFont* tryLoadFont(const char* file) {
+ImFont* tryLoadFont(const char* file, const ImFontConfig* font_cfg = nullptr, const ImWchar* glyph_ranges = nullptr) {
     auto& io = ImGui::GetIO();
     if (std::filesystem::exists(file)) {
-        auto font = io.Fonts->AddFontFromFileTTF(file, 13);
+        auto font = io.Fonts->AddFontFromFileTTF(file, 13, font_cfg, glyph_ranges);
         if (font)
             return font;
     }
@@ -307,10 +307,11 @@ HRESULT __stdcall PresentHook(IDXGISwapChain* pSwapChain, UINT SyncInterval, UIN
             cfg.OversampleH = cfg.OversampleV = 1;
             cfg.MergeMode = true;
             cfg.FontBuilderFlags |= ImGuiFreeTypeBuilderFlags_LoadColor;
+
             auto& io = ImGui::GetIO();
             imgui_helpers::BoldFont = tryLoadFont("MonaspaceXenon-ExtraBold.otf");
             tryLoadFont("MonaspaceXenon-Regular.otf");
-            io.FontDefault = tryLoadFont("Font Awesome 6 Free-Solid-900.otf"); //TODO: Is this right?
+            io.FontDefault = tryLoadFont("Font Awesome 6 Free-Solid-900.otf", &cfg, ranges);
 
             io.ConfigFlags |= ImGuiConfigFlags_DockingEnable /*| ImGuiConfigFlags_ViewportsEnable*/; //TODO: Viewports
             io.ConfigDockingWithShift = true;
@@ -1175,7 +1176,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
         case DLL_PROCESS_ATTACH:
             std::call_once(entrypoint_mutex, [] {
                 globals::ensure_console_allocated();
-                Utility::Modules::Initialize();
+                Atlas::Utility::Modules::Initialize();
                 Logs::Initialize(); //soz i defo shouldnt be putting this inside dllmain but like idk where else to put it rn
 
                 printf("Hello World!\n");
@@ -1228,7 +1229,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
                 printf("Goodbye World!\n");
                 MH_VERIFY(MH_Uninitialize());
                 Logs::Uninitialize();
-                Utility::Modules::Uninitialize();
+                Atlas::Utility::Modules::Uninitialize();
                 });
             break;
         case DLL_THREAD_ATTACH:

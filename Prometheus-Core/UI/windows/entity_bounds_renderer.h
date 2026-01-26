@@ -63,7 +63,7 @@ class entity_bounds_renderer : public window {
 		_renderer = ImguiRenderer::GetInstance();
 		_renderer->BeginScene();
 		
-		auto get_ent_cv = STU_Object::create(GetSTUInfoByHash(stringHash("STUConfigVarEntityID")));
+		auto get_ent_cv = STU_Object::create(STURegistry::Get()->GetSTUInfoByHash(stringHash("STUConfigVarEntityID")));
 		//get_ent_cv.initialize_configVar();
 		//get_ent_cv.get_argument_primitive("m_value").set_value(_arg->entity_id);
 		StatescriptPrimitive ent;
@@ -73,7 +73,7 @@ class entity_bounds_renderer : public window {
 		get_ent_cv.get_argument_primitive(0x83e83924).set_value((__int64)&get_ent_impl);
 
 		{
-			auto get_pos_cv = STU_Object::create(GetSTUInfoByHash(0xd7aa244a)); //Get entity root pos
+			auto get_pos_cv = STU_Object::create(STURegistry::Get()->GetSTUInfoByHash(0xd7aa244a)); //Get entity root pos
 			get_pos_cv.initialize_configVar();
 			get_pos_cv.set_object("m_entity", get_ent_cv);
 			auto cv = (STUConfigVar*)get_pos_cv.value;
@@ -83,7 +83,7 @@ class entity_bounds_renderer : public window {
 			get_pos_cv.deallocate();
 		}
 		{
-			auto get_pos_cv = STU_Object::create(GetSTUInfoByHash(0x8d4869d1)); //Get entity bounds size
+			auto get_pos_cv = STU_Object::create(STURegistry::Get()->GetSTUInfoByHash(0x8d4869d1)); //Get entity bounds size
 			get_pos_cv.initialize_configVar();
 			get_pos_cv.set_object("m_entity", get_ent_cv);
 			auto cv = (STUConfigVar*)get_pos_cv.value;

@@ -1,7 +1,10 @@
 ﻿#pragma once
+#include "Atlas/STU/RTTI/STUInfo.h"
+#include "STU.h"
 #include "../window_manager/window_manager.h"
-#include "../../STU.h"
 #include "../imgui_helpers.h"
+
+using namespace Atlas::STU::RTTI;
 
 struct StatescriptInstance;
 class stu_explorer : public window {

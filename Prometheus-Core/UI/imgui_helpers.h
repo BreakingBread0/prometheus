@@ -2,10 +2,12 @@
 
 #include "globals.h"
 #include "idadefs.h"
+#include "Atlas/STU/RTTI/STUArgumentInfo.h"
 #include "window_manager/window_manager.h"
 
+using namespace Atlas::STU::RTTI;
+
 struct STUConfigVarDynamic;
-struct STUArgumentInfo;
 struct StatescriptInstance;
 class STU_Primitive;
 class STUConfigVar;

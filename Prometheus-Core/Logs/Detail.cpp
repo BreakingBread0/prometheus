@@ -8,7 +8,9 @@
 #include "Patterner.h"
 #include "globals.h"
 #include "Utility/Exception.h"
-#include "Utility/Modules.h"
+#include "AtlasExt/Utility/Modules.h"
+
+using namespace Atlas::Utility::Modules;
 
 namespace Logs::Detail
 {
@@ -40,8 +42,8 @@ namespace Logs::Detail
         Clean->info("-   ");
         Clean->info("====================================================================");
         Clean->info("-   ");
-        Clean->info("-   Game Base:   {:n} {:n}", FmtAddr(GameBounds().Base()), FmtAddr(GameBounds().Base()));
-        Clean->info("-   Module Base: {:n} {:n}", FmtAddr(CoreBounds().Base()), FmtAddr(CoreBounds().Size()));
+        Clean->info("-   Program Base: {:n} {:n}", FmtAddr(ProgramBounds().Base()), FmtAddr(ProgramBounds().Base()));
+        Clean->info("-   Runtime Base: {:n} {:n}", FmtAddr(RuntimeBounds().Base()), FmtAddr(RuntimeBounds().Size()));
         Clean->info("-   Main Thread: {}", GetCurrentThreadId());
         Clean->info("-   ");
         Clean->info("====================================================================");
@@ -70,6 +72,16 @@ namespace Logs::Detail
         Nested->critical("Code:   {:n}     Params: {}", FmtAddr(record->ExceptionCode), record->NumberParameters);
         for (int i = 0; i < record->NumberParameters; i++) {
             Nested->critical("Param   {0:0>2}: {1:nv}", i, FmtAddr(record->ExceptionInformation[i]));
+        }
+
+        if (record->ExceptionCode == EXCEPTION_UNCAUGHT_CXX_EXCEPTION && record->NumberParameters >= 3) {
+            Newline();
+            Nested->critical("***  C++ Exception");
+            if (const auto whatStr = Utility::Exception::CXXErrorToString(record->ExceptionInformation[1])){
+                Nested->critical("std::exception::what(): \"{}\"", whatStr);
+            } else {
+                Nested->critical("Failed to cast to std::exception!");
+            }
         }
 
         if (record->ExceptionRecord) {

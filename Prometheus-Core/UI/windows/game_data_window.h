@@ -373,7 +373,7 @@ class game_data_window : public window {
 				auto inst = (STUStatescriptGraph*)try_load_resource(0x5800000000009d0);
 				if (inst) {
 					for (auto state : inst->m_states) {
-						if (state->ss_base.graph_node.base.vfptr->GetSTUInfo()->name_hash == STU_NAME::STUStatescriptStateUXHeroSelectScreen) {
+						if (state->ss_base.graph_node.base.vfptr->GetSTUInfo()->Hash == STU_NAME::STUStatescriptStateUXHeroSelectScreen) {
 							state->ss_base.graph_node.base.vfptr = (STUBase_vt*)(globals::gameBase + 0x1509020);
 							auto create_res_cv = (__int64(__fastcall*)(void))(globals::gameBase + 0x746ab0);
 							auto find_impl_fn = (__int64(__fastcall*)(__int64 unused, __int64 stu_state))(globals::gameBase + 0xf43450);

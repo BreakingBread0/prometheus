@@ -46,3 +46,8 @@ typedef ull             uint64;
 #define MERGE(a, b) a ## b
 #define MERGE_WRAP(a, b) MERGE(a, b)
 #define PADDING(size) uint8 MERGE_WRAP(pad, __LINE__)[size]
+
+#define STUB_T(ret, ...) ret MERGE_WRAP(funcStub, __LINE__)(__VA_ARGS__) = 0
+#define STUB(...) STUB_T(virtual int64, __VA_ARGS__)
+
+#define ATLAS_ASSERT_SIZE(type, size) static_assert(sizeof(type) == size, "Invalid size for " #type)

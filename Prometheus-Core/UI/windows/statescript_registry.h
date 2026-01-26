@@ -2,6 +2,7 @@
 #include "../window_manager/window_manager.h"
 #include "Statescript.h"
 #include "../search_helper.h"
+#include "Atlas/STU/RTTI/STURegistry.h"
 
 class statescript_registry : public window {
 	WINDOW_DEFINE(statescript_registry, "Statescript", "Statescript Registry", true);

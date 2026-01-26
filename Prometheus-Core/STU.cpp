@@ -1,6 +1,7 @@
 #include "STU.h"
 #include "STU_Editable.h"
 #include "stu_resources.h"
+#include "AtlasExt/Utility/Modules.h"
 
 namespace STU_NAME {
 	namespace Primitive {
@@ -39,7 +40,7 @@ namespace STURegistryData {
 
 	void emplaceHeader(STURegistry* header)
 	{
-		auto instance = header->info->create_instance_fn();
+		auto instance = (STUBase<>*) header->Info->CreateInstance();
 		if (instance && instance->vfptr) {
 			/*	printf("Invalid instance (%x): %p\n", header->info->name_hash, instance);
 			}
@@ -50,7 +51,15 @@ namespace STURegistryData {
 	}
 
 	void initialize() {
-		STURegistry* header = GetSTURegistry();
+
+		printf("attempting to load stu registry...\n");
+		printf("Gamebase at %p  - Gamebase + 0x18f74e0 = %p\n", globals::gameBase, (void*)(globals::gameBase + 0x18f74e0));
+		printf("Programbase at %p  - Programbase + 0x18f74e0 = %p\n", (void*)Atlas::Utility::Modules::ProgramBounds().Base(), (void*)Atlas::Utility::Modules::ProgramBounds().VA( 0x18f74e0));
+
+		auto test =  *(STURegistry**)(globals::gameBase + 0x18f74e0);
+		printf("STU regstest: %p\n", test);
+
+		STURegistry* header = STURegistry::Get();
 		while (header) {
 			__try {
 				//C2712: Cannot use __try in functions that require object unwinding
@@ -58,9 +67,9 @@ namespace STURegistryData {
 				emplaceHeader(header);
 			}
 			__except (EXCEPTION_EXECUTE_HANDLER) {
-				printf("Failed to instantiate %x!\n", header->info->name_hash);
+				printf("Failed to instantiate %x!\n", header->Info->Hash);
 			}
-			header = header->next;
+			header = header->Next;
 		}
 		printf("STU count: %d\n", vfptr_addresses.size());
 	}

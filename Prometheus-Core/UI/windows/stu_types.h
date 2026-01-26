@@ -17,12 +17,12 @@ class stu_types : public window {
 					auto current = info;
 					while (current) {
 						if (_search.needs_haystack()) {
-							_search.haystack_stringhash(current->name_hash);
+							_search.haystack_stringhash(current->Hash);
 						}
-						if (_search.found_needle(info != current ? info->name_hash ^ current->name_hash : info->name_hash)) {
+						if (_search.found_needle(info != current ? info->Hash ^ current->Hash : info->Hash)) {
 							found.emplace(current);
 						}
-						current = current->base_stu;
+						current = current->Parent;
 					}
 					if (found.size() == 0)
 						continue;
@@ -30,9 +30,9 @@ class stu_types : public window {
 					bool found_typ = false;
 					if (_arg_constraint_typ != 0) {
 						//only search top level
-						for (int i = 0; i < info->argument_count; i++) {
-							auto arg = info->arguments[i];
-							if (arg.constraint && arg.constraint->get_type_flag() == _arg_constraint_typ) {
+						for (int i = 0; i < info->ArgsCount; i++) {
+							auto arg = info->Args[i];
+							if (arg.Constraint && arg.Constraint->ToConstraintType() == _arg_constraint_typ) {
 								found_typ = true;
 								break;
 							}
@@ -45,23 +45,23 @@ class stu_types : public window {
 					ImGui::PushID(info);
 
 					ImGui::TableNextColumn();
-					imgui_helpers::display_type(info->name_hash, found.find(info) != found.end(), true, false);
+					imgui_helpers::display_type(info->Hash, found.find(info) != found.end(), true, false);
 					ImGui::SameLine();
 					if (ImGui::Button(EMOJI_FORWARD)) {
 						stu_explorer::get_latest_or_create(this)->navigate_to(info, 0, nullptr);
 					}
 
 					ImGui::TableNextColumn();
-					current = info->base_stu;
+					current = info->Parent;
 					while (current) {
 						ImGui::PushID(current);
-						imgui_helpers::display_type(current->name_hash, found.find(current) != found.end(), true, false);
+						imgui_helpers::display_type(current->Hash, found.find(current) != found.end(), true, false);
 						ImGui::SameLine();
 						if (ImGui::Button(EMOJI_FORWARD)) {
 							stu_explorer::get_latest_or_create(this)->navigate_to(current, 0, nullptr);
 						}
 						ImGui::PopID();
-						current = current->base_stu;
+						current = current->Parent;
 					}
 
 					ImGui::PopID();
@@ -73,10 +73,10 @@ class stu_types : public window {
 	}
 
 	inline void initialize() override {
-		STURegistry* header = GetSTURegistry();
+		STURegistry* header = STURegistry::Get();
 		while (header) {
-			_infos.push_back(header->info);
-			header = header->next;
+			_infos.push_back(header->Info);
+			header = header->Next;
 		}
 	}
 private:

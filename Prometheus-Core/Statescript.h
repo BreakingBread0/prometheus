@@ -13,7 +13,6 @@
 
 struct StatescriptInstance;
 struct StatescriptVar_VarBag;
-struct InheritanceInfo;
 struct STUGraphLink;
 struct StatescriptSyncMgr;
 struct STUStatescriptBase;
@@ -322,7 +321,7 @@ struct STUConfigVar {
 	}
 	
 	bool is_expression() {
-		return base.vfptr->GetSTUInfo()->assignable_to_hash(STU_NAME::STUConfigVarExpression);
+		return base.vfptr->GetSTUInfo()->AssignableToHash(STU_NAME::STUConfigVarExpression);
 	}
 
 	char get_value(StatescriptInstance* ss, StatescriptPrimitive* out_var) {

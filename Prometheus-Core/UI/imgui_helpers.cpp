@@ -138,7 +138,7 @@ namespace imgui_helpers {
 	bool display_cv(STUConfigVar* cv, StatescriptInstance* ss, STUArgumentInfo* arg_info, bool display_logicalButton) {
 		ImGui::PushID(cv);
 		if (arg_info) {
-			display_type(arg_info->name_hash, false, true, false);
+			display_type(arg_info->Hash, false, true, false);
 			ImGui::Indent();
 		}
 		if (cv->base.valid()) {
@@ -149,7 +149,7 @@ namespace imgui_helpers {
 				ImGui::PopID();
 				return false;
 			}
-			uint stu_hash = cv->base.vfptr->GetSTUInfo()->name_hash;
+			uint stu_hash = cv->base.vfptr->GetSTUInfo()->Hash;
 			display_type(stu_hash, true);
 			StatescriptPrimitive value{};
 			if (cv->get_value(ss, &value)) {

@@ -1,6 +1,9 @@
 #pragma once
 #include "Statescript.h"
 
+#include "Atlas/STU/RTTI/STURegistry.h"
+using namespace Atlas::STU::RTTI;
+
 struct StatescriptVar_Base;
 struct StatescriptVar_VarBag;
 struct StatescriptVar_Primitive;
@@ -183,7 +186,7 @@ struct StatescriptVar_VarBag {
 	void SetVar(std::vector<__int64> cv_path, StatescriptPrimitive value) {
 		STUConfigVarDynamic_Editable set_health_cv(cv_path); //current health value
 		STUConfigVar value_cv{};
-		GetSTUInfoByHash(stringHash("STUConfigVar"))->clear_instance_fn((__int64)&value_cv);
+		STURegistry::Get()->GetSTUInfoByHash(stringHash("STUConfigVar"))->ClearInstance((__int64)&value_cv);
 		STUConfigVar_impl_Custom value_cv_impl(value);
 		value_cv.cv_impl = (STUConfigVar_impl*)&value_cv_impl;
 		base.stu_base.vfptr->SetConfigVarValueFromSTUConfigVar(this, set_health_cv.get(), (STUConfigVar*)&value_cv, 0);

@@ -6,6 +6,7 @@
 #include "statescript_window.h"
 #include <set>
 #include "stu_explorer.h"
+#include "Atlas/STU/RTTI/STURegistry.h"
 
 class statescript_node_search : public window {
 	WINDOW_DEFINE_ARG(statescript_node_search, "Statescript", "Statescript Node Search", Component_23_Statescript*);
@@ -25,30 +26,32 @@ class statescript_node_search : public window {
 			_search.search_box("Search");
 			if (_search.needs_haystack()) {
 				_nodes.clear();
+
+				auto reg = STURegistry::Get();
 				for (auto& ss : _arg->ss_inner) {
 					if (ss->graph) {
 						for (auto node : *ss->graph) {
 							auto typ = node->graph_node.base.vfptr->GetSTUInfo();
-							_search.haystack_stringhash(typ->name_hash);
+							_search.haystack_stringhash(typ->Hash);
 							std::vector<std::pair<STUArgumentInfo*, STUConfigVar*>> cvs{};
-							for (auto arg_info : *typ) {
-								if (arg_info.first->name_hash == STU_NAME::STUStatescriptState ||
-									arg_info.first->name_hash == STU_NAME::STUStatescriptAction)
+							for (auto arg_info :typ->RangeArgs()) {
+								if (arg_info.first->Hash == STU_NAME::STUStatescriptState ||
+									arg_info.first->Hash == STU_NAME::STUStatescriptAction)
 									break;
 								auto arg = arg_info.second;
-								if (arg->constraint->get_type_flag() == STU_ConstraintType_Object) {
-									auto arg_typ = GetSTUInfoByHash(arg->constraint->get_stu_type());
-									if (arg_typ && arg_typ->assignable_to_hash(STU_NAME::STUConfigVar)) {
-										STUConfigVar* cv = *(STUConfigVar**)((__int64)node + arg->offset);
+								if (arg->Constraint->ToConstraintType() == STU_ConstraintType_Object) {
+									auto arg_typ = reg->GetSTUInfoByHash(arg->Constraint->GetSTUType());
+									if (arg_typ && arg_typ->AssignableToHash(STU_NAME::STUConfigVar)) {
+										STUConfigVar* cv = *(STUConfigVar**)((__int64)node + arg->Offset);
 										if (cv) {
-											_search.haystack_stringhash(cv->base.vfptr->GetSTUInfo()->name_hash);
+											_search.haystack_stringhash(cv->base.vfptr->GetSTUInfo()->Hash);
 											cvs.push_back(std::pair<STUArgumentInfo*, STUConfigVar*>{arg, cv});
 										}
 									}
 								}
 							}
 							if (_search.found_needle(node)) {
-								_nodes[typ->name_hash].push_back({ss, node, cvs});
+								_nodes[typ->Hash].push_back({ss, node, cvs});
 							}
 						}
 					}
@@ -80,11 +83,11 @@ class statescript_node_search : public window {
 						for (auto& cv : node.config_vars) {
 							ImGui::PushID(cv.second);
 
-							imgui_helpers::display_type(cv.first->name_hash, true, true, false);
+							imgui_helpers::display_type(cv.first->Hash, true, true, false);
 							ImGui::SameLine();
-							imgui_helpers::display_type(cv.second->base.vfptr->GetSTUInfo()->name_hash, false, true, false);
+							imgui_helpers::display_type(cv.second->base.vfptr->GetSTUInfo()->Hash, false, true, false);
 							ImGui::SameLine();
-							ImGui::Text("- at offs 0x%x", cv.first->offset);
+							ImGui::Text("- at offs 0x%x", cv.first->Offset);
 
 							ImGui::PopID();
 						}

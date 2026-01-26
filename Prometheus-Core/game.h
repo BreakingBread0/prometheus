@@ -3,6 +3,7 @@
 #include <format>
 #include "globals.h"
 #include "idadefs.h"
+#include "Atlas/STU/RTTI/STUInfo.h"
 
 struct LogicalButtonName // sizeof=0x18
 {
@@ -37,16 +38,11 @@ inline LogicalButtonName* LogicalButtonByName(std::string name) {
 }
 
 /* 433 */
-struct InheritanceInfo
-{
-	__int64 this_ptr;
-	InheritanceInfo* next;
-};
 
 struct InheritanceInfo_vt {
-	InheritanceInfo* (*get_inheritance)(__int64 instance);
-	bool(__fastcall* rtti_assignable_to)(__int64,InheritanceInfo *info); //a2 = InheritanceInfo**
-	bool(__fastcall* rtti_instanceof)(__int64,InheritanceInfo *info); //a2 = InheritanceInfo**
+	Atlas::STU::RTTI::InheritanceInfo* (*get_inheritance)(__int64 instance);
+	bool(__fastcall* rtti_assignable_to)(__int64,Atlas::STU::RTTI::InheritanceInfo *info); //a2 = InheritanceInfo**
+	bool(__fastcall* rtti_instanceof)(__int64,Atlas::STU::RTTI::InheritanceInfo *info); //a2 = InheritanceInfo**
 };
 
 /* 493 */

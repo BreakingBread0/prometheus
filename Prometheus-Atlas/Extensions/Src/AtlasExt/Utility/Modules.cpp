@@ -9,44 +9,53 @@
 
 #include "Modules.h"
 
-
 using LdrRegisterDllNotification_t = NTSTATUS(NTAPI*)(_In_ ULONG Flags, _In_ PVOID NotificationFunction, _In_opt_ PVOID Context, _Out_ PVOID* Cookie);
 using LdrUnregisterDllNotification_t = NTSTATUS(NTAPI*)(_In_ PVOID Cookie);
 
-namespace Utility::Modules
+namespace Atlas::Utility::Modules
 {
-    static std::vector<ModuleBounds> Modules{};
+    static std::vector<ModuleBounds> s_modules{};
 
-    static std::atomic dirty{true};
-    static PVOID cookie = nullptr;
+    static std::atomic s_dirty{true};
+    static PVOID s_cookie = nullptr;
 
-    static std::optional<ModuleBounds> GameBase{};
-    static std::optional<ModuleBounds> CoreBase{};
+    static std::optional<ModuleBounds> s_programBounds{};
+    static std::optional<ModuleBounds> s_runtimeBounds{};
 
-    const ModuleBounds& GameBounds() { return *GameBase; }
-    const ModuleBounds& CoreBounds() { return *CoreBase; }
+    const ModuleBounds& ProgramBounds() { return *s_programBounds; }
+    const ModuleBounds& RuntimeBounds() { return *s_runtimeBounds; }
 
-    uint64 ModuleBounds::RVA(const uint64 address) const
+    uint64 ModuleBounds::RVA(const uint64 absolute) const
     {
-        if (address < base || address >= end) {
+        if (absolute < base || absolute >= end) {
             return 0;
         }
 
-        return address - base;
+        return absolute - base;
+    }
+
+    uint64 ModuleBounds::VA(const uint64 relative) const
+    {
+        const auto res = base + relative;
+        if (res < base || res >= end) {
+            return 0;
+        }
+
+        return res;
     }
 
     static void NTAPI DllNotify(ULONG reason, const void* data, void* ctx)
     {
-        dirty.store(true, std::memory_order_relaxed);
+        s_dirty.store(true, std::memory_order_relaxed);
     }
 
     void TryUpdateModules()
     {
-        if (!dirty.exchange(false, std::memory_order_relaxed)) {
+        if (!s_dirty.exchange(false, std::memory_order_relaxed)) {
             return;
         }
 
-        Modules.clear();
+        s_modules.clear();
 
         const DWORD pid = GetCurrentProcessId();
         const auto snap = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32, pid);
@@ -65,18 +74,23 @@ namespace Utility::Modules
         }
 
         do {
-            Modules.emplace_back(me);
+            s_modules.emplace_back(me);
         } while (Module32Next(snap, &me));
 
         CloseHandle(snap);
-        std::ranges::sort(Modules, [](const ModuleBounds& a, const ModuleBounds& b) { return a.Base() < b.Base(); });
+        std::ranges::sort(s_modules, [](const ModuleBounds& a, const ModuleBounds& b) { return a.Base() < b.Base(); });
 
-        GameBase.emplace(*FindModuleForAddress(GetModuleHandleA(nullptr)));
-        CoreBase.emplace(*FindModuleForAddress(reinterpret_cast<uint64>(&Initialize)));
+        s_programBounds.emplace(*FindModuleForAddress(GetModuleHandleA(nullptr)));
+        s_runtimeBounds.emplace(*FindModuleForAddress(reinterpret_cast<uint64>(&Initialize)));
     }
 
     void Initialize()
     {
+        if (s_cookie) {
+            printf("Init failed. Modules Utility is already initialized!!\n");
+            return;
+        }
+
         const HMODULE ntdll = GetModuleHandleW(L"ntdll.dll");
         const auto registerDll = reinterpret_cast<LdrRegisterDllNotification_t>(GetProcAddress(ntdll, "LdrRegisterDllNotification"));
         if (!registerDll) {
@@ -84,12 +98,12 @@ namespace Utility::Modules
             return;
         }
 
-        if (registerDll(0, reinterpret_cast<PVOID>(&DllNotify), nullptr, &cookie) < 0) {
+        if (registerDll(0, reinterpret_cast<PVOID>(&DllNotify), nullptr, &s_cookie) < 0) {
             printf("Failed to register DllNotify\n");
             return;
         }
 
-        dirty.store(true, std::memory_order_relaxed);
+        s_dirty.store(true, std::memory_order_relaxed);
         printf("Successfully registered DllNotify\n");
 
         TryUpdateModules();
@@ -97,7 +111,7 @@ namespace Utility::Modules
 
     void Uninitialize()
     {
-        if (!cookie) {
+        if (!s_cookie) {
             return;
         }
 
@@ -108,22 +122,22 @@ namespace Utility::Modules
             return;
         }
 
-        if (unregisterDll(cookie)) {
+        if (unregisterDll(s_cookie)) {
             printf("Failed to unregister DllNotify\n");
             return;
         }
 
-        cookie = nullptr;
+        s_cookie = nullptr;
     }
 
     const ModuleBounds* FindModuleForAddress(const uint64 addr)
     {
         TryUpdateModules();
 
-        auto it = std::upper_bound(Modules.begin(), Modules.end(), addr,
+        auto it = std::upper_bound(s_modules.begin(), s_modules.end(), addr,
                 [](const uint64 value, const ModuleBounds& m) { return value < m.Base(); });
 
-        if (it == Modules.begin()) {
+        if (it == s_modules.begin()) {
             return nullptr;
         }
 
