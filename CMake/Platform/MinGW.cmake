@@ -11,7 +11,7 @@ function(Pro_ApplyPlatform TargetName)
             -w -ffunction-sections -fdata-sections -fbuiltin
             -fno-stack-protector -std=c++20 -fms-extensions
             $<$<CONFIG:Release>:-gcodeview>
-            $<$<CONFIG:Debug>:-fno-exceptions -fno-asynchronous-unwind-tables>
+            $<$<CONFIG:Debug>:-fno-asynchronous-unwind-tables>
     )
 
     set(TARGET_COMPILE_DEFS
