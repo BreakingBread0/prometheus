@@ -243,7 +243,7 @@ class loadlist_visualizer : public window {
 				if (entry) {
 					while (entry) {
 						ClonedResourceLoadEntry* clone_inner = new ClonedResourceLoadEntry;
-						memcpy(clone_inner, entry, sizeof ResourceLoadEntry);
+						memcpy(clone_inner, entry, sizeof(ResourceLoadEntry));
 						if (!clone->lists[i].front)
 							clone->lists[i].front = &clone_inner->loaded_entry;
 						if (prev != nullptr)
@@ -301,7 +301,7 @@ class loadlist_visualizer : public window {
 	}
 
 	inline void preStartInitialize() override {
-		MH_CreateHook((LPVOID)(globals::gameBase + 0x9d2e10), __WorkLoadList_hook, (void**)&__WorkLoadList_orig);
+		MH_CreateHook((LPVOID)(globals::gameBase + 0x9d2e10), (LPVOID)__WorkLoadList_hook, (void**)&__WorkLoadList_orig);
 		MH_EnableHook((LPVOID)(globals::gameBase + 0x9d2e10));
 	}
 	//inline void initialize() override {}

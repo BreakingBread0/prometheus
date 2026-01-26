@@ -28,6 +28,10 @@
     ILOG(logger, Nested, Critical, "********* Exception End *********");                \
     Logs::logger->Newline();
 
+struct _EXCEPTION_POINTERS;
+struct _CONTEXT;
+struct _EXCEPTION_RECORD;
+
 namespace Logs::Detail
 {
     enum LogLevel : int {

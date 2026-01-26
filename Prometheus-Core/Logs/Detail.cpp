@@ -2,6 +2,8 @@
 
 #include "Detail.h"
 
+#include <spdlog/sinks/sink.h>
+
 #include "Common.h"
 #include "Patterner.h"
 #include "globals.h"

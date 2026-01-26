@@ -73,7 +73,7 @@ class log_window : public window {
 	}
 
 	inline void preStartInitialize() override {
-		MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0x7e5c90), log_fn, (PVOID*)&log_orig_fn));
+		MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0x7e5c90), (LPVOID)log_fn, (PVOID*)&log_orig_fn));
 		MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0x7e5c90)));
 	}
 	//inline void initialize() override {}

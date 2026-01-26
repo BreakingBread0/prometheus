@@ -41,6 +41,7 @@ class movementsys_editor : public window {
 		_orig_list = new movement_vt**[_orig_cnt = ea->movement_systems.num];
 		memcpy(_orig_list, ea->movement_systems.begin(), sizeof(movement_vt**) * ea->movement_systems.num);
 	}
+
 private:
 	struct movsys_state {
 		__int64 vfptr;
@@ -48,13 +49,13 @@ private:
 		bool enabled = true;
 	};
 	static inline std::vector<movsys_state> s_mov_vtables = {
-		{ 0x15c17b0, "stuprojectile" },
-		{ 0x15c1c30, "charmover" },
-		{ 0x15c1ed8, "unsynchronized_mover" },
-		{ 0x15c1ef8, "stuweapon" },
-		{ 0x15c2d90, "statescript" },
-		{ 0x15c4da0, "simplemover" },
-		{ 0x15c4e28, "localplayer" }
+		{ 0x15c17b0, "stuprojectile", true },
+		{ 0x15c1c30, "charmover", true },
+		{ 0x15c1ed8, "unsynchronized_mover", true },
+		{ 0x15c1ef8, "stuweapon", true },
+		{ 0x15c2d90, "statescript", true },
+		{ 0x15c4da0, "simplemover", true },
+		{ 0x15c4e28, "localplayer", true }
 	};
 	movement_vt*** _orig_list;
 	int _orig_cnt;

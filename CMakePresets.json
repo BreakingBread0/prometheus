@@ -57,6 +57,53 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug"
       }
+    },
+    {
+      "hidden": true,
+      "name": "MinGW",
+      "generator": "Ninja",
+      "inherits": "base",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/external/vcpkg/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_HOST_TRIPLET": "x64-mingw-static",
+        "VCPKG_TARGET_TRIPLET": "x64-mingw-static",
+        "PRO_PLATFORM": "MinGW"
+      },
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "vendor": {
+        "jetbrains.com/clion": {
+          "toolchain": "MinGW"
+        },
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "hostOS": [ "Windows" ]
+        }
+      },
+      "environment": {
+        "VCPKG_ROOT": "${sourceDir}/external/vcpkg",
+        "VCPKG_DEFAULT_TRIPLET": "x64-mingw-static",
+        "VCPKG_KEEP_ENV_VARS": "PATH"
+      }
+    },
+    {
+      "name": "Release-MinGW",
+      "displayName": "Release MinGW Build",
+      "description": "Build for LLVM MinGW x64 in Release mode",
+      "inherits": "MinGW",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "Debug-MinGW",
+      "displayName": "Debug MinGW Build",
+      "description": "Build for LLVM MinGW x64 in Debug mode",
+      "inherits": "MinGW",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
     }
   ]
 }
