@@ -10,6 +10,7 @@
 #include <nlohmann/json.hpp>
 
 #include "Probe_Hex.h"
+#include "AtlasExt/Utility/Hash.h"
 
 namespace Generation::Probing
 {
@@ -57,7 +58,7 @@ namespace Generation::Probing
             for (auto [info, reg] : registry)
             {
                 ProbeData_STUProbe data{};
-                data.Name           = info->Name_str && info->Name_str[0] != '\0' ? info->Name_str : "<unnamed>";
+                data.Name           = info->Name_str && info->Name_str[0] != '\0' ? info->Name_str : Atlas::Utility::Hash::GetStringForHash(info->Hash, "<unknown>");
 
                 data.Hash           = info->Hash;
                 data.ParentHash     = info->Parent ? info->Parent->Hash : 0;
@@ -74,14 +75,14 @@ namespace Generation::Probing
                 for (const auto arg : reg->Info->RangeArgs(false) | std::views::values)
                 {
                     ProbeData_STUArgument argData{};
-                    argData.Name     = "<unnamed>";
+                    argData.Name        = Atlas::Utility::Hash::GetStringForHash(arg->Hash, "<unknown>");
 
                     argData.Hash     = arg->Hash;
                     argData.Offset   = arg->Offset;
 
                     if (arg->Constraint)
                     {
-                        argData.TypeName = "<unnamed>";
+                        argData.TypeName    = Atlas::Utility::Hash::GetStringForHash(arg->Constraint->GetSTUType(), "<unknown>");
                         argData.TypeHash = arg->Constraint->GetSTUType();
                         argData.TypeFlag = arg->Constraint->ToConstraintType();
                     }

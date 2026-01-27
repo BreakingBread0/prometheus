@@ -339,6 +339,7 @@ HRESULT __stdcall PresentHook(IDXGISwapChain* pSwapChain, UINT SyncInterval, UIN
             statescript_logger::Initialize();
             window_manager::add_window(new management_window);
 
+            Atlas::Utility::Hash::ParseStrings("./Prometheus/GameStrings.txt");
             Generation::Probing::ProbeToFile(Atlas::Utility::Modules::ProgramBounds(),
                 "./Prometheus/ProbeData.json");
         });
