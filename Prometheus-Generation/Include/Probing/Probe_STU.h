@@ -9,36 +9,39 @@
 #include <vector>
 #include <nlohmann/json.hpp>
 
+#include "Probe_Hex.h"
+
 namespace Generation::Probing
 {
     struct ProbeData_STUArgument
     {
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(ProbeData_STUArgument, Name, Hash, Offset, TypeHash, TypeFlag)
+        NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(ProbeData_STUArgument, Name, Hash, Offset, TypeName, TypeHash, TypeFlag)
 
-        std::string Name;
+        std::string     Name;
 
-        uint32      Hash;
-        uint32      Offset;
+        ProbeData_Hex   Hash;
+        ProbeData_Hex   Offset;
 
-        uint32      TypeHash;
-        uint32      TypeFlag;
+        std::string     TypeName;
+        ProbeData_Hex   TypeHash;
+        ProbeData_Hex   TypeFlag;
     };
 
     struct ProbeData_STUProbe
     {
         NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(ProbeData_STUProbe, Name, Hash, ParentHash, RVA, RegistryRVA, Size, IsArray, ArgumentCount, Arguments)
 
-        std::string Name;
+        std::string     Name;
 
-        uint32      Hash;
-        uint32      ParentHash;
+        ProbeData_Hex   Hash;
+        ProbeData_Hex   ParentHash;
 
-        uint64      RVA;
-        uint64      RegistryRVA;
+        ProbeData_Hex   RVA;
+        ProbeData_Hex   RegistryRVA;
 
-        uint64      Size;
+        uint64  Size;
 
-        int32       ArgumentCount;
+        int32   ArgumentCount;
         std::vector<ProbeData_STUArgument> Arguments;
 
         bool    IsArray;
@@ -76,8 +79,12 @@ namespace Generation::Probing
                     argData.Hash     = arg->Hash;
                     argData.Offset   = arg->Offset;
 
-                    argData.TypeFlag = arg->Constraint ? arg->Constraint->ToConstraintType() : 0;
-                    argData.TypeHash = arg->Constraint ? arg->Constraint->GetSTUType() : 0;
+                    if (arg->Constraint)
+                    {
+                        argData.TypeName = "<unnamed>";
+                        argData.TypeHash = arg->Constraint->GetSTUType();
+                        argData.TypeFlag = arg->Constraint->ToConstraintType();
+                    }
 
                     data.Arguments.push_back(argData);
                 }

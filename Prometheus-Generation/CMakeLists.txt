@@ -8,6 +8,7 @@ project(Prometheus-Generation
 add_library(Prometheus-Generation INTERFACE
         "Include/Probing/Probing.h"
         "Include/Probing/Probe_STU.h"
+        "Include/Probing/Probe_Hex.h"
 )
 
 target_include_directories(Prometheus-Generation INTERFACE ${PROJECT_SOURCE_DIR}/Include)
