@@ -31,17 +31,17 @@ namespace Atlas::STU::RTTI
 
             struct Iter
             {
-                STUInfo*  m_info;
+                const STUInfo*  m_info;
                 int32           m_currentPos;
                 bool            m_includeParents;
 
                 using iterator_category = std::forward_iterator_tag;
-                using value_type        = std::pair<STUInfo*, STUArgumentInfo*>;
+                using value_type        = std::pair<const STUInfo*, STUArgumentInfo*>;
                 using difference_type   = std::ptrdiff_t;
 
                 Iter() = default;
 
-                Iter(STUInfo* info, const bool includeParents) :
+                Iter(const STUInfo* info, const bool includeParents) :
                     m_info(info),
                     m_currentPos(-1),
                     m_includeParents(includeParents) {
@@ -56,7 +56,7 @@ namespace Atlas::STU::RTTI
 
             [[nodiscard]] Iter begin() const
             {
-                return Iter{const_cast<STUInfo*>(m_info), m_includeParents};
+                return Iter{m_info, m_includeParents};
             }
 
             [[nodiscard]] Iter end() const

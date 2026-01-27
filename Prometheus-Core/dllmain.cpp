@@ -49,6 +49,8 @@
 #include "Logs/Logs.h"
 #include "Utility/Exception.h"
 #include "AtlasExt/Utility/Modules.h"
+#include "Probing/Probe_STU.h"
+#include "Probing/Probing.h"
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ImVec2, x, y);
 
@@ -336,6 +338,9 @@ HRESULT __stdcall PresentHook(IDXGISwapChain* pSwapChain, UINT SyncInterval, UIN
             STURegistryData::initialize();
             statescript_logger::Initialize();
             window_manager::add_window(new management_window);
+
+            Generation::Probing::ProbeToFile(Atlas::Utility::Modules::ProgramBounds(),
+                "./Prometheus/ProbeData.json");
         });
         globals::pauseLogHook = true;
         CreateRenderTarget(pSwapChain, false);

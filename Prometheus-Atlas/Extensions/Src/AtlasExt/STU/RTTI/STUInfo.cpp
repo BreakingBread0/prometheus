@@ -37,7 +37,6 @@ namespace Atlas::STU::RTTI
         return STUInfoView::Create<ParentsTraverse | SiblingsTraverse>(this->Parent);
     }
 
-
     bool STUInfo::AssignableToHash(const uint64 assign) const
     {
         auto stu = this;

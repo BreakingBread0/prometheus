@@ -53,8 +53,8 @@ namespace Atlas::STU::RTTI
             {
                 const STUArgumentViewFlags m_flags;
 
-                const STUInfo*                    m_root;
-                const STUInfo*                    m_current;
+                const STUInfo*            m_root;
+                const STUInfo*            m_current;
 
                 using iterator_category = std::forward_iterator_tag;
                 using value_type        = const STUInfo*;

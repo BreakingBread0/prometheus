@@ -9,7 +9,12 @@ namespace Atlas::STU::RTTI
 {
     STURegistry* STURegistry::Get()
     {
-        return *Utility::Modules::ProgramBounds().VA<STURegistry**>(0x18F74E0);
+        return Get(Utility::Modules::ProgramBounds());
+    }
+
+    STURegistry* STURegistry::Get(const Utility::Modules::ModuleBounds& module)
+    {
+        return *module.VA<STURegistry**>(0x18F74E0);
     }
 
     STUInfo* STURegistry::GetSTUInfoByHash(const uint32 hash) const
@@ -24,5 +29,10 @@ namespace Atlas::STU::RTTI
         }
 
         return nullptr;
+    }
+
+    STURegistryView STURegistry::Range() const
+    {
+        return STURegistryView::Create(this);
     }
 }

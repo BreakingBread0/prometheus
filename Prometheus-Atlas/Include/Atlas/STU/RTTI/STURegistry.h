@@ -4,6 +4,11 @@
 
 #include "STUInfo.h"
 
+#ifdef ATLAS_EXTENSIONS
+#include "AtlasExt/Utility/Modules.h"
+#include "AtlasExt/STU/RTTI/Views/STURegistryView.h"
+#endif
+
 namespace Atlas::STU::RTTI
 {
     /**
@@ -19,8 +24,8 @@ namespace Atlas::STU::RTTI
      */
     struct STURegistry
     {
-        STURegistry* Next;
-        STUInfo* Info;
+        STURegistry*    Next;
+        STUInfo*        Info;
 
 #ifdef ATLAS_EXTENSIONS
 
@@ -29,8 +34,11 @@ namespace Atlas::STU::RTTI
          * @return Pointer to the first STURegistry in the linked list.
          */
         static STURegistry* Get();
+        static STURegistry* Get(const Utility::Modules::ModuleBounds& module);
 
         STUInfo* GetSTUInfoByHash(uint32 hash) const;
+
+        [[nodiscard]] STURegistryView Range() const;
 #endif
     };
 
