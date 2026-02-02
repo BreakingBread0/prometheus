@@ -1,13 +1,12 @@
 #pragma once
 #include "../window_manager/window_manager.h"
 
-typedef std::pair<__int64, STUArgumentInfo*> primitive_edit_arg;
 class stu_primitive_edit : public window {
-	WINDOW_DEFINE_ARG(stu_primitive_edit, "STU", "Edit: Primitive", primitive_edit_arg);
+	WINDOW_DEFINE_ARG(stu_primitive_edit, "STU", "Edit: Primitive", STU_Primitive);
 
 	inline void render() override {
 		if (open_window()) {
-
+			imgui_helpers::editor_primitive(_arg);
 		}
 		ImGui::End();
 	}

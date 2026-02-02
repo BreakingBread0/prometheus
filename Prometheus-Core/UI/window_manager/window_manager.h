@@ -16,12 +16,14 @@ class window {
 public:
 	int window_id = 0;
 	bool is_dependent = false;
+	bool is_modal = false;
+	bool modal_force_focus = false;
 
 	const bool& has_dependents = _has_dependents;
 	const ImGuiID& im_id = _im_id;
-	const bool& is_latest = _is_latest;
 	const bool& is_collapsed = _is_collapsed;
 	const bool& is_docked = _is_docked;
+	const bool& is_focused = _is_focused;
 
 	void set_focus_next_frame(bool focus = true) {
 		_focus_next_frame = focus;
@@ -81,7 +83,6 @@ private:
 	virtual void pre_render() {}
 	virtual void initialize() {};
 	virtual void preStartInitialize() {};
-	virtual void tick() {};
 
 	friend class window_manager;
 	friend class management_window; //lazy asf
@@ -90,7 +91,7 @@ private:
 	bool _focus_next_frame = false;
 	bool _has_dependents = false;
 	ImGuiID _im_id = 0;
-	bool _is_latest = false;
+	bool _is_focused = false;
 	bool _is_collapsed = 0;
 	bool _wants_collapse = false;
 	bool _wants_show = false;
@@ -127,6 +128,26 @@ public:
 	static void add_default_window(window_type type);
 	//static std::shared_ptr<window> ensure_exists(window_type type);
 	static void call_preStartInitialize();
+
+	template <typename modal_window_type, typename arg_type>
+	static inline void open_modal(window* from, arg_type arg) {
+		auto new_wind = create_by_type<modal_window_type>(from);
+		owassert(new_wind.get());
+		auto wind_cast = dynamic_cast<modal_window_type*>(new_wind.get());
+		wind_cast->set(arg);
+		new_wind->is_dependent = true;
+		new_wind->is_modal = true;
+		new_wind->set_focus_next_frame(true);
+	}
+
+	template <typename modal_window_type>
+	static inline void open_modal(window* from) {
+		auto new_wind = create_by_type<modal_window_type>(from);
+		new_wind->is_dependent = true;
+		new_wind->is_modal = true;
+		new_wind->set_focus_next_frame(true);
+	}
+
 	//not recursive
 	static void kill_dependents(window* from);
 	static std::shared_ptr<window> add_window(std::unique_ptr<window> window_reference, window* from = nullptr);
@@ -138,6 +159,8 @@ public:
 	}
 	//static void remove_window(window* window_reference);
 	static void render();
+	static void render_ex();
+	static void render_error(const char* error);
 
 	//Put here since the MSVC linker is bullshit. 
 	template <typename T>
@@ -218,6 +241,7 @@ private:
 	static inline std::map<ImGuiID, std::weak_ptr<window>> s_windows_by_im_id{};
 	static inline std::map<window_type, std::weak_ptr<window>> s_latest_windows{};
 	static inline volatile long s_id_counter;
+	static inline int s_focused_window;
 	static void call_window_render(window*);
 
 	//that is actually such a good idea. Thanks, olususus!

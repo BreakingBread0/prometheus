@@ -19,6 +19,11 @@ namespace stringhash_library {
 	void display_hash(int hash, const char* prepend = nullptr);
 	void add_hash(const std::string str);
 	void add_comment(__int64 key, const std::string& value, bool force_override = false);
+
+	//If it errors out
+	void enable_library_saving();
+	void show_error();
+
 	void initialize();
 	void save_all();
 }

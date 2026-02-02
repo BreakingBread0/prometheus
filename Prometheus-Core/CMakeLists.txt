@@ -12,6 +12,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(DIR_BIN ${CMAKE_BINARY_DIR}/bin/core)
 set(DIR_LIB ${CMAKE_BINARY_DIR}/lib/core)
 
+file(GLOB_RECURSE SRC_FILES CONFIGURE_DEPENDS
+        "${PROJECT_SOURCE_DIR}/*.cpp"
+        "${PROJECT_SOURCE_DIR}/*.h")
+
 add_library(Prometheus-Core SHARED
         $<TARGET_OBJECTS:Prometheus-Atlas-Extensions-Obj>
         "Common.h"
@@ -39,6 +43,10 @@ add_library(Prometheus-Core SHARED
         "statescript_logger.h"
         "state_replicator.h"
         "stringhash_library.h"
+        "STUConfigVar_Custom.cpp"
+        "STUConfigVar_Custom.h"
+        "STUConfigVarDynamic_Custom.cpp"
+        "STUConfigVarDynamic_Custom.h"
         "STU.h"
         "STU_Editable.h"
         "stu_resources.h"

@@ -1,12 +1,10 @@
 #pragma once
 #include "../window_manager/window_manager.h"
-#include "stringhash_library.h"
+#include "../stringhash_library.h"
 #include <format>
 
-#include "Probing/Probing.h"
-
 class hash_display_window : public window {
-	WINDOW_DEFINE(hash_display_window, "Game", "Hash & Probe Display", true);
+	WINDOW_DEFINE(hash_display_window, "Game", "Hash Display", true);
 
 	inline void render() override {
 		if (open_window()) {
@@ -17,16 +15,9 @@ class hash_display_window : public window {
 			if (ImGui::Button("Add to Library")) {
 				stringhash_library::add_hash(buf);
 			}
-
-			ImGui::SameLine();
-			if (ImGui::Button("Refresh Probing Data")) {
-				Generation::Probing::ProbeToFile(Atlas::Utility::Modules::ProgramBounds(),
-				"./Prometheus/ProbeData.json",
-				true);
-			}
-
 			ImGui::NewLine();
 			ImGui::Separator();
+
 			ImGui::Text("The allmighty string hashing library has a size of %d. ALL PRAISE OUR LORD AND SAVIOUR STRINGHASH", stringhash_library::hashes.size());
 
 			static char filter[256];

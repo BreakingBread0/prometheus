@@ -1,6 +1,7 @@
 # Prometheus <!-- omit in toc -->
 
 Hey and welcome, thanks for stopping by!
+- [0. Thank you](#0-thank-you)
 - [1. Usage](#1-usage)
   - [Download a Release](#download-a-release)
     - [Linux instructions](#linux-instructions)
@@ -14,10 +15,11 @@ Hey and welcome, thanks for stopping by!
   - [DataFlow](#dataflow)
   - [Game Messages](#game-messages)
   - [Components](#components)
-    - [STUPvPGameComponent 0x24](#stupvpgamecomponent-0x24)
-    - [STUStatescriptComponent 0x23](#stustatescriptcomponent-0x23)
-    - [Component 1](#component-1)
-    - [MovementStateSystem](#movementstatesystem)
+    - [STUPvPGameComponent (0x24)](#stupvpgamecomponent-0x24)
+    - [STUStatescriptComponent (0x23)](#stustatescriptcomponent-0x23)
+    - [SceneRendering Component (1)](#scenerendering-component-1)
+    - [MovementStateSystem (0x12, 0x15, 0x16)](#movementstatesystem-0x12-0x15-0x16)
+    - [Embedded / LobbyMap Entity Admin (0x54)](#embedded--lobbymap-entity-admin-0x54)
 - [3. Broken stuff and why it's broken](#3-broken-stuff-and-why-its-broken)
 - [4. Tips \& Tricks](#4-tips--tricks)
 - [5. Contributions Welcome!](#5-contributions-welcome)
@@ -25,7 +27,13 @@ Hey and welcome, thanks for stopping by!
 - [7. Open Source libraries used](#7-open-source-libraries-used)
 - [8. License and Contact](#8-license-and-contact)
 
+# 0. Thank you
+
+As I've said in [my talk](https://media.ccc.de/v/39c3-prometheus-reverse-engineering-overwatch), this was and is a labor of love. Please do not send any hate to current or past Overwatch developers, and please do not harrass them. It is still my favourite multiplayer game, and if you're reading this, chances are it is yours too. It probably wasn't easy to just stomp out a whole new multiplayer game within two years out of the broken shambles of Titan. 0.8, even if still a "beta" version, is very much feature-complete and very stable!
+
 # 1. Usage
+
+This project is more an exploration of all the structures and the general game layout. It is not ready, and you cannot play with other people. A lot of hero abilities don't work, including shooting weapons.
 
 If you havent already, download the 0.8 beta from [archive.org](https://archive.org/details/overwatch-beta-0-8-0-24919) and extract the files somewhere.
 * ⚠️ Make sure that you don't download any malicious executable and verify that GameClientApp.exe is signed by Blizzard. The signature will get broken after applying the patcher.
@@ -57,7 +65,7 @@ If you havent already, download the 0.8 beta from [archive.org](https://archive.
 
 * Download the [MonaspaceXenon](https://monaspace.githubnext.com/) font and put the -regular.otf and -bold.otf in the directory of the game files.
 * Download the [Font Awesome v6](https://fontawesome.com/v6/download) free desktop font files and put the .otf files into the game directory.
-* Once first started, the library will create hashlibrary.json. You can add crc32 strings / elements to hash which will be displayed in various places where applicable. You can just add all the strings from the [overtools github repository](https://github.com/overtools/OWLib/tree/develop/TankLibHelper/DataPreHashChange). To do so add another root JSON element (an array) called "add" and put all your strings there.
+* Once first started, the library will create hashlibrary.json. You can add crc32 strings / elements to hash which will be displayed in various places where applicable. You can just add all the strings from the [overtools github repository](https://github.com/overtools/OWLib/tree/develop/TankLibHelper/DataPreHashChange). To do so add another root JSON element (an array) called "add" and put all your strings there. See the [json schema](hashlibrary.schema.json).
 
 ### Patcher & how it works
 
@@ -111,9 +119,13 @@ DataFlow members can also be out of an entity and out of the Entity Component sy
 
 TODO
 
-### STUPvPGameComponent 0x24
+### STUPvPGameComponent (0x24)
 
-### STUStatescriptComponent 0x23
+Contains information about the current game state, like what phase it's in, how much time is remaining, ...
+
+Other systems access this information by using an embedded class in the GameEntityAdmin. This 
+
+### STUStatescriptComponent (0x23)
 
 Statescript controls:
 * Ingame abilities and pretty much everything ingame except for basic movement
@@ -130,11 +142,11 @@ An implementation class is either static for the game (Actions, Conditions, Entr
 
 As far as I can see there is only one Entity in the LobbyEntityAdmin which holds a statescript instance. This is used for Lobby / Login UI, Login flow and Music. For ingame stuff: The controller entity has no Statescript Instance. Only the model has one which controls abilities and other various stuff. Other stuff may also have statescript instances. These include: Health Packs, Capture Points, 
 
-### Component 1
+### SceneRendering Component (1)
 
 I called this SceneRendering. This component is needed if the entity wants to be shown in the map. It holds size, scaling and rotation and some other miscellanious stuff.
 
-### MovementStateSystem
+### MovementStateSystem (0x12, 0x15, 0x16)
 
 (Quick note: When talking about the MovementStateSystem I mean everything which encompasses it, movement_vt, Movement system(s), Component 12 (STUMovementState), 15 (STUCharacterMoverComponent) and 16 (STUSimpleMovementComponent))
 
@@ -143,6 +155,10 @@ If an object needs to dynamically move in the map, the MovementStateSystem updat
 For the local player, there are some flags which you NEED to set in order for you to be able to move around. This is done by the player_spawner for you.
 
 The most important thing is the list of MovementState in component 12. It holds all the deltas sent down from the server and does interpolation and stuff to hide network interference for you.
+
+### Embedded / LobbyMap Entity Admin (0x54)
+
+The embedded entity admin is very cool. Its only purpose is to display the lobby background map, and is contained within the singleton components of the Lobby Entity Admin. The component itself contains a pointer to the entity admin, 
 
 # 3. Broken stuff and why it's broken
 
@@ -195,7 +211,7 @@ Also dont look into the window manager. Its an abomination. You have been warned
 * [keystone](https://github.com/keystone-engine/keystone)
 * [capstone](github.com/capstone-engine/capstone)
 * [imgui](https://github.com/ocornut/imgui/)
-* [imnodes](https://github.com/BreakingBread0/imnodes/) ([my branch](github.com/BreakingBread0/imnodes/))
+* [imnodes](https://github.com/BreakingBread0/imnodes/) ([my branch](https://github.com/BreakingBread0/imnodes/))
 * pe (Could not find the original repository, please open an issue if you know it!)
 * [lazy_importer](https://github.com/JustasMasiulis/lazy_importer)
 * [nlohmann_json](https://github.com/nlohmann/json)

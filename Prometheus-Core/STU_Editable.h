@@ -24,6 +24,8 @@ public:
 		owassert(value);
 	}
 
+	STU_Primitive() : value(nullptr), type(0) { }
+
 	template <typename T>
 	T get_value() const {
 		return *(T*)value;
@@ -67,6 +69,7 @@ public:
 	STUInfo* struct_info;
 
 	STU_Object(STUInfo* struct_info, void* value = nullptr) : struct_info(struct_info), value(value) {}
+	STU_Object() : struct_info(nullptr), value(nullptr) {}
 
 	//Always valid if this object is valid
 	DEFINE_ACCESSOR_FUNC(STU_Primitive, get_argument_primitive);
@@ -76,7 +79,7 @@ public:
 	DEFINE_ACCESSOR_FUNC(STU_ObjectList, get_argument_objectlist);
 	//Child object is always valid
 	DEFINE_ACCESSOR_FUNC(STU_PrimitiveList, get_argument_primitivelist);
-	//Child object is always valid (but may not have a resource)
+	//Child object is always valid (but may not have a resource / resource id)
 	DEFINE_ACCESSOR_FUNC(STU_ResourceRefList, get_argument_resreflist);
 	//Always valid if this object is valid
 	DEFINE_ACCESSOR_FUNC(STUResourceReference*, get_argument_resource);
@@ -93,6 +96,7 @@ public:
 	void initialize_configVar();
 	//Shallow
 	void deallocate();
+	//TODO: May get deallocated if edited with STU Editor, or if game unloads resource
 	inline bool valid() {
 		return struct_info != nullptr && value != nullptr;
 	}
@@ -113,6 +117,7 @@ public:
 	}
 
 	static STU_Object create(STUInfo* struct_info);
+	static STU_Object* createNew(STUInfo* struct_info);
 };
 
 class STU_ListBase {
@@ -307,6 +312,27 @@ public:
 		value->set_list(new_buf);
 	}
 
+	void push_back_default() {
+		switch (_item_size) {
+		case 1:
+			push_back<char>(0);
+			break;
+		case 2:
+			push_back<short>(0);
+			break;
+		case 4:
+			push_back<int>(0);
+			break;
+		case 8:
+			push_back<__int64>(0);
+			break;
+		default:
+			printf("ImplementMe Item Size: %d\n", _item_size);
+			owassert(false);
+			break;
+		}
+	}
+
 	template<>
 	void push_back<std::string>(std::string str) {
 		push_back(str.c_str());
@@ -333,6 +359,10 @@ public:
 
 	ListIterator end() {
 		return ListIterator();
+	}
+
+	int get_item_size() {
+		return _item_size;
 	}
 private:
 	int _item_size;
@@ -371,6 +401,19 @@ public:
 
 	ListIterator end() {
 		return ListIterator();
+	}
+
+	void push_back(__int64 resource_id) {
+		int old_size = value->count() * sizeof(STUResourceReference);
+		void* new_buf = (void*)ow_memalloc(old_size + sizeof(STUResourceReference));
+		memcpy(new_buf, value->list(), old_size);
+		auto new_stru = ((STUResourceReference*)((__int64)new_buf + old_size));
+		new_stru->resource_load_entry = 0;
+		new_stru->resource_id = resource_id;
+
+		value->set_count(value->count() + 1);
+		ow_dealloc((__int64)value->list());
+		value->set_list(new_buf);
 	}
 };
 
