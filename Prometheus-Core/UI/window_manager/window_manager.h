@@ -9,6 +9,7 @@
 #include <imgui_internal.h>
 #include <map>
 #include <mutex>
+#include "globals.h"
 
 typedef std::string window_type;
 
@@ -160,7 +161,7 @@ public:
 	//static void remove_window(window* window_reference);
 	static void render();
 	static void render_ex();
-	static void render_error(const char* error);
+	static void render_error(const std::string& error);
 
 	//Put here since the MSVC linker is bullshit. 
 	template <typename T>

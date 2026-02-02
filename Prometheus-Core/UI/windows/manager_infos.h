@@ -1,4 +1,5 @@
 #pragma once
+#include "ResourceManager.h"
 #include "../window_manager/window_manager.h"
 
 class manager_infos : public window {
@@ -6,10 +7,10 @@ class manager_infos : public window {
 
 	inline void render() override {
 		if (open_window()) {
-			if (imgui_helpers::beginTable("Managers", { "Name", "Supported", "id", "negated", "crc_continued", "field_18", "manager_flags", "field_20", "field_28", "field_30", "field_38", "stu_construct_fn", "field_48", "field_50", "field_58", "field_60" })) {
+			if (imgui_helpers::beginTable("Managers", { "Name", "Supported", "id", "negated", "crc_continued", "field_18", "manager_flags", "field_20", "field_28", "field_30", "field_38", "construct_resource_fn", "field_48", "field_50", "field_58", "field_60" })) {
 
 				for (int i = 0; i < 34; i++) {
-					manager_info* manager = ((manager_info**)(globals::gameBase + 0x182c940))[i];
+					auto manager = GetManagerInfoByIndex(i);
 					if (!manager)
 						continue;
 					ImGui::TableNextRow();
@@ -57,7 +58,7 @@ class manager_infos : public window {
 					display_addr(manager->field_38);
 
 					ImGui::TableNextColumn();
-					display_addr((__int64)manager->stu_construct_fn);
+					display_addr((__int64)manager->resource_constructor);
 
 					ImGui::TableNextColumn();
 					display_addr((__int64)manager->OnResourceLoaded);

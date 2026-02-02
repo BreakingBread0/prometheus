@@ -161,6 +161,6 @@ namespace imgui_helpers {
 	void item_path_print(STUConfigVarDynamic* cv);
 	bool display_type(__int64 type, bool color, bool edit = true, bool hash_show = true);
 
-	void render_primitive(STU_Primitive value, uint32 hash);
-	void editor_primitive(STU_Primitive value, uint32 hash);
+	void render_primitive(STU_Primitive value);
+	void editor_primitive(STU_Primitive value);
 }

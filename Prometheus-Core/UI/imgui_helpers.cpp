@@ -323,9 +323,9 @@ namespace imgui_helpers {
 		ImGui::NewLine();
 	}
 
-	void render_primitive(STU_Primitive value, uint32 hash) {
+	void render_primitive(STU_Primitive value) {
 		__try {
-			switch (hash) {
+			switch (value.type) {
 			case STU_NAME::Primitive::teMtx43A:
 			case STU_NAME::Primitive::teVec3A:
 			case STU_NAME::Primitive::teVec2:
@@ -384,9 +384,9 @@ namespace imgui_helpers {
 		}
 	}
 
-	void editor_primitive(STU_Primitive value, uint32 hash) {
+	void editor_primitive(STU_Primitive value) {
 		ImGui::PushID(value.value);
-		switch (hash) {
+		switch (value.type) {
 		case STU_NAME::Primitive::teMtx43A:
 		case STU_NAME::Primitive::teVec3A:
 		case STU_NAME::Primitive::teVec2:
@@ -430,11 +430,11 @@ namespace imgui_helpers {
 		auto storage = ImGui::GetStateStorage();
 		ImGuiID id = ImGui::GetActiveID();
 		auto hex = storage->GetBoolRef(id, false);
-		if (hash != STU_NAME::Primitive::f32 && hash != STU_NAME::Primitive::f64) {
+		if (value.type != STU_NAME::Primitive::f32 && value.type != STU_NAME::Primitive::f64) {
 			ImGui::Checkbox("Hex", hex);
 			ImGui::SameLine();
 		}
-		switch (hash) {
+		switch (value.type) {
 		case STU_NAME::Primitive::u8: {
 			int temp = value.get_value<unsigned char>();
 			if (hex ? imgui_helpers::InputHex("", &temp) : ImGui::InputInt("", &temp))

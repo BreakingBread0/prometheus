@@ -2,7 +2,7 @@
 #include "STU_Editable.h"
 
 STUConfigVarDynamic_Custom::STUConfigVarDynamic_Custom(std::vector<__int64> ids) {
-	GetSTUInfoByHash(stringHash("STUConfigVarDynamic"))->clear_instance_fn((__int64)this);
+	STURegistry::Get()->GetSTUInfoByHash(stringHash("STUConfigVarDynamic"))->ClearInstance((__int64)this);
 	//printf("%p\n", cv_base.base.vfptr);
 	cv_base.base.to_editable().initialize_configVar();
 	list = new fake_list;

@@ -1,5 +1,6 @@
 #pragma once
 #include "../window_manager/window_manager.h"
+#include "STU_Editable.h"
 
 class stu_primitive_edit : public window {
 	WINDOW_DEFINE_ARG(stu_primitive_edit, "STU", "Edit: Primitive", STU_Primitive);

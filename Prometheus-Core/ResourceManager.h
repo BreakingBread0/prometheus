@@ -37,6 +37,8 @@ struct ResourceLoadEntry
 };
 
 /* 511 */
+typedef void(__fastcall* resource_construct_fn)(ResourceLoadEntry*);
+
 struct manager_info
 {
 	char* name;
@@ -49,13 +51,27 @@ struct manager_info
 	void(__fastcall* BeforeDataDeletion)(ResourceLoadEntry*);
 	__int64 field_30;
 	__int64 field_38;
-	void(__fastcall* stu_construct_fn)(ResourceLoadEntry*);
+	resource_construct_fn resource_constructor;
 	void(__fastcall* OnResourceLoaded)(ResourceLoadEntry*);
 	__int64 field_50;
 	void(__fastcall* BeforeDeallocateError)(ResourceLoadEntry*);
 	__int64 field_60;
 	__int64 manager_negated;
 };
+
+inline manager_info* GetManagerInfoByIndex(int index) {
+	owassert(index > 0 && index < 34);
+	return ((manager_info**)(globals::gameBase + 0x182c940))[index];
+}
+
+inline manager_info* GetManagerInfoByName(const char* name) {
+	for (int i = 0; i < 34; i++) {
+		auto manager = GetManagerInfoByIndex(i);
+		if (!strcmpi(manager->name, name))
+			return manager;
+	}
+	return nullptr;
+}
 
 /* 512 */
 struct PriorityListQueueStart

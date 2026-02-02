@@ -112,7 +112,7 @@ STU_Object STU_Object::create(STUInfo* struct_info) {
 }
 
 STU_Object* STU_Object::createNew(STUInfo* struct_info) {
-	auto result = new STU_Object(struct_info, (void*)struct_info->create_instance_fn());
+	auto result = new STU_Object(struct_info, (void*)struct_info->CreateInstance());
 	result->initialize();
 	return result;
 }

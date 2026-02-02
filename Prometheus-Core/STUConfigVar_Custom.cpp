@@ -46,6 +46,10 @@ STUConfigVar* STUConfigVar_Custom::get() {
 	return (STUConfigVar*)_instance->value;
 }
 
+STU_Object STUConfigVar_Custom::get_editable() {
+	return *_instance;
+}
+
 STUConfigVar_Custom::STUConfigVar_Custom(STUInfo* info, StatescriptPrimitive value) : 
 	_instance(STU_Object::createNew(info)), 
 	_getter(new STUConfigVar_impl_Custom(value)) {

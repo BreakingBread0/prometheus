@@ -1,6 +1,6 @@
 #pragma once
 #include "../window_manager/window_manager.h"
-#include "../stringhash_library.h"
+#include "stringhash_library.h"
 #include <format>
 
 class hash_display_window : public window {

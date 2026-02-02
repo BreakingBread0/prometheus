@@ -12,9 +12,10 @@ private:
 	STUConfigVar_impl_Custom* _getter;
 public:
 	STUConfigVar* get();
+	STU_Object get_editable();
 
 	STUConfigVar_Custom(STUInfo* info, StatescriptPrimitive value);
-	STUConfigVar_Custom(uint hash, StatescriptPrimitive value) : STUConfigVar_Custom(GetSTUInfoByHash(hash), value) {}
+	STUConfigVar_Custom(uint hash, StatescriptPrimitive value) : STUConfigVar_Custom(STURegistry::Get()->GetSTUInfoByHash(hash), value) {}
 	STUConfigVar_Custom(StatescriptPrimitive value) : STUConfigVar_Custom(stringHash("STUConfigVar"), value) {}
 	~STUConfigVar_Custom();
 };

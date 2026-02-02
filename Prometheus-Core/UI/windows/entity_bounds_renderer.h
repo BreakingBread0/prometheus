@@ -5,6 +5,7 @@
 #include "Statescript.h"
 #include "entity_window.h"
 #include "STU_Editable.h"
+#include "STUConfigVar_Custom.h"
 
 //TODO: Apparently does not take the camera FOV into account. But who cares.
 class entity_bounds_renderer : public window {
@@ -63,19 +64,15 @@ class entity_bounds_renderer : public window {
 		_renderer = ImguiRenderer::GetInstance();
 		_renderer->BeginScene();
 		
-		auto get_ent_cv = STU_Object::create(STURegistry::Get()->GetSTUInfoByHash(stringHash("STUConfigVarEntityID")));
-		//get_ent_cv.initialize_configVar();
-		//get_ent_cv.get_argument_primitive("m_value").set_value(_arg->entity_id);
 		StatescriptPrimitive ent;
 		ent.type = StatescriptPrimitive_ENTITY;
 		ent.value = _arg->entity_id;
-		auto get_ent_impl = STUConfigVar_impl_Custom(ent);
-		get_ent_cv.get_argument_primitive(0x83e83924).set_value((__int64)&get_ent_impl);
+		auto get_ent_cv = STUConfigVar_Custom(ent);
 
 		{
 			auto get_pos_cv = STU_Object::create(STURegistry::Get()->GetSTUInfoByHash(0xd7aa244a)); //Get entity root pos
 			get_pos_cv.initialize_configVar();
-			get_pos_cv.set_object("m_entity", get_ent_cv);
+			get_pos_cv.set_object("m_entity", get_ent_cv.get_editable());
 			auto cv = (STUConfigVar*)get_pos_cv.value;
 			StatescriptPrimitive output{};
 			cv->cv_impl->vfptr->GetConfigVarValue(cv->cv_impl, _ss, cv, &output);
@@ -85,14 +82,13 @@ class entity_bounds_renderer : public window {
 		{
 			auto get_pos_cv = STU_Object::create(STURegistry::Get()->GetSTUInfoByHash(0x8d4869d1)); //Get entity bounds size
 			get_pos_cv.initialize_configVar();
-			get_pos_cv.set_object("m_entity", get_ent_cv);
+			get_pos_cv.set_object("m_entity", get_ent_cv.get_editable());
 			auto cv = (STUConfigVar*)get_pos_cv.value;
 			StatescriptPrimitive output{};
 			cv->cv_impl->vfptr->GetConfigVarValue(cv->cv_impl, _ss, cv, &output);
 			_bounds_size = output.get_vec3();
 			get_pos_cv.deallocate();
 		}
-		get_ent_cv.deallocate();
 
 		/*drawLine(Vector3(_pos.X + _bounds_size.X, _pos.Y + _bounds_size.Y, _pos.Z + _bounds_size.Z), Vector3(_pos.X + _bounds_size.X, _pos.Y - _bounds_size.Y, _pos.Z + _bounds_size.Z));
 		drawLine(Vector3(_pos.X - _bounds_size.X, _pos.Y + _bounds_size.Y, _pos.Z + _bounds_size.Z), Vector3(_pos.X - _bounds_size.X, _pos.Y - _bounds_size.Y, _pos.Z + _bounds_size.Z));
