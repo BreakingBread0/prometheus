@@ -188,6 +188,7 @@ struct StatescriptVar_VarBag {
 	void SetVar(std::vector<__int64> cv_path, StatescriptPrimitive value) {
 		STUConfigVarDynamic_Custom set_health_cv(cv_path); //current health value
 		STUConfigVar_Custom value_cv(value);
+		//printf("CVD: %p CV: %p\n", set_health_cv.get(), value_cv.get());
 		base.stu_base.vfptr->SetConfigVarValueFromSTUConfigVar(this, set_health_cv.get(), value_cv.get(), 0);
 	}
 

@@ -158,6 +158,7 @@ add_library(Prometheus-Core SHARED
         "UI/imgui_helpers.cpp"
         "UI/imgui_helpers.h"
         "UI/Drawers/EnumFlags.h"
+        TimeScale.h
 )
 target_include_directories(Prometheus-Core PRIVATE ${PROJECT_SOURCE_DIR}/)
 

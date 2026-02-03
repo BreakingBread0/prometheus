@@ -42,8 +42,8 @@ namespace Logs::Detail
         Clean->info("-   ");
         Clean->info("====================================================================");
         Clean->info("-   ");
-        Clean->info("-   Program Base: {:n} {:n}", FmtAddr(ProgramBounds().Base()), FmtAddr(ProgramBounds().Base()));
-        Clean->info("-   Runtime Base: {:n} {:n}", FmtAddr(RuntimeBounds().Base()), FmtAddr(RuntimeBounds().Size()));
+        Clean->info("-   Game Base: {:n} {:n}", FmtAddr(ProgramBounds().Base()), FmtAddr(ProgramBounds().Size()));
+        Clean->info("-   DLL Base: {:n} {:n}", FmtAddr(RuntimeBounds().Base()), FmtAddr(RuntimeBounds().Size()));
         Clean->info("-   Main Thread: {}", GetCurrentThreadId());
         Clean->info("-   ");
         Clean->info("====================================================================");

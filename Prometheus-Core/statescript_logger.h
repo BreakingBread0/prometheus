@@ -164,7 +164,7 @@ private:
         state.is_finish_state = true;
         return ScriptEntry_orig(a1, ss, stu);
     }
-    static void __fastcall Deallocate(StatescriptInstance* script, char a2) {
+    static StatescriptInstance* __fastcall Deallocate(StatescriptInstance* script, char a2) {
         //printf("Script %p (%d) deallocated\n", script->script_id, script->instance_id);
         s_subscriptions.erase(script);
         s_scriptStates.erase(script);
@@ -172,13 +172,14 @@ private:
             auto func = it->lock();
             if (func) {
                 (*func)(script);
-                it++;
+                ++it;
             }
             else {
-                s_deletionSubs.erase(it);
+                it = s_deletionSubs.erase(it);
             }
         }
         Deallocate_orig(script, a2);
+        return script;
     }
 
     static inline std::map<StatescriptInstance*, LogStruct> s_subscriptions{};

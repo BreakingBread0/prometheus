@@ -3,7 +3,7 @@
 #include <vector>
 #include "Statescript.h"
 
-class STUConfigVarDynamic_Custom
+struct STUConfigVarDynamic_Custom
 {
 public:
 	struct fake_list {
@@ -19,8 +19,8 @@ public:
 
 	~STUConfigVarDynamic_Custom() {
 		if (list) {
-			delete list;
 			delete[] list->list;
+			delete list;
 			list = nullptr;
 		}
 	}

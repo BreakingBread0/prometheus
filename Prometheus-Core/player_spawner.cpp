@@ -91,7 +91,7 @@ void player_spawner::modify_ent(spawn_info info, Entity* ent) {
 
 			//filler stub for the entry to 0x0D8000000000001D (valid weapon idxs dict)
 			const StatescriptPrimitive wpnDictionaryBotox{0, StatescriptPrimitive_INT};
-			statescript->ss_inner.rid_entity_varbag->SetArray({0x0D8000000000001D, StatescriptVar_ENTITY_VARBAG}, wpnDictionaryBotox, wpnDictionaryBotox, 1);
+			statescript->ss_inner.rid_entity_varbag->SetArray({0x0D8000000000001D, StatescriptVar_ENTITY_VARBAG }, wpnDictionaryBotox, wpnDictionaryBotox, 1);
 
 			auto weaponId = 1;
 			for (auto weapon : weapon_comp.get_argument_objectlist("m_weapons")) {
@@ -141,6 +141,7 @@ Entity* player_spawner::spawn_ent(spawn_info& info) {
 	for (auto additional : info.additional_compids) {
 		auto spawner_elem = &spawner->loader_entries[additional.component_id];
 		spawner_elem->component_id = additional.component_id;
+		memset((void*)&spawner_elem, 0, sizeof(EntityLoader_Entry));
 		if (additional.init_data)
 			spawner_elem->init_data = additional.init_data;
 		if (additional.stu_component_data)

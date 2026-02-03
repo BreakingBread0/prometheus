@@ -339,6 +339,31 @@ struct STUConfigVarDynamic {
 	STUBullshitListFull<STUResourceReference> item_location;
 };
 
+struct STUConfigVarDynamic_Editable {
+	struct fake_list {
+		STUResourceReference* list;
+		int count;
+	};
+
+	STUConfigVar cv_base;
+	fake_list* list;
+	int static_list_flag = 1;
+
+	STUConfigVarDynamic_Editable(std::vector<__int64> ids);
+
+	~STUConfigVarDynamic_Editable() {
+		if (list) {
+			delete[] list->list;
+			delete list;
+			list = nullptr;
+		}
+	}
+
+	STUConfigVarDynamic* get() {
+		return (STUConfigVarDynamic*)this;
+	}
+};
+
 //TED specific? Unused in the CV getter...
 struct STUConfigVarExpressionFragment {
 	__int64 m_text;

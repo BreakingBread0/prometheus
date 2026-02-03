@@ -12,6 +12,7 @@
 #include "state_replicator.h"
 #include "serialization.h"
 #include "demo_cammoves.cpp"
+#include "TimeScale.h"
 #include "Logs/Logs.h"
 
 __int64 PrometheusSystem::get_inheritance() {
@@ -105,12 +106,12 @@ char SendHeroSelection(StatescriptAction_vt** impl, StatescriptState* state, Sta
 	auto hero_cv = (STUConfigVar*)hero.value;
 	StatescriptPrimitive hero_value;
 	hero_cv->get_value(ss, &hero_value);
-	owassert(hero_value.type == StatescriptPrimitive_INT64);
 
 	auto behavior = stu.get_argument_primitive("m_behavior").get_value<int>();
 	/*printf("HeroSelect behavior: %hx\n", behavior);*/
 	//0 = just send teammate preview
 	if (hero_value.value != 0 && behavior == 1) {
+		owassert(hero_value.type == StatescriptPrimitive_INT64);
 		printf("Selected Hero: %p\n", hero_value.value);
 
 		auto old_local = GameEntityAdmin()->getLocalEnt();
@@ -128,7 +129,6 @@ char SendHeroSelection(StatescriptAction_vt** impl, StatescriptState* state, Sta
 
 		player_spawner spawner(model_entid);
 		spawner.controller_info.heroid = hero_value.value;
-		Component_1_SceneRendering::InitData init{};
 		auto local_ents = spawner.spawn();
 
 		//TODO Move
@@ -153,12 +153,16 @@ void pachipachi(Vector4 position, Vector4 rotation, Vector4 scaling) {
 		return;
 	auto ea = GameEntityAdmin();
 	auto loader = EntityLoader::Create(0x04000000000006CA, res, false, false);
-	auto init_data = Component_1_SceneRendering::InitData{};
-	init_data.position = position;
-	init_data.rotation = rotation;
-	init_data.scale = scaling;
+	//making this a stack local variable crashes the game EXACTLY at 0x00A04249
+	//Why is this? I dont know
+	//But at this point I dont care anymore.
+	auto init_data = new Component_1_SceneRendering::InitData{};
+	init_data->position = position;
+	init_data->rotation = rotation;
+	init_data->scale = scaling;
 
-	loader->loader_entries[1].init_data = (__int64)&init_data;
+	loader->loader_entries[1].init_data = (__int64)init_data;
+	delete init_data;
 	loader->Spawn(ea);
 }
 
@@ -700,8 +704,8 @@ void PrometheusSystem::OnTick(float tick) {
 		if (!_applied_demo) {
 			_applied_demo = true;
 
-			MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0x8537c0), (LPVOID)get_displayString_func, (PVOID*)&get_displayString_orig));
-			MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0x8537c0)));
+			//MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0x8537c0), (LPVOID)get_displayString_func, (PVOID*)&get_displayString_orig));
+			//MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0x8537c0)));
 
 			MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xc87220), (LPVOID)play_game_btn, (PVOID*)0));
 			MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0xc87220)));
@@ -1041,10 +1045,10 @@ void PrometheusSystem::OnTick(float tick) {
 			}
 		}
 		else if (ImGui::IsKeyPressed(ImGuiKey_LeftArrow, false)) {
-			(*globalTimeScale()) -= 0.5f;
+			(*TimeScale::ServerPhysicsTimescale()) -= 0.2f;
 		}
 		else if (ImGui::IsKeyPressed(ImGuiKey_RightArrow, false)) {
-			(*globalTimeScale()) += 0.5f;
+			(*TimeScale::ServerPhysicsTimescale()) += 0.2f;
 		}
 
 		//memcpy(_old_lbutton_states, curr, sizeof(_old_lbutton_states));
@@ -1166,11 +1170,11 @@ void PrometheusSystem::OnTick(float tick) {
 				spawn_pachis();
 			}
 
-			_newly_added_entities.erase(it);
-			continue;
+			it = _newly_added_entities.erase(it);
+			break;
 		}
 
-		it++;
+		++it;
 	}
 
 	if (!_world)

@@ -167,10 +167,6 @@ inline EntityAdminBase* GameEntityAdmin() {
 	return *(EntityAdminBase**)(globals::gameBase + 0x17b7f90);
 }
 
-inline float* globalTimeScale() {
-	return (float*)(globals::gameBase + 0x17b7fe4);
-}
-
 inline uint stringHash(const char* input) {
 	//this is an abomination hahahahahah
 	return ((uint(__fastcall*)(const char*))(globals::gameBase + 0x7f88e0))(input);

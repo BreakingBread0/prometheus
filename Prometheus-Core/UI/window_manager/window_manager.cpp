@@ -165,7 +165,7 @@ void window_manager::render() {
 	}
 }
 
-void window_manager::render_ex() {
+void DECLSPEC_NOINLINE window_manager::render_ex() {
 	try {
 		for (int i = 0; i < s_windows.size(); i++) {
 			auto window = s_windows[i];
