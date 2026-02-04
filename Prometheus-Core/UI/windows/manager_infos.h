@@ -26,7 +26,9 @@ class manager_infos : public window {
 							if (ptr == 0)
 								continue;
 							//__int64 type, bool color, bool edit, bool hash_show
+							ImGui::PushID(j);
 							imgui_helpers::display_type(ptr, true, true, true);
+							ImGui::PopID();
 						}
 					}
 

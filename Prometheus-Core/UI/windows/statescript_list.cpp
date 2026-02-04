@@ -36,19 +36,19 @@ void statescript_list::render() {
 			ImGui::EndMenuBar();
 		}
 
-		if (ImGui::BeginListBox("", ImVec2(-10, -30))) {
+		if (ImGui::BeginListBox("##scripts", ImVec2(-10, -30))) {
 			for (auto script : _ss->ss_inner.g1_instanceArr) {
 				if (!script->parent_instance_id) {
 					list_script(script);
 				}
 			}
 			ImGui::EndListBox();
-				
-			imgui_helpers::InputHex("", &_load_script);
-			ImGui::SameLine();
-			if (ImGui::Button("Load Script")) {
-				_ss->vfptr->load_statescript_script(_ss, _load_script, 0, 0);
-			}
+		}
+
+		imgui_helpers::InputHex("##script", &_load_script);
+		ImGui::SameLine();
+		if (ImGui::Button("Load Script")) {
+			_ss->vfptr->load_statescript_script(_ss, _load_script, 0, 0);
 		}
 	}
 	ImGui::End();

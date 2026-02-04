@@ -60,7 +60,7 @@ struct manager_info
 };
 
 inline manager_info* GetManagerInfoByIndex(int index) {
-	owassert(index > 0 && index < 34);
+	owassert(index >= 0 && index < 34);
 	return ((manager_info**)(globals::gameBase + 0x182c940))[index];
 }
 

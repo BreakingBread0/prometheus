@@ -83,6 +83,10 @@ struct Entity {
     inline T* getById(int id) {
         return (T*)getById(id);
     }
+
+    static Entity* getFromGlobalEntitylist(unsigned int global_entitylist_id) {
+        return ((Entity*(*)(uint))(globals::gameBase + 0x80e6c0))(global_entitylist_id);
+    }
 };
 
 struct Component_50_Input {
