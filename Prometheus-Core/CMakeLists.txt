@@ -159,6 +159,10 @@ add_library(Prometheus-Core SHARED
         "UI/imgui_helpers.h"
         "UI/Drawers/EnumFlags.h"
         TimeScale.h
+        Systems/SingleplayerSpawnSystem.h
+        Systems/SystemBase.h
+        Systems/SystemBase.h
+        Systems/MapChangeObserver.h
 )
 target_include_directories(Prometheus-Core PRIVATE ${PROJECT_SOURCE_DIR}/)
 

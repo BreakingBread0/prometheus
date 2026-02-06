@@ -103,12 +103,9 @@ void entity_window::render() {
 			if (_entity_admin && !IsBadReadPtr((LPVOID)_entity_admin, 8)) {
 				ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(10.0f, 10.0f));
 				if (imgui_helpers::beginTable("Entities", { "ID", "Addr", "Components" })) {
-					EntityListItem* entities = _entity_admin->entity_list_array;
-					for (int i = 0; i < 0x1000; i++) {
-						if (entities->is_possessed_by_a_demon_ && entities->entity_im->ent->parent == nullptr) {
-							render_entity(entities->entity_im->ent);
-						}
-						entities++;
+					for (auto entity : *_entity_admin) {
+						if (entity->parent == nullptr)
+							render_entity(entity);
 					}
 					ImGui::EndTable();
 				}
@@ -204,54 +201,6 @@ void entity_window::render_entity(Entity* ent, int depth) {
 		}
 
 		ImGui::Text("Pos:\n%f %f %f", sceneRendering->position.X, sceneRendering->position.Y, sceneRendering->position.Z);
-
-		/*ImGui::PushID("X");
-		ImGui::Text("X: %f", sceneRendering->position.X);
-		ImGui::SameLine();
-		if (ImGui::Button("-")) {
-			auto vec = sceneRendering->position;
-			vec.X -= 1;
-			sceneRendering->SetPosRotation(vec, sceneRendering->rotation);
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("+")) {
-			auto vec = sceneRendering->position;
-			vec.X += 1;
-			sceneRendering->SetPosRotation(vec, sceneRendering->rotation);
-		}
-		ImGui::PopID();
-
-		ImGui::PushID("Y");
-		ImGui::Text("Y: %f", sceneRendering->position.Y);
-		ImGui::SameLine();
-		if (ImGui::Button("-")) {
-			Vector4 vec = sceneRendering->position;
-			vec.Y -= 1;
-			sceneRendering->SetPosRotation(vec, sceneRendering->rotation);
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("+")) {
-			Vector4 vec = sceneRendering->position;
-			vec.Y += 1;
-			sceneRendering->SetPosRotation(vec, sceneRendering->rotation);
-		}
-		ImGui::PopID();
-
-		ImGui::PushID("Z");
-		ImGui::Text("Z: %f", sceneRendering->position.Z);
-		ImGui::SameLine();
-		if (ImGui::Button("-")) {
-			Vector4 vec = sceneRendering->position;
-			vec.Z -= 1;
-			sceneRendering->SetPosRotation(vec, sceneRendering->rotation);
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("+")) {
-			Vector4 vec = sceneRendering->position;
-			vec.Z += 1;
-			sceneRendering->SetPosRotation(vec, sceneRendering->rotation);
-		}
-		ImGui::PopID();*/
 
 		if (ImGui::Button(EMOJI_COPY " pos")) {
 			char buf[128];

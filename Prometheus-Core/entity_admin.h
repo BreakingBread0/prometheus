@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <map>
 #include <vector>
+#include <mutex>
 
 struct Entity;
 struct EntityAdminBase;
@@ -526,14 +527,7 @@ struct EntityIntermediate // sizeof=0x10
 {
     uint32 entitiy_id;
 	__int32 field_4;
-	Entity* ent;
-};
-
-struct EntityListItem // sizeof=0x10
-{
-	EntityIntermediate* entity_im;
-	__int32 is_possessed_by_a_demon_;
-	__int32 EIGHT;
+	Entity* entity;
 };
 
 struct StatescriptFlagger_vt // sizeof=0x18
@@ -673,14 +667,17 @@ struct EntityAdminCreationInfo {
 };
 
 
-const int ENTITYLIST_MAX = 0x1000;
-//Just threw together GameEntityAdmin, LobbyEntityAdmin, LobbyMapEntityAdmin and ReplayEntityAdmin
+const int ENTITYGROUP_MAX = 0x1000;
 struct EntityAdminBase {
     union {
         EntityAdmin_vt* vfptr;
-        STRUCT_PLACE(EntityListItem*, entity_list_array, 0x10);
+        STRUCT_PLACE(uint, mutex, 0x8);
+        STRUCT_PLACE(volatile int, entity_count, 0xC);
+        //I was mistaken about there being a maximum of 0x1000 entities. In theory there can be unlimited entities! (with the limit being (u)int32... lmao)
+        STRUCT_PLACE_CUSTOM(entity_list_array, 0x10, teList<EntityIntermediate>* entity_list_array);
+
         STRUCT_PLACE(EntityAdmin_ComponentIterator*, component_iterator, 0xb0);
-        STRUCT_PLACE(EntityAdmin_ComponentIterator*, it2, 0xb8);
+        STRUCT_PLACE(EntityAdmin_ComponentIterator*, it2, 0xb8); //component subscription iterators?
         STRUCT_PLACE(teList<system_vt**>, systems_array, 0xD8);
         //STRUCT_PLACE(int, local_entity_id, 0x108);
         STRUCT_PLACE(uint, local_entid, 0x220);
@@ -693,12 +690,35 @@ struct EntityAdminBase {
 
     };
 
+    //TODO: Cann lock() and unlock() just be on the main EntityAdminBase?
+    class EntityAdminMutex {
+    public:
+        EntityAdminMutex(const EntityAdminMutex&) = delete;
+        EntityAdminMutex& operator=(const EntityAdminMutex&) = delete;
+
+        explicit EntityAdminMutex(EntityAdminBase* ea) : _ea(ea) { }
+
+        void lock() {
+            _ea->MutexAcquire();
+        }
+
+        void unlock() {
+            _ea->MutexRelease();
+        }
+    private:
+        EntityAdminBase* _ea;
+    };
+
+    inline EntityAdminMutex getMutex() {
+        return EntityAdminMutex(this);
+    }
+
     inline Entity* getEntById(uint32 id) {
-        EntityListItem* entities = entity_list_array;
-        for (int i = 0; i < ENTITYLIST_MAX; i++) {
-            if (entities->is_possessed_by_a_demon_ && entities->entity_im->entitiy_id == id)
-                return entities->entity_im->ent;
-            entities++;
+        EntityAdminMutex mut = getMutex();
+        std::lock_guard lock{mut};
+        for (auto ent : entity_list_array[id & 0xFFF]) {
+            if (ent.entitiy_id == id)
+                return ent.entity;
         }
         return nullptr;
     }
@@ -734,13 +754,10 @@ struct EntityAdminBase {
             this->operator++();
         }
         EntityIterator& operator++() {
-            do {
-                if (++_current_pos >= ENTITYLIST_MAX) {
-                    _ea = nullptr;
-                    _current_pos = 0;
-                    break;
-                }
-            } while (!_ea->entity_list_array[_current_pos].is_possessed_by_a_demon_);
+            if (++_current_pos >= _ea->entity_count) {
+                _ea = nullptr;
+                _current_pos = 0;
+            }
             return *this;
         }
 
@@ -753,7 +770,18 @@ struct EntityAdminBase {
         value_type operator*() const {
             if (!_ea)
                 throw std::out_of_range("Iterator out of range");
-            return _ea->entity_list_array[_current_pos].entity_im->ent;
+            //This is ugly. Very ugly.
+            int curr = _current_pos;
+            owassert(_current_pos < _ea->entity_count);
+            for (int i = 0; i < ENTITYGROUP_MAX; i++) {
+                auto group = &_ea->entity_list_array[i];
+                if (curr >= group->num)
+                    curr -= group->num;
+                else
+                    return group->ptr[curr].entity;
+            }
+            owassert(false); //Should never happen
+            return nullptr;
         }
 
         bool operator==(const EntityIterator& it) const {
@@ -772,6 +800,25 @@ struct EntityAdminBase {
     EntityIterator end() {
         return EntityIterator();
     }
+
+private:
+    inline void MutexAcquire() {
+        ((void(*)(volatile uint*))(globals::gameBase + 0x7e74a0))(&mutex);
+    }
+
+    inline void MutexRelease() {
+        uint v10 = mutex - 0x1000;
+        if ( (v10 & 0xFFFFF000) == 0 )
+            v10 = 0;
+        mutex = v10;
+    }
+};
+
+struct GameEntityAdmin {
+    union {
+        EntityAdminBase base;
+
+    };
 };
 
 struct CombatSystem_SpawnQueue {
