@@ -14,6 +14,8 @@
 #include "../windows/radio_selector_window.h"
 //#include "../windows/radio_selector_window.h"
 
+//#define WM_THROW_EXCEPTIONS
+
 bool window_manager::window_id_exists(int window_id) {
 	for (auto& window : s_windows) {
 		if (window->window_id == window_id)
@@ -138,17 +140,22 @@ void window_manager::call_window_render(window* window) {
 		window->pre_render();
 		window->render();
 		window->_exception_counter = 0;
-	} __except(EXCEPTION_EXECUTE_HANDLER) {
-		printf("Window failed to render: %x\n", window->window_id);
+	}
+#ifndef WM_THROW_EXCEPTIONS
+	__except(EXCEPTION_EXECUTE_HANDLER) {
+		printf("Window failed to render: %x (%s)\n", window->window_id, window->window_name());
 		if (window->_exception_counter++ >= 10) {
 			printf("Killing window %x due to exception\n", window->window_id);
 			window->_wants_delete = true;
 			message_kill_window(window);
 		}
 	}
+#else
+	__except(EXCEPTION_CONTINUE_SEARCH) {}
+#endif
 }
 
-void window_manager::render_error(const std::string& err) {
+void window_manager::render_error(const char* err) {
 	auto renderer = ImguiRenderer::GetInstance();
 	renderer->BeginScene();
 	renderer->DrawString(ImGui::GetDefaultFont(), "Window manager failed to render!", ImVec2(50, 50), 18, IM_COL32(255, 0, 0, 255), false);
@@ -160,10 +167,21 @@ void window_manager::render() {
 	__try {
 		render_ex();
 	}
+#ifndef WM_THROW_EXCEPTIONS
 	__except (EXCEPTION_EXECUTE_HANDLER) {
 		render_error("C handler exception");
 	}
+#else
+	__except(EXCEPTION_CONTINUE_SEARCH) {}
+#endif
 }
+
+//statemachine debugging because i cant be bothered to refactor this mess once again...
+#if TRUE
+#define WM_SM_DEBUG(statement) printf("(%d: %s) %s %d\n", window->window_id, window->window_name(), "WM: " #statement " on line ", __LINE__); statement;
+#else
+#define WM_SM_DEBUG(statement) statement;
+#endif
 
 void DECLSPEC_NOINLINE window_manager::render_ex() {
 	try {
@@ -176,20 +194,20 @@ void DECLSPEC_NOINLINE window_manager::render_ex() {
 					continue;
 				}
 				if (window->is_modal) {
-					window->is_dependent = true;
+					WM_SM_DEBUG(window->is_dependent = true);
 					if (window->is_collapsed) {
-						window->queue_deletion();
+						WM_SM_DEBUG(window->queue_deletion());
 						continue;
 					}
 				}
 				if (window->is_dependent) {
 					auto dependant = window->created_by.lock();
 					if (!dependant) {
-						window->queue_deletion();
+						WM_SM_DEBUG(window->queue_deletion());
 						continue;
 					}
 					else {
-						dependant->_has_dependents = true;
+						WM_SM_DEBUG(dependant->_has_dependents = true);
 					}
 				}
 				if (window->is_docked) {
@@ -202,7 +220,7 @@ void DECLSPEC_NOINLINE window_manager::render_ex() {
 							auto creator = window->created_by.lock();
 							if (creator) {
 								if (this_root != creator->_root_dock.lock()) {
-									ImGui::DockContextQueueUndockWindow(ImGui::GetCurrentContext(), ImGui::FindWindowByID(window->im_id));
+									WM_SM_DEBUG(ImGui::DockContextQueueUndockWindow(ImGui::GetCurrentContext(), ImGui::FindWindowByID(window->im_id)));
 								}
 							}
 						}
@@ -210,20 +228,30 @@ void DECLSPEC_NOINLINE window_manager::render_ex() {
 				}
 
 				if (window->_focus_next_frame && !window->is_collapsed && window->im_id) {
-					window->_focus_next_frame = false;
+					WM_SM_DEBUG(window->_focus_next_frame = false);
 					ImGui::FocusWindow(ImGui::FindWindowByID(window->im_id));
 				}
 
 				call_window_render(window.get());
 
-				if (window->_is_focused)
-					s_focused_window = window->window_id;
-
 				if (window->_focus_next_frame) {
-					window->set_collapsed(false);
+					WM_SM_DEBUG(window->set_collapsed(false));
 				}
-				else if (window->is_modal && !window->_is_focused) {
-					window->queue_deletion();
+				else if (window->is_modal) {
+					bool is_topmost_modal = true;
+					for (auto child : get_children(window)) {
+						if (child->is_modal) {
+							is_topmost_modal = false;
+							break;
+						}
+					}
+					if (is_topmost_modal && !window->is_focused) {
+						if (window->modal_force_focus) {
+							WM_SM_DEBUG(window->_focus_next_frame = true);
+						} else {
+							WM_SM_DEBUG(window->queue_deletion());
+						}
+					}
 				}
 
 				auto imw = ImGui::GetCurrentWindowRead();
@@ -241,12 +269,12 @@ void DECLSPEC_NOINLINE window_manager::render_ex() {
 										auto other_window = ImGui::FindWindowByID(other->im_id);
 										if (other_window) {
 											ImGui::DockContextQueueDock(ImGui::GetCurrentContext(), this_window, this_window->DockNodeAsHost, other_window, it->direction, it->size_ratio, true);
-											window->_dock_requests.erase(it);
+											it = window->_dock_requests.erase(it);
 											continue;
 										}
 									}
 								}
-								it++;
+								++it;
 							}
 						}
 						s_windows_by_im_id[window->im_id] = window;
@@ -261,11 +289,11 @@ void DECLSPEC_NOINLINE window_manager::render_ex() {
 						}
 						window->_is_collapsed = root->is_collapsed;
 						if (window->_wants_collapse) {
-							root->_is_collapsed = true;
+							WM_SM_DEBUG(root->_is_collapsed = true);
 							window->_wants_collapse = false;
 						}
 						if (window->_wants_show) {
-							root->_is_collapsed = false;
+							WM_SM_DEBUG(root->_is_collapsed = false);
 							window->_wants_show = false;
 						}
 						if (window->_first_render && !window->is_docked && !window->is_modal) {
@@ -280,15 +308,14 @@ void DECLSPEC_NOINLINE window_manager::render_ex() {
 									new_pos.x = 20;
 								if (new_pos.y < 20)
 									new_pos.y = 20;
-								curr_window->Pos = new_pos;
+								WM_SM_DEBUG(curr_window->Pos = new_pos);
 							}
 						}
-						window->_first_render = false;
+						if (window->_first_render)
+							WM_SM_DEBUG(window->_first_render = false);
+						if (window->_just_focused)
+							WM_SM_DEBUG(window->_focus_counter = InterlockedAdd(&s_focus_counter, 1));
 					}
-				}
-
-				if (imw->LastFrameJustFocused) {
-					s_latest_windows[window->get_window_type()] = window;
 				}
 			}
 		}
@@ -298,7 +325,7 @@ void DECLSPEC_NOINLINE window_manager::render_ex() {
 		s_window_add_queue.clear();
 	}
 	catch (const std::exception& ex) {
-		render_error("Failed to render because of error: " + std::string(ex.what()));
+		render_error(("Failed to render because of error: " + std::string(ex.what())).c_str());
 	}
 	catch (...) {
 		render_error("Failed to render (other error).");
@@ -316,6 +343,16 @@ std::shared_ptr<window> window_manager::get_docked(window_type typ, window* from
 		}
 	}
 	return {};
+}
+
+std::vector<std::shared_ptr<window>> window_manager::get_children(std::shared_ptr<window> from) {
+	std::vector<std::shared_ptr<window>> result{};
+	for (auto window : s_windows) {
+		if (window->created_by.lock() == from) {
+			result.push_back(window);
+		}
+	}
+	return result;
 }
 
 std::vector<std::shared_ptr<window>> window_manager::get_all_by_type(window_type typ) {
@@ -345,11 +382,12 @@ std::vector<std::shared_ptr<window>> window_manager::get_all_by_type(window_type
 //}
 
 std::shared_ptr<window> window_manager::get_latest_by_type(window_type typ) {
-	auto result = s_latest_windows.find(typ);
-	if (result != s_latest_windows.end()) {
-		return result->second.lock();
+	std::shared_ptr<window> result{};
+	for (auto window : s_windows) {
+		if (window->get_window_type() == typ && (!result || result->_focus_counter < window->_focus_counter))
+			result = window;
 	}
-	return std::shared_ptr<window>{};
+	return result;
 }
 
 bool window::open_window(const char* title, int flags, ImVec2 size) {
@@ -367,19 +405,35 @@ bool window::open_window(const char* title, int flags, ImVec2 size) {
 		if (window) {
 			auto size = window->Size;
 			int root_id = _root_dock.lock() ? _root_dock.lock()->window_id : -1;
-			name = std::format("{:s} ({:d}x{:d}) {:d} dock: {:d}###{:x}", title == nullptr ? window_name() : title, (int)size.x, (int)size.y, window_id, root_id, window_id);
+			name = std::format("{:s} ({:d}x{:d}) {:d} dock: {:d} focus: {:s}/{:x}###{:x}", title == nullptr ? window_name() : title, (int)size.x, (int)size.y, window_id, root_id, is_focused ? "Yes" : "No", _focus_counter, window_id);
 		}
 	}
 	if (name.empty()) {
 		name = std::format("{:s}###{:x}", title == nullptr ? window_name() : title, window_id);
 	}
-	auto state = ImGui::Begin(name.c_str(), &open, flags | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings);
+	flags |= ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings;
+	if (is_modal) {
+		flags |= ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove;
+		if (_first_render) {
+			auto pos = ImGui::GetIO().MousePos;
+			pos.x += 10;
+			pos.y += 10;
+			ImGui::SetNextWindowPos(pos);
+		}
+		if (modal_force_focus) {
+			ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(255, 0, 255, 255));
+		}
+	}
+	auto state = ImGui::Begin(name.c_str(), &open, flags);
 	if (!open) {
 		this->queue_deletion();
 	}
 	if (state) {
 		auto window = ImGui::GetCurrentWindowRead();
 		this->_im_id = window->ID;
+		bool old_focus = _is_focused;
+		_is_focused = ImGui::IsWindowFocused();
+		_just_focused = !old_focus && _is_focused;
 	}
 	return state;
 }

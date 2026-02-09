@@ -818,6 +818,12 @@ __int64 CreateAllocator_hook(int type) {
     return CreateAllocator_orig(1);
 }
 
+__int64 (*MapCreateSwitch_orig)(__int64, __int64);
+__int64 MapCreateSwitch_hook(__int64 a1, __int64 a2) {
+    //if (*(char*)(a1 + 0x32) == )
+    return MapCreateSwitch_orig(a1, a2);
+}
+
 void __cdecl StartHook(void*) {
     //system("pause");
     printf("hello monsieur\n");

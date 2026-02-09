@@ -375,7 +375,9 @@ namespace imgui_helpers {
 				ImGui::Text("%lf", value.get_value<double>());
 				break;
 			default:
-				ImGui::TextUnformatted("Unknown Primitive");
+				ImGui::TextUnformatted("ImplementMe:");
+				ImGui::SameLine();
+				display_type(value.type, true, false, false);
 				break;
 			}
 		}

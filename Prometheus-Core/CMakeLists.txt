@@ -163,6 +163,10 @@ add_library(Prometheus-Core SHARED
         Systems/SystemBase.h
         Systems/SystemBase.h
         Systems/MapChangeObserver.h
+        Components/Component.h
+        UI/windows/component_window.h
+        UI/windows/stu_enum_window.h
+        UI/history_helper.h
 )
 target_include_directories(Prometheus-Core PRIVATE ${PROJECT_SOURCE_DIR}/)
 

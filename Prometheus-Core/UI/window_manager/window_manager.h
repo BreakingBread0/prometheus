@@ -93,12 +93,14 @@ private:
 	bool _has_dependents = false;
 	ImGuiID _im_id = 0;
 	bool _is_focused = false;
+	bool _just_focused = false;
 	bool _is_collapsed = 0;
 	bool _wants_collapse = false;
 	bool _wants_show = false;
 	bool _wants_delete = false;
 	bool _is_docked = false;
 	int _exception_counter = 0;
+	int _focus_counter = -1; //Used to get the topmost window of a specific type. Why use many word when few do trick?
 	std::weak_ptr<window> _root_dock;
 	//ImGuiID _dock_uniqueid;
 
@@ -161,7 +163,7 @@ public:
 	//static void remove_window(window* window_reference);
 	static void render();
 	static void render_ex();
-	static void render_error(const std::string& error);
+	static void render_error(const char* error);
 
 	//Put here since the MSVC linker is bullshit. 
 	template <typename T>
@@ -240,10 +242,12 @@ private:
 	static inline std::vector<std::shared_ptr<window>> s_window_add_queue{};
 	static inline std::vector<std::shared_ptr<window>> s_windows{};
 	static inline std::map<ImGuiID, std::weak_ptr<window>> s_windows_by_im_id{};
-	static inline std::map<window_type, std::weak_ptr<window>> s_latest_windows{};
 	static inline volatile long s_id_counter;
-	static inline int s_focused_window;
+	//increased by 1 every time its assigned to a window
+	//assigned when window gains focus (imgui message)
+	static inline volatile long s_focus_counter;
 	static void call_window_render(window*);
+	static std::vector<std::shared_ptr<window>> get_children(std::shared_ptr<window> from);
 
 	//that is actually such a good idea. Thanks, olususus!
 	static std::set<std::string>& s_window_categories() {

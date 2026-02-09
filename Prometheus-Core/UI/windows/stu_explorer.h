@@ -3,6 +3,7 @@
 #include "STU.h"
 #include "../window_manager/window_manager.h"
 #include "../imgui_helpers.h"
+#include "UI/history_helper.h"
 
 using namespace Atlas::STU::RTTI;
 
@@ -12,6 +13,7 @@ class stu_explorer : public window {
 
 public:
 	void navigate_to(STUInfo* info, __int64 instance, StatescriptInstance* ss_inst);
+	void navigate_to_resource(__int64 resource);
 
 	inline void render() override;
 
@@ -32,16 +34,25 @@ private:
 
 	void render_stu(STU_Object value);
 
+	struct FollowedItem {
+		STUArgumentInfo* item = nullptr;
+		int index = -1;
+	};
+
+	void navigate_internal(STUInfo* stu_info, __int64 current_instance, StatescriptInstance* ss, bool remove_root, FollowedItem followItem);
+	void navigate_with_history(STUInfo* stu_info, __int64 current_instance, FollowedItem followed_via);
+
 	struct Item {
-		STUInfo* cls = 0;
+		STUInfo* stu_info = nullptr;
 		__int64 current_instance = 0;
 		StatescriptInstance* ss = 0;
-		uint followed = 0, followed_index = -1;
-	} _current_item;
+
+		std::vector<FollowedItem> followed_path;
+	} root_item;
+	__int64 root_item_resource = 0;
 
 	bool _show_inheritance = false;
-	std::vector<Item> _history{};
-	std::vector<Item> _forward_history{};
+	history_helper<Item> _history{};
 };
 
 WINDOW_REGISTER(stu_explorer);

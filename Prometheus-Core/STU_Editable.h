@@ -291,9 +291,9 @@ public:
 	STU_PrimitiveList(STUArgumentInfo* argument, void* value = nullptr) : STU_ListBase(argument, value) {
 		auto type = argument->Constraint->ToConstraintType();
 		owassert(type == STU_ConstraintType_BSList_Primitive || type == STU_ConstraintType_BSList_Enum);
-		auto stu_type = argument->Constraint->ToConstraintType();
+		_stu_type = argument->Constraint->GetSTUType();
 		if (type == STU_ConstraintType_BSList_Primitive)
-			_item_size = STU_NAME::Primitive::_primitive_size(stu_type);
+			_item_size = STU_NAME::Primitive::_primitive_size(_stu_type);
 		else
 			_item_size = 4; //Enum has a size of 4
 	}

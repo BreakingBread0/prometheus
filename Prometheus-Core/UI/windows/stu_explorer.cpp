@@ -4,80 +4,105 @@
 #include "stu_resources.h"
 #include "stu_primitive_edit.h"
 #include "stu_object_edit.h"
+#include "stu_enum_window.h"
 
-void stu_explorer::navigate_to(STUInfo* info, __int64 instance, StatescriptInstance* ss_inst) {
-	_forward_history.clear();
-	_history.push_back(_current_item);
-	_current_item.cls = info;
-	_current_item.current_instance = instance;
-	_current_item.ss = ss_inst;
+void stu_explorer::navigate_to(STUInfo* info, __int64 instance, StatescriptInstance* ss_inst = nullptr) {
+	navigate_internal(info, instance, ss_inst, true, {});
+}
+
+void stu_explorer::navigate_to_resource(__int64 resource) {
+	auto item = stu_resources::GetByID(resource);
+	if (item->valid()) {
+		navigate_internal(item->vfptr->GetSTUInfo(), (__int64)item, nullptr, true, {});
+		root_item = _history.current_item;
+		root_item_resource = resource;
+	}
+}
+
+void stu_explorer::navigate_with_history(STUInfo* stu_info, __int64 current_instance, FollowedItem followed_via) {
+	navigate_internal(stu_info, current_instance, _history.current_item.ss, false, followed_via);
+}
+
+void stu_explorer::navigate_internal(STUInfo* info, __int64 instance, StatescriptInstance* ss_inst, bool remove_root, FollowedItem followItem) {
+	Item new_item;
+	new_item.current_instance = instance;
+	new_item.stu_info = info;
+	new_item.ss = ss_inst;
+	if (followItem.item) {
+		new_item.followed_path = _history.current_item.followed_path;
+		new_item.followed_path.push_back(followItem);
+	}
+
+	_history.push_item(new_item);
+
+	if (remove_root) {
+		root_item_resource = 0;
+		root_item = {};
+	}
 }
 
 inline void stu_explorer::render() {
 	if (open_window(nullptr, 0, ImVec2(1100, 500))) {
-		auto history_disabled = _history.size() == 1;
-		if (history_disabled)
-			ImGui::BeginDisabled();
-		if (ImGui::Button(EMOJI_BACK)) {
-			auto& item = _history.back();
-			_forward_history.push_back(_current_item);
-			_current_item = item;
-			_history.pop_back();
-		}
-		if (history_disabled)
-			ImGui::EndDisabled();
+		_history.display_history_buttons();
 
-		ImGui::SameLine();
-		bool forward_history_disabled = _forward_history.size() == 0;
-		if (forward_history_disabled)
-			ImGui::BeginDisabled();
-		if (ImGui::Button(EMOJI_FORWARD)) {
-			auto& item = _forward_history.back();
-			_history.push_back(_current_item);
-			_current_item = item;
-			_forward_history.pop_back();
-		}
-		if (forward_history_disabled)
-			ImGui::EndDisabled();
+		ImGui::PushID("history");
+		int follow_amount = _history.current_item.followed_path.size();
+		if (follow_amount > 0) {
+			bool first = true;
+			for (auto item_followed : _history.current_item.followed_path) {
+				ImGui::PushID(follow_amount);
+				if (!first) {
+					ImGui::SameLine();
+					ImGui::BeginDisabled();
+					ImGui::TextUnformatted(">>");
+					ImGui::EndDisabled();
+					ImGui::SameLine();
+				} else {
+					first = false;
+				}
 
-		if (_history.size() > 0 && _history.back().followed != 0) {
-			for (auto it = _history.rbegin(); it != _history.rend(); it++) {
-				if (it->followed == 0) {
-					while (it-- != _history.rbegin()) {
-						imgui_helpers::display_type(it->followed, false, false, false);
-						if (it->followed_index != -1) {
-							ImGui::SameLine();
-							ImGui::Text("(index %d)", it->followed_index);
-						}
-						ImGui::SameLine();
-						ImGui::TextDisabled(">>");
-						ImGui::SameLine();
-					}
+				if (ImGui::ArrowButton("##back", ImGuiDir_Left)) {
+					for (int i = 0; i < follow_amount; i++)
+						_history.history_back();
+					ImGui::PopID();
 					break;
 				}
-			}
-			ImGui::NewLine();
-		}
-
-		if (_current_item.current_instance) {
-			display_addr(_current_item.current_instance, "Current Instance");
-			if (IsBadReadPtr((void*)_current_item.current_instance, 1)) {
 				ImGui::SameLine();
-				ImGui::TextUnformatted("Invalid");
+				ImGui::Text("[0x%x]", item_followed.item->Offset);
+				if (item_followed.index != -1) {
+					ImGui::SameLine();
+					ImGui::Text("(idx 0x%x)", item_followed.index);
+				}
+				ImGui::SameLine();
+				imgui_helpers::display_type(item_followed.item->Hash, false, false, false);
+
+				follow_amount--;
+				ImGui::PopID();
+			}
+		}
+		ImGui::PopID();
+
+		if (_history.current_item.current_instance) {
+			display_addr(_history.current_item.current_instance, "Current Instance");
+			if (IsBadReadPtr((void*)_history.current_item.current_instance, 1)) {
+				ImGui::SameLine();
+				ImGui::PushFont(imgui_helpers::BoldFont);
+				ImGui::TextUnformatted("Invalid!");
+				ImGui::PopFont();
 			}
 		}
 
-		if (_current_item.cls) {
-			auto instance = _current_item.cls;
-			STU_Object obj(instance, IsBadReadPtr((void*)_current_item.current_instance, _current_item.cls->InstanceSize) ? nullptr : (void*)_current_item.current_instance);
+		if (_history.current_item.stu_info) {
+			auto instance = _history.current_item.stu_info;
+			STU_Object obj(instance, IsBadReadPtr((void*)_history.current_item.current_instance, _history.current_item.stu_info->InstanceSize) ? nullptr : (void*)_history.current_item.current_instance);
 			instance = (obj = obj.get_runtime_root()).struct_info;
 			int children = 0;
-			auto child = _current_item.cls->Child;
+			auto child = _history.current_item.stu_info->Child;
 			while (child) {
 				children++;
 				child = child->Sibling;
 			}
-			ImGui::Text("Arguments (top): %d - Size: %x - Children %d - Hash: ", _current_item.cls->ArgsCount, _current_item.cls->InstanceSize, children);
+			ImGui::Text("Arguments (top): %d - Size: %x - Children %d - Hash: ", _history.current_item.stu_info->ArgsCount, _history.current_item.stu_info->InstanceSize, children);
 			ImGui::SameLine();
 			while (instance) {
 				//__try {
@@ -111,8 +136,8 @@ void stu_explorer::render_resref(STUResourceReference* ref) {
 			ImGui::SameLine();
 		}
 		auto stu = stu_resources::GetByID(ref->resource_id);
-		if (stu && imgui_helpers::TooltipButton(EMOJI_FORWARD, "follow")) {
-			navigate_to(stu->to_editable().struct_info, (__int64)stu, nullptr);
+		if (stu && imgui_helpers::TooltipButton(EMOJI_FORWARD, "Follow - Will end editing session for current resource")) {
+			navigate_to_resource(ref->resource_id);
 		}
 		ImGui::SameLine();
 		if (ImGui::Button(EMOJI_EDIT)) {
@@ -148,9 +173,7 @@ void stu_explorer::render_stu(STU_Object value) {
 				auto list = (STUBullshitListFull<__int64>*)((__int64)value.value + arg->Offset);
 				if (list->valid()) {
 					if (imgui_helpers::TooltipButton(EMOJI_FORWARD, "Follow without address")) {
-						navigate_to(reg->GetSTUInfoByHash(arg_type_hash), 0, 0);
-						auto& old = _history.back();
-						old.followed = arg->Hash;
+						navigate_with_history(reg->GetSTUInfoByHash(arg_type_hash), 0, FollowedItem{arg});
 					}
 					ImGui::SameLine();
 					ImGui::Text("Count: %d", list->count());
@@ -165,9 +188,7 @@ void stu_explorer::render_stu(STU_Object value) {
 				auto list = value.get_argument_map(arg);
 				if (list.valid()) {
 					if (imgui_helpers::TooltipButton(EMOJI_FORWARD, "Follow without address")) {
-						navigate_to(reg->GetSTUInfoByHash(arg_type_hash), 0, 0);
-						auto& old = _history.back();
-						old.followed = arg->Hash;
+						navigate_with_history(reg->GetSTUInfoByHash(arg_type_hash), 0, FollowedItem{arg});
 					}
 					ImGui::SameLine();
 					ImGui::Text("Count: %d", list.count());
@@ -193,9 +214,7 @@ void stu_explorer::render_stu(STU_Object value) {
 				case STU_ConstraintType_InlinedObject: {
 					auto object = value.get_argument_object(arg);
 					if (imgui_helpers::TooltipButton(EMOJI_FORWARD, "Follow")) {
-						navigate_to(object.struct_info, (__int64)object.value, _current_item.ss);
-						auto& old = _history.back();
-						old.followed = arg->Hash;
+						navigate_with_history(object.struct_info, (__int64)object.value, FollowedItem{arg});
 					}
 					if (!object.value) {
 						ImGui::SameLine();
@@ -206,6 +225,14 @@ void stu_explorer::render_stu(STU_Object value) {
 				case STU_ConstraintType_Enum: {
 					auto primitive = value.get_argument_primitive(arg);
 					ImGui::Text("%x", primitive.get_value<uint>());
+					ImGui::SameLine();
+					auto enum_type = STUFindEnum(arg_type_hash);
+					auto enum_value = enum_type->findValue(primitive.get_value<uint>());
+					if (enum_value) {
+						imgui_helpers::display_type(enum_value->hash, true, true, false);
+					} else {
+						ImGui::Text("enum value invalid");
+					}
 					break;
 				}
 				case STU_ConstraintType_NonSTUResourceRef:
@@ -220,15 +247,28 @@ void stu_explorer::render_stu(STU_Object value) {
 		else {
 			if (type == STU_ConstraintType_Object || type == STU_ConstraintType_InlinedObject || arg->Constraint->IsList()) {
 				if (imgui_helpers::TooltipButton(EMOJI_FORWARD, "Follow")) {
-					navigate_to(reg->GetSTUInfoByHash(arg_type_hash), 0, 0);
-					auto& old = _history.back();
-					old.followed = arg->Hash;
+					navigate_with_history(reg->GetSTUInfoByHash(arg_type_hash), 0, FollowedItem{arg});
 				}
 			}
 		}
 
 		ImGui::TableNextColumn();
 		ImGui::TextUnformatted(STUConstraintType_ToString(type));
+		if (type == STU_ConstraintType_Enum || type == STU_ConstraintType_BSList_Enum) {
+			ImGui::SameLine();
+			auto def = STUFindEnum(arg_type_hash);
+			if (!def)
+				ImGui::BeginDisabled();
+
+			if (ImGui::Button(EMOJI_SHARE)) {
+				auto window = stu_enum_window::get_latest_or_create(this);
+				dock_item_right(window, 0.8f);
+				window->set(def);
+			}
+
+			if (!def)
+				ImGui::EndDisabled();
+		}
 
 		ImGui::TableNextColumn();
 		imgui_helpers::display_type(arg_type_hash, true, true, false);
@@ -259,10 +299,7 @@ void stu_explorer::render_stu(STU_Object value) {
 					imgui_helpers::display_type(item.get_runtime_root().struct_info->Hash, true, true, false);
 					ImGui::SameLine();
 					if (imgui_helpers::TooltipButton(EMOJI_FORWARD, "Follow")) {
-						navigate_to(item.struct_info, (__int64)item.value, _current_item.ss);
-						auto& old = _history.back();
-						old.followed = arg->Hash;
-						old.followed_index = i;
+						navigate_with_history(item.struct_info, (__int64)item.value, FollowedItem{arg, i});
 					}
 					ImGui::SameLine();
 					if (imgui_helpers::TooltipButton(EMOJI_CROSS, "Remove")) {
@@ -340,10 +377,7 @@ void stu_explorer::render_stu(STU_Object value) {
 					imgui_helpers::display_type(item.second.get_runtime_root().struct_info->Hash, true, true, false);
 					ImGui::SameLine();
 					if (imgui_helpers::TooltipButton(EMOJI_FORWARD, "Follow")) {
-						navigate_to(item.second.struct_info, (__int64)item.second.value, _current_item.ss);
-						auto& old = _history.back();
-						old.followed = arg->Hash;
-						old.followed_index = i;
+						navigate_with_history(item.second.struct_info, (__int64)item.second.value, FollowedItem{arg, i});
 					}
 					ImGui::PopID();
 				}

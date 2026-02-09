@@ -417,13 +417,15 @@ struct STUEnumValueDefinition {
 
 struct STUEnumDefinition {
 	char* enum_name;
+	uint32 __unused;
 	uint32 enum_hash;
 	STUEnumValueDefinition* values;
 	int values_count;
 
 	STUEnumValueDefinition* findValue(int value) {
+		owassert(this);
 		for (int i = 0; i < values_count; i++) {
-			if (values[i].value == value)
+			if ((int)values[i].value == value)
 				return &values[i];
 		}
 		return nullptr;

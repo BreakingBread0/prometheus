@@ -1,28 +1,7 @@
 #pragma once
 #include "../window_manager/window_manager.h"
 #include <string>
-
-struct ComponentCreator;
-struct ComponentCreator_vt {
-	__int64 (*destruct)(ComponentCreator*, char);
-};
-
-struct ComponentCreator {
-	union {
-		ComponentCreator_vt* vfptr;
-		STRUCT_PLACE(char, component_id, 8);
-		STRUCT_PLACE(StructPageAllocator*, iclass, 0x28);
-		STRUCT_PLACE(__int64, iwelche_flags, 0x30);
-	};
-};
-
-struct ComponentRTTI
-{
-     ComponentRTTI* next;
-     __int16 component_id;
-     ComponentCreator*(__fastcall *create_componentCreator)();
-     __int64 field_18;
- };
+#include "Components/Component.h"
 
 //aka a bulk memory allocator
 class blizzbbqueueq_window : public window {
@@ -77,11 +56,14 @@ class blizzbbqueueq_window : public window {
 			{ "mby_ux_root", 0x180f058 },
 			{ "Job queue", 0x1892210 },
 			{ "Resourceload queue", 0x17a56a0 },
-			{ "Viewmodel shit", 0x18097b8 }
+			{ "Viewmodel shit", 0x18097b8 },
+			{"Compo strange 1 0x4", 0x17a5ad0},
+			{"Compo strange 2 0x5", 0x17a5ad0},
+			{"Compo strange 3 0xb", 0x17a6380}
 		};
 		if (open_window()) {
 			if (ImGui::Button("Load Component Creators")) {
-				ComponentRTTI* rtti = *(ComponentRTTI**)(globals::gameBase + 0x18f74d0);
+				auto rtti = ComponentRTTI::Get();
 				while (rtti) {
 					//printf("ID: %d\n", rtti->component_id);
 					auto creator = rtti->create_componentCreator();

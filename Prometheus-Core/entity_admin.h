@@ -7,6 +7,7 @@
 #include <map>
 #include <vector>
 #include <mutex>
+#include <Components/Component.h>
 
 struct Entity;
 struct EntityAdminBase;
@@ -20,37 +21,6 @@ struct ComponentBase;
 inline void EntityIDToString(uint* entid, char* buf, int sz) {
     ((void(*)(uint*, char*, int))(globals::gameBase + 0x7f91d0))(entid, buf, sz);
 }
-
-struct Component_vt {
-    class GetMirrorDataHelper {
-        virtual void Callback(ComponentBase*, __int64* mirrorData) {
-            MirrorDataPtr = mirrorData;
-        }
-
-    public:
-        __int64* MirrorDataPtr = nullptr;
-    };
-
-    __int64(__fastcall* deallocate)(__int64, char);
-    void(__fastcall * CallForDeserialize)(ComponentBase*, GetMirrorDataHelper*);
-    char (*OnCreate)(ComponentBase*, __int64 /*EntityLoader**/);
-    void(__fastcall* field_1)();
-    void(__fastcall* field_2)();
-    char (*field_3)();
-};
-
-struct ComponentBase {
-    Component_vt* vfptr;
-	Entity* entity_backref;
-	unsigned char component_id;
-	int is_mirrored; //TODO that is wrong. Why do some components have 1 and some have 0?
-
-    __int64* GetMirrorData() {
-        Component_vt::GetMirrorDataHelper helper{};
-        vfptr->CallForDeserialize(this, &helper);
-        return helper.MirrorDataPtr;
-    }
-};
 
 struct Entity {
 	union {
@@ -751,8 +721,9 @@ struct EntityAdminBase {
 
         EntityIterator() {}
         EntityIterator(EntityAdminBase* ea) : _ea(ea) {
-            this->operator++();
+
         }
+
         EntityIterator& operator++() {
             if (++_current_pos >= _ea->entity_count) {
                 _ea = nullptr;
