@@ -167,6 +167,10 @@ add_library(Prometheus-Core SHARED
         UI/windows/component_window.h
         UI/windows/stu_enum_window.h
         UI/history_helper.h
+        UI/windows/effect_tester.h
+        Components/Component_4_Model.h
+        displaytext_resources.h
+        stu_serializer.h
 )
 target_include_directories(Prometheus-Core PRIVATE ${PROJECT_SOURCE_DIR}/)
 

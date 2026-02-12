@@ -34,6 +34,7 @@ enum StatescriptPrimitive_Type // 4 bytes
 	StatescriptPrimitive_INTVEC4 = 0x7,        // confirmed
 	StatescriptPrimitive_SS_INSTANCEID = 0x8,
 	StatescriptPrimitive_FLT16VEC4 = 0x9,
+	StatescriptPrimitive_ColorRGBA = 0xA, //4 bytes 0-255
 	StatescriptPrimitive_ENTITY = 0xB,
 	StatescriptPrimitive_COUNT = 0xC //not a type
 };

@@ -16,8 +16,6 @@ public:
 		MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xa4c620), (LPVOID)STUD_DestroyResource, (PVOID*)&stud_destroy_orig));
 		MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0xa4c620)));
 
-		MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0x8553f0), (LPVOID)DisplayText_ConstructFromResource, (PVOID*)&DisplayText_construct_orig));
-		MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0x8553f0)));
 		memset((void*)(globals::gameBase + 0x8553fb), 0x90, 0x3BB);
 	}
 
@@ -56,9 +54,6 @@ private:
 
 	static inline __int64(__fastcall* stud_construct_orig)(ResourceLoadEntry*);
 	static __int64 STUD_ConstructFromResource(ResourceLoadEntry* entry);
-
-	static inline __int64(__fastcall* DisplayText_construct_orig)(ResourceLoadEntry*);
-	static __int64 DisplayText_ConstructFromResource(ResourceLoadEntry* entry);
 
 	static inline __int64(__fastcall* stud_destroy_orig)(ResourceLoadEntry*);
 	static inline __int64 STUD_DestroyResource(ResourceLoadEntry* entry) {

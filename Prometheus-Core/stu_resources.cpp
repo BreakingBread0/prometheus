@@ -23,21 +23,3 @@ __int64 stu_resources::STUD_ConstructFromResource(ResourceLoadEntry* entry) {
 	}
 	return result;
 }
-
-//bool __declspec(noinline) test123(ResourceLoadEntry* entry) {
-//	if (globals::isDemo) {
-//		if (entry->resource_id == 0xde00000000005df) { //PLAY
-//			printf("here\n");
-//		}
-//	}
-//	return false;
-//}
-
-__int64 stu_resources::DisplayText_ConstructFromResource(ResourceLoadEntry* entry) {
-	/*if (test123(entry))
-		return 1;*/
-	return DisplayText_construct_orig(entry);;
-	
-}
-
-//

@@ -398,6 +398,16 @@ struct Component_4F_Camera {
     }
 };
 
+/*
+ *Component 4
+ * Flags at 0x54:
+ *
+ * 0x10000: No Shadows
+ * 0x2000000: m_allowMaterialEffectInheritance
+ * 0x20000000: m_blockScreenEffects
+ * 0x40000000: m_blockScreenEffects3P
+ */
+
 struct Component_1_SceneRendering {
     struct InitData {
         Vector4 position;
@@ -405,6 +415,23 @@ struct Component_1_SceneRendering {
         Vector4 rotation;
     };
 
+    /*
+     * RENDERING FLAGS
+     *
+     * 1: still loading? (see map entity loading 0xa487f1)
+     * 2: Load failed?
+     * 8: Has an entry in component2 list 0x98
+     *
+     * 0x8000: Invisible
+     * 0x200000000000: Invisible
+     * 0x10000000000000: Set on map entities, idk 0xa490e7
+     *
+     * 0x8000 and 0x10000 are set when Placeable_Base field_10 & 8 is set
+     * model always sets 0x10000000000000
+     * DynamicLighting always sets in OnCreate: 0x100000000000, 0x20000000, 0x10000000000, 0x20000000000
+     * Model always sets in OnCreate: 0x100000000000
+     * 0x100000000000 -> Has SceneRenderingInterfacer_vt?
+     */
     union {
         ComponentBase base;
 

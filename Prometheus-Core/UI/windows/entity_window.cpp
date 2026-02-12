@@ -10,6 +10,7 @@
 #include "stu_explorer.h"
 #include "movstate_visualizer.h"
 #include "STU_Editable.h"
+#include "Components/Component_4_Model.h"
 
 struct MovementState;
 
@@ -117,6 +118,25 @@ void entity_window::render() {
 	ImGui::End();
 }
 
+void entity_window::render_resload(MisalignedResourceLoadEntry* res, int item) {
+	ImGui::PushID("resload");
+	ImGui::PushID(item);
+	if (res->valid()) {
+		auto resload_ent = res->align();
+		if (resload_ent->valid()) {
+			ImGui::Text("%d:", item);
+			ImGui::SameLine();
+			if (imgui_helpers::TooltipButton(EMOJI_SHARE, "Open in stu explorer")) {
+				stu_explorer::get_latest_or_create(this)->navigate_to_resource(resload_ent->resource_id);
+			}
+			ImGui::SameLine();
+			imgui_helpers::display_type(resload_ent->resource_id, true, true, false);
+		}
+	}
+	ImGui::PopID();
+	ImGui::PopID();
+}
+
 void entity_window::render_entity(Entity* ent, int depth) {
 	if (_search.needs_haystack()) {
 		if (_search_components) {
@@ -149,6 +169,10 @@ void entity_window::render_entity(Entity* ent, int depth) {
 	}
 	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255,188,255,255));
 	ImGui::Text("%x", ent->entity_id);
+	ImGui::SameLine();
+	if (ImGui::Button(EMOJI_COPY)) {
+		imgui_helpers::openCopyWindow(ent->entity_id);
+	}
 	ImGui::PopStyleColor();
 
 	if (ImGui::Button("Del")) {
@@ -185,6 +209,75 @@ void entity_window::render_entity(Entity* ent, int depth) {
 				sceneRendering->SetVisible();
 			}
 		}
+
+		if (ent->hasComponent(4)) {
+			auto model = ent->getById<Component_4_Model>(4);
+			bool enabled = ((ushort)model->model_rendering_flags & (ushort)Component_4_Model::ModelRenderingFlags::OUTLINE_MASK) != 0;
+			if (ImGui::Checkbox("Outline", &enabled)) {
+				if (enabled) {
+					model->EnableOutline(Component_4_Model::ModelRenderingFlags::OUTLINE_INVISIBLE, 0xFF00FF00);
+				} else {
+					model->DisableOutline();
+				}
+			}
+			if (ImGui::IsItemHovered()) {
+				ImGui::SetTooltip("Will not work on player entities, since outlines are set by the game every frame.");
+			}
+			if (enabled) {
+				ImGui::SameLine();
+				float color[] = {
+					(float)(model->outline_color & 0xFF) / 255.0f,
+					(float)(BYTE1(model->outline_color)) / 255.f,
+					(float)(BYTE2(model->outline_color)) / 255.f,
+					(float)(BYTE3(model->outline_color)) / 255.f,
+				};
+				if (ImGui::ColorEdit4("Color", color, ImGuiColorEditFlags_NoInputs)) {
+					auto new_col = (uint32)(color[0] * 255.0f);
+					new_col |= (uint32)(color[1] * 255.0f) << 8;
+					new_col |= (uint32)(color[2] * 255.0f) << 16;
+					new_col |= (uint32)(color[3] * 255.0f) << 24;
+					model->outline_color = new_col;
+				}
+			}
+		}
+		/*if (ent->hasComponent(4)) {
+			if (ImGui::Button("Outlines 0x40 :)")) {
+				struct outlineStru {
+					unsigned short outline_type = 0x40;
+					unsigned char r = 0xFF;
+					unsigned char g = 0xFF;
+					unsigned char b = 0xFF;
+					unsigned char a = 0xFF;
+					int unk = 3;
+				} outline;
+				((void(*)(Entity*, outlineStru*))(globals::gameBase + 0xd5a050))(ent, &outline);
+			}
+			if (ImGui::Button("Outlines 0x80 :)")) {
+				struct outlineStru {
+					unsigned short outline_type = 0x80;
+					unsigned char r = 0xFF;
+					unsigned char g = 0xFF;
+					unsigned char b = 0xFF;
+					unsigned char a = 0xFF;
+					int unk = 3;
+				} outline;
+				((void(*)(Entity*, outlineStru*))(globals::gameBase + 0xd5a050))(ent, &outline);
+			}
+			if (ImGui::Button("Outlines 0x100 :)")) {
+				struct outlineStru {
+					unsigned short outline_type = 0x100;
+					unsigned char r = 0xFF;
+					unsigned char g = 0xFF;
+					unsigned char b = 0xFF;
+					unsigned char a = 0xFF;
+					int unk = 3;
+				} outline;
+				((void(*)(Entity*, outlineStru*))(globals::gameBase + 0xd5a050))(ent, &outline);
+			}
+			if (ImGui::Button("Outlines :(")) {
+				((void(*)(Entity*))(globals::gameBase + 0xd5a430))(ent);
+			}
+		}*/
 
 		if (sceneRendering->scaling.X == sceneRendering->scaling.Y == sceneRendering->scaling.Z) {
 			ImGui::Text("scale: %f", sceneRendering->scaling.X);
@@ -226,36 +319,9 @@ void entity_window::render_entity(Entity* ent, int depth) {
 
 	ImGui::NewLine();
 
-	ImGui::PushID("resload-1");
-	if (ent->resload_entry->valid()) {
-		auto resload_ent = ent->resload_entry->align();
-		if (resload_ent->valid()) {
-			ImGui::TextUnformatted("1:");
-			ImGui::SameLine();
-			imgui_helpers::display_type(resload_ent->resource_id, true, true, false);
-		}
-	}
-	ImGui::PopID();
-	ImGui::PushID("resload-2");
-	if (ent->resload_entry2->valid()) {
-		auto resload_ent = ent->resload_entry2->align();
-		if (resload_ent->valid()) {
-			ImGui::TextUnformatted("2:");
-			ImGui::SameLine();
-			imgui_helpers::display_type(resload_ent->resource_id, true, true, false);
-		}
-	}
-	ImGui::PopID();
-	ImGui::PushID("resload-3");
-	if (ent->resload_entry3->valid()) {
-		auto resload_ent = ent->resload_entry3->align();
-		if (resload_ent->valid()) {
-			ImGui::TextUnformatted("3:");
-			ImGui::SameLine();
-			imgui_helpers::display_type(resload_ent->resource_id, true, true, false);
-		}
-	}
-	ImGui::PopID();
+	render_resload(ent->resload_entry, 1);
+	render_resload(ent->resload_entry2, 2);
+	render_resload(ent->resload_entry3, 3);
 
 	ImGui::TableNextColumn();
 	for (int i = 0; i < ent->component_list.num - 1; i++) {

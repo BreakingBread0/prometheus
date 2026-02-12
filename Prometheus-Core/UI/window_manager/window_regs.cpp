@@ -63,3 +63,4 @@
 #include "../windows/stu_primitive_edit.h"
 #include "../windows/stu_object_edit.h"
 #include "../windows/component_window.h"
+#include "../windows/effect_tester.h"

@@ -10,7 +10,7 @@ class manager_infos : public window {
 			if (imgui_helpers::beginTable("Managers", { "Name", "Supported", "id", "negated", "crc_continued", "field_18", "manager_flags", "field_20", "field_28", "field_30", "field_38", "construct_resource_fn", "field_48", "field_50", "field_58", "field_60" })) {
 
 				for (int i = 0; i < 34; i++) {
-					auto manager = GetManagerInfoByIndex(i);
+					auto manager = resource_handler_helper::getManagerInfoByIndex(i);
 					if (!manager)
 						continue;
 					ImGui::TableNextRow();

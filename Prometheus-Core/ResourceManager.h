@@ -1,6 +1,8 @@
 #pragma once
 #include "globals.h"
 #include "idadefs.h"
+#include <functional>
+#include <MinHook.h>
 
 struct ResourceLoadEntry;
 
@@ -39,10 +41,10 @@ struct ResourceLoadEntry
 /* 511 */
 typedef void(__fastcall* resource_construct_fn)(ResourceLoadEntry*);
 
-struct manager_info
+struct resource_handler
 {
 	char* name;
-	__int32 manager_id;
+	__int32 manager_id; //or ID of resource handler, doesnt really matter - it's not important
 	_BYTE gapC[4];
 	__int64 crc_continued;
 	__int32 handles_filetype_ent;
@@ -59,19 +61,43 @@ struct manager_info
 	__int64 manager_negated;
 };
 
-inline manager_info* GetManagerInfoByIndex(int index) {
-	owassert(index >= 0 && index < 34);
-	return ((manager_info**)(globals::gameBase + 0x182c940))[index];
-}
-
-inline manager_info* GetManagerInfoByName(const char* name) {
-	for (int i = 0; i < 34; i++) {
-		auto manager = GetManagerInfoByIndex(i);
-		if (!strcmpi(manager->name, name))
-			return manager;
+class resource_handler_helper {
+public:
+	static void initialize() {
+		MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0x9c7c70), (LPVOID)emplaceRH_hook, (PVOID*)&emplaceRH_orig));
+		MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0x9c7c70)));
 	}
-	return nullptr;
-}
+
+	static resource_handler* getManagerInfoByIndex(int index) {
+		owassert(index >= 0 && index < 34);
+		return ((resource_handler**)(globals::gameBase + 0x182c940))[index];
+	}
+
+	static resource_handler* getManagerInfoByName(const char* name) {
+		for (int i = 0; i < 34; i++) {
+			auto manager = getManagerInfoByIndex(i);
+			if (!_stricmp(manager->name, name))
+				return manager;
+		}
+		return nullptr;
+	}
+
+	static void hookInitialize(const char* for_handler, const std::function<void(resource_handler*)>& callback) {
+		s_hooks.push_back({std::string(for_handler), callback});
+	}
+private:
+	static char emplaceRH_hook(resource_handler* handler) {
+		for (auto& item : s_hooks) {
+			if (!_stricmp(item.first.c_str(), handler->name))
+				item.second(handler);
+		}
+		return emplaceRH_orig(handler);
+	}
+
+	static inline char (*emplaceRH_orig)(resource_handler*);
+	static inline std::vector<std::pair<std::string, std::function<void(resource_handler*)>>> s_hooks;
+};
+
 
 /* 512 */
 struct PriorityListQueueStart

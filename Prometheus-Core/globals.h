@@ -255,6 +255,16 @@ inline bool icontains(const std::string& strHaystack, const std::string& strNeed
 	return (it != strHaystack.end());
 }
 
+inline void replace_first(
+	std::string& s,
+	std::string const& toReplace,
+	std::string const& replaceWith
+) {
+	std::size_t pos = s.find(toReplace);
+	if (pos == std::string::npos) return;
+	s.replace(pos, toReplace.length(), replaceWith);
+}
+
 inline std::string stacktrace_str() {
 	char buf[4096]{};
 

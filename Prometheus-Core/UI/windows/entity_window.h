@@ -23,6 +23,7 @@ private:
 
 	void search_compo54(EntityAdminBase* ea);
 	void render_entity(Entity* ent, int depth = 0);
+	void render_resload(MisalignedResourceLoadEntry*, int item);
 };
 
 WINDOW_REGISTER(entity_window);

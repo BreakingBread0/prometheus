@@ -177,7 +177,7 @@ void window_manager::render() {
 }
 
 //statemachine debugging because i cant be bothered to refactor this mess once again...
-#if TRUE
+#if FALSE
 #define WM_SM_DEBUG(statement) printf("(%d: %s) %s %d\n", window->window_id, window->window_name(), "WM: " #statement " on line ", __LINE__); statement;
 #else
 #define WM_SM_DEBUG(statement) statement;

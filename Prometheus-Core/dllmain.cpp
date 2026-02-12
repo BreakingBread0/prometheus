@@ -51,6 +51,7 @@
 #include "AtlasExt/Utility/Modules.h"
 #include "Probing/Probe_STU.h"
 #include "Probing/Probing.h"
+#include "displaytext_resources.h"
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ImVec2, x, y);
 
@@ -700,22 +701,27 @@ __int64 __fastcall dataflow_bugfix_fn(__int64 a1, __int64 a2, int a3, float* a4)
     return dataflow_bugfix_orig(a1, a2, a3, a4);
 }
 
-bool ea_firstCall = true;
+int ea_initcall = 0;
 EntityAdminBase* (*Construct_GameEntityAdmin_orig)(EntityAdminBase* ea, EntityAdminCreationInfo* ci);
 EntityAdminBase* Construct_GameEntityAdmin_fn(EntityAdminBase* ea, EntityAdminCreationInfo* ci) {
     ea = Construct_GameEntityAdmin_orig(ea, ci);
 
-    //auto emplace_fn = (void(*)(EntityAdminBase*, mapfunc_outer_vt**, __int64 inheritance))(globals::gameBase + 0x80f450);
-    //emplace_fn(ea, (mapfunc_outer_vt**)PrometheusSystem::create(ea), globals::gameBase + 0x80f450);
-
-    if (ea_firstCall) {
-        ea_firstCall = false;
-        return ea;
+    switch (ea_initcall) {
+        case 0: //Lobby Entity Admin
+            break;
+        case 1: {
+            //Game Entity Admin
+            auto sys = PrometheusSystem::create(ea);
+            if (sys) //The second call is for GameEntityAdmin
+                ea->systems_array.emplace_item((system_vt**)sys);
+        }
+            break;
+        case 2:
+        default:
+            //...
+            break;
     }
-
-    auto sys = PrometheusSystem::create(ea);
-    if (sys) //The second call is for GameEntityAdmin
-        ea->systems_array.emplace_item((system_vt**)sys);
+    ea_initcall++;
     return ea;
 }
 
@@ -810,7 +816,6 @@ __int64 System63_hook(__int64 sys) {
 
 __int64 (*CreateAllocator_orig)(int);
 __int64 CreateAllocator_hook(int type) {
-    printf("Memallocator changed to jeMalloc\n");
     //1: default
     //2: windows allocator
     //3: jemalloc
@@ -820,7 +825,10 @@ __int64 CreateAllocator_hook(int type) {
 
 __int64 (*MapCreateSwitch_orig)(__int64, __int64);
 __int64 MapCreateSwitch_hook(__int64 a1, __int64 a2) {
-    //if (*(char*)(a1 + 0x32) == )
+    auto sw = (char*)(a1 + 0x32);
+    /* f 9 8 a d e */
+    if (*sw == 0xa)
+        return 2;
     return MapCreateSwitch_orig(a1, a2);
 }
 
@@ -898,12 +906,17 @@ void __cdecl StartHook(void*) {
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0xf3eb10)));
     printf("after data pack load hook\n");
 
+    MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xa485d0), (LPVOID)MapCreateSwitch_hook, (PVOID*)&MapCreateSwitch_orig));
+    MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0xa485d0)));
+    printf("mapcreate hook\n");
+
     // MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xa00450), (LPVOID)componen1_oncreate_hook, (PVOID*)&component_1_oncreate_orig));
     // MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0xa00450)));
 
     /*MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xbff460), testVIGSTickHook, (PVOID*)&VigsTickOrig));
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0xbff460)));*/
 
+#pragma region Anti-Anti-Debug
     memcpy((void*)(globals::gameBase + 0x000000000137F061), std::array<unsigned char, 5>{0xe9, 0x57, 0x20, 0x0, 0x0}.data(), 0x5);
     memcpy((void*)(globals::gameBase + 0x000000000137F0D1), std::array<unsigned char, 5>{0xe9, 0xdf, 0x1f, 0x0, 0x0}.data(), 0x5);
     memcpy((void*)(globals::gameBase + 0x000000000138119B), std::array<unsigned char, 2>{0xeb, 0x42}.data(), 0x2);
@@ -1421,6 +1434,7 @@ void __cdecl StartHook(void*) {
     memcpy((void*)(globals::gameBase + 0x1084dee), std::array<unsigned char, 5>{0xe9, 0xf1, 0x0, 0x0, 0x0}.data(), 0x5);
     memcpy((void*)(globals::gameBase + 0x108516a), std::array<unsigned char, 5>{0xe9, 0xa0, 0x0, 0x0, 0x0}.data(), 0x5);
     printf("patched retaddr checks\n"); //i think those are like 335/342?
+#pragma endregion
 
     memset((void*)(globals::gameBase + 0x805607), 0x85, 1);
     printf("patched veh set trap\n");
@@ -1478,7 +1492,9 @@ void __cdecl StartHook(void*) {
 
     printf("Loading hashlib\n");
     stringhash_library::initialize();
+    resource_handler_helper::initialize();
     stu_resources::initialize();
+    displaytext_resources::initialize();
 
     //force all retaddr checks to fail to check if any remain
     //const auto pe = Pe::PeNative::fromModule(GetModuleHandleA(NULL));
@@ -1517,7 +1533,9 @@ HMODULE GetCurrentModule()
     return hModule;
 }
 
-
+//Initial entry for the executable.
+//Making hooks / calling stuff here isnt really a good idea, since this is called from TlsCallback_0 which is very restrictive
+//(example: creating threads doesnt work)
 BOOL APIENTRY DllMain(HMODULE hModule,
     DWORD  ul_reason_for_call,
     LPVOID lpReserved
@@ -1583,7 +1601,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
                 MH_VERIFY(MH_Uninitialize());
                 Logs::Uninitialize();
                 Atlas::Utility::Modules::Uninitialize();
-                });
+            });
             break;
         case DLL_THREAD_ATTACH:
         case DLL_THREAD_DETACH:

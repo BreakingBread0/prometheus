@@ -168,7 +168,6 @@ void stu_explorer::render_stu(STU_Object value) {
 		ImGui::TableNextColumn();
 		bool* expand_list = ImGui::GetStateStorage()->GetBoolRef(arg->Hash, false);
 		if (value.valid()) {
-
 			if (arg->Constraint->IsList()) {
 				auto list = (STUBullshitListFull<__int64>*)((__int64)value.value + arg->Offset);
 				if (list->valid()) {
@@ -371,7 +370,9 @@ void stu_explorer::render_stu(STU_Object value) {
 					ImGui::PushID(i);
 					ImGui::BulletText("%d - Key: ", i);
 					ImGui::SameLine();
+					ImGui::PushID("key");
 					imgui_helpers::display_type(item.first, false, true, true);
+					ImGui::PopID();
 					display_addr((__int64)item.second.value);
 					ImGui::SameLine();
 					imgui_helpers::display_type(item.second.get_runtime_root().struct_info->Hash, true, true, false);

@@ -36,7 +36,7 @@ class loadlist_visualizer : public window {
 				ImGui::Text("ManagerInfo Index: %d - ", entry->loaded_entry.manager_info_index);
 				ImGui::SameLine();
 				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(ImColor(0, 255, 0, 255)));
-				manager_info* manager = ((manager_info**)(globals::gameBase + 0x182c940))[entry->loaded_entry.manager_info_index];
+				resource_handler* manager = ((resource_handler**)(globals::gameBase + 0x182c940))[entry->loaded_entry.manager_info_index];
 				ImGui::Text("%s", manager->name);
 				ImGui::PopStyleColor();
 				ImGui::Text("Resource State: %d", entry->loaded_entry.resource_state);
