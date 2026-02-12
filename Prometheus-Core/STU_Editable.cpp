@@ -11,6 +11,17 @@ IMPLEMENT_ACCESSOR_FUNC(STU_PrimitiveList, get_argument_primitivelist);
 IMPLEMENT_ACCESSOR_FUNC(STU_ResourceRefList, get_argument_resreflist);
 IMPLEMENT_ACCESSOR_FUNC(STUResourceReference*, get_argument_resource);
 IMPLEMENT_ACCESSOR_FUNC(STU_Map, get_argument_map);
+IMPLEMENT_ACCESSOR_FUNC(void*, get_argument_raw);
+
+void* STU_Object::get_argument_raw(STUArgumentInfo *arg) {
+	owassert(arg);
+	owassert(value);
+
+	auto typ = arg->Constraint->ToConstraintType();
+	if (typ == STU_ConstraintType_Object)
+		return *(void**)((__int64)value + arg->Offset);
+	return (void*)((__int64)value + arg->Offset);
+}
 
 STU_Primitive STU_Object::get_argument_primitive(STUArgumentInfo* arg) {
 	owassert(arg);

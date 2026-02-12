@@ -5,6 +5,7 @@
 #include "stu_primitive_edit.h"
 #include "stu_object_edit.h"
 #include "stu_enum_window.h"
+#include "stu_serializer.h"
 
 void stu_explorer::navigate_to(STUInfo* info, __int64 instance, StatescriptInstance* ss_inst = nullptr) {
 	navigate_internal(info, instance, ss_inst, true, {});
@@ -14,8 +15,8 @@ void stu_explorer::navigate_to_resource(__int64 resource) {
 	auto item = stu_resources::GetByID(resource);
 	if (item->valid()) {
 		navigate_internal(item->vfptr->GetSTUInfo(), (__int64)item, nullptr, true, {});
-		root_item = _history.current_item;
-		root_item_resource = resource;
+		_root_item = _history.current_item;
+		_root_item_resource = resource;
 	}
 }
 
@@ -36,8 +37,8 @@ void stu_explorer::navigate_internal(STUInfo* info, __int64 instance, Statescrip
 	_history.push_item(new_item);
 
 	if (remove_root) {
-		root_item_resource = 0;
-		root_item = {};
+		_root_item_resource = 0;
+		_root_item = {};
 	}
 }
 
@@ -90,6 +91,25 @@ inline void stu_explorer::render() {
 				ImGui::TextUnformatted("Invalid!");
 				ImGui::PopFont();
 			}
+		}
+
+		if (_root_item_resource != 0) {
+			ImGui::Text("Root Item: ");
+			ImGui::SameLine();
+			imgui_helpers::display_type(_root_item_resource, true, false, true);
+
+			static std::vector<uint8_t> test_buf{};
+			auto root = STU_Object(_root_item.stu_info, (void*)_root_item.current_instance);
+			ImGui::SameLine();
+			if (ImGui::Button("TestCopy")) {
+				test_buf = stu_serializer::serialize(root);
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("TestPaste")) {
+				stu_serializer::deserialize(test_buf, root);
+			}
+			ImGui::SameLine();
+			ImGui::Text("%d", test_buf.size());
 		}
 
 		if (_history.current_item.stu_info) {

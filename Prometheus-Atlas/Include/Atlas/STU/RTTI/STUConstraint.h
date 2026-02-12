@@ -4,6 +4,8 @@
 
 #include "Atlas/Common.h"
 
+struct bsDataStore;
+
 namespace Atlas::STU::RTTI
 {
     enum STUConstraintType {
@@ -30,11 +32,12 @@ namespace Atlas::STU::RTTI
      *  <b> STUConstraint </b> \n
      *      Description TBC
      *
+     *  NOTE: "void* stu_value" means the pointer to the actual STU value youre operating on. A helper accessor function is available on STU_Editable::get_argument_raw
      *
      *  \n
      *  \n  Size:           Unk
-     *  \n  Factory:        N/A
-     *  \n  VT:             Base Unk. Der Example: 0x14DFFE8
+     *  \n  Factory:        None
+     *  \n  VT:             No base / unnecessary to know base
      *  \n
      */
     class STUConstraint {
@@ -51,27 +54,30 @@ namespace Atlas::STU::RTTI
 
             virtual uint64  GetNameHash() = 0;
 
-            virtual uint64  SetDefaultValue(int64 u8_type, int8* stu_value) = 0;
-            virtual void    ClearValue(int64, int8*) = 0;
-            virtual void    ClearObjectValue(int8 *) = 0; // Can also happen on primitive (teString). No impl on u8*
+            virtual uint64  SetDefaultValue(void* stu_value) = 0;
+            virtual void    ClearValue(void* stu_value) = 0;
+            virtual void    ClearObjectValue(void* stu_balue) = 0; // Can also happen on primitive (teString). No impl on u8*
 
             virtual const char* GetName() = 0;
 
-            virtual int64   GetSomeFlagObject() = 0;
-            virtual int64   GetSomeFlagPrimitive() = 0;
+            virtual int64   GetSomeFlag_Object() = 0;
+            virtual int64   GetSomeFlag_Primitive() = 0;
             virtual int64   GetFieldSize() = 0;
-            virtual int8    IsFieldNull(uint8*)  = 0;
+            virtual int8    IsFieldNull(void* stu_value)  = 0;
 
             STUB();
             STUB(int64, int64, int64);
 
-            virtual uint8   SerializeToBitstream(void* bsDataStore, int64, uint8* input_value) = 0;
+            virtual uint8   SerializeToBitstream(bsDataStore* store, int64 _unused, void* input_value) = 0;
             STUB(int64, int64, int64);
             STUB(int64, char*, int64, int64, int64, int64, int8);
-            virtual uint8   DeserializeFromBitStream(void* bsDataStore, void* bsDataStore2, uint8* output_with_offs)  = 0;
-            virtual int64   Clone_Unsafe(uint8**)  = 0; // Call on a FRESH target instance!
+            virtual uint8   DeserializeFromBitStream(bsDataStore* store, int64 _unused, void* stu_value)  = 0;
+            // Call on a FRESH target instance!
+            // Unsafe because old value is not cleared.
+            virtual int64   Clone_Unsafe(uint8**)  = 0;
             STUB();
             STUB(uint8*, int8*);
+            //From casc archives. Not useful
             virtual void    DeserializeSelf() = 0;
             virtual int64   GetAdditionalHash() = 0;
             STUB();

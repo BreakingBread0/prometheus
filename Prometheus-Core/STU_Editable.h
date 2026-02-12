@@ -85,6 +85,8 @@ public:
 	DEFINE_ACCESSOR_FUNC(STUResourceReference*, get_argument_resource);
 	//Always valid if this object is valid
 	DEFINE_ACCESSOR_FUNC(STU_Map, get_argument_map);
+	//Get the raw ptr to an argument, no matter what it is.
+	DEFINE_ACCESSOR_FUNC(void*, get_argument_raw);
 
 	//Set object will only work on an non-inlined object!
 	void set_object(STUArgumentInfo* arg, STU_Object object);

@@ -19,7 +19,7 @@ struct ResourceLoadEntry
 {
 	ResourceLoadEntry* prev;
 	ResourceLoadEntry* next;
-	__int32 manager_info_index;
+	__int32 resource_handler_index;
 	__int32 resource_state;
 	__int32 requested_termination;
 	__int32 prio_override;

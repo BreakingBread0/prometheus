@@ -72,7 +72,7 @@ class stu_registry : public window {
 						ImGui::TableNextColumn();
 						
 						if (ImGui::Button("Explore")) {
-							stu_explorer::get_latest_or_create(this)->navigate_to(info.second->vfptr->GetSTUInfo(), (__int64)info.second, nullptr);
+							stu_explorer::get_latest_or_create(this)->navigate_to_resource(info.first);
 						}
 
 						ImGui::PopID();

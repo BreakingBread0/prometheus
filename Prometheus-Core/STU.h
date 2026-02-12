@@ -472,57 +472,6 @@ struct STUResourceReference {
 	STUBase<>* get_STU() const;
 };
 
-//struct EntityComponentMap {
-//	__int64 component_hash; //Bsp 17c5e999 STUContactSetComponent
-//	STUBase<>* STUEntityComponent_data;
-//};
-//
-//struct ChildEntityDefinition {
-//	__int64 unk;
-//	STUResourceReference entity; //STUEntityDefinition*
-//	STUResourceReference another_res_1;
-//	STUResourceReference another_res_2;
-//};
-//
-//typedef STUBullshitListFull<ChildEntityDefinition> ChildEntData;
-//struct STUEntityDefinition {
-//	union {
-//		STUBase_vt* vfptr;
-//		
-//		STRUCT_PLACE(ChildEntData, m_childEntityData, 0x18);
-//		STRUCT_PLACE(STUBullshitMapFull<EntityComponentMap>, m_componentMap, 0x28);
-//	};
-//};
-//
-////Alle IDs von Tracer
-//struct STUHero {
-//	union {
-//		STUBase_vt* vfptr;
-//		STRUCT_MIN_SIZE(0x180);
-//		STRUCT_PLACE(STUResourceReference, f1_resource_reference, 0x8); //0F10000000000015
-//		STRUCT_PLACE(STUResourceReference, m_gameplayEntity, 0x20);
-//		STRUCT_PLACE(STUResourceReference*, hero_name, 0x30);
-//		//STUSkinTheme ist was anderes 0A50000000001711
-//		STRUCT_PLACE(STUBullshitListFull<STUResourceReference<__int64>>, m_skins, 0x40); //0AE00000000003EA
-//		STRUCT_PLACE(STUResourceReference<__int64>, m_category, 0x50); //0D8000000000084E
-//		
-//		STRUCT_PLACE(STUBullshitListFull<STUResourceReference<__int64>>, d6_keys_list, 0x60); //0D600000000000F5
-//		
-//		STRUCT_PLACE(STUResourceReference<STUEntityDefinition>, entity_heroselect_lineup, 0x70); //Hero Lineup, HeroSelect
-//		STRUCT_PLACE(STUResourceReference<STUEntityDefinition>, entity_herolineup, 0x80); //Hero Lineup, HeroSelect
-//		STRUCT_PLACE(STUResourceReference<STUEntityDefinition>, entity_potg, 0x90); //POTG Scene
-//
-//		STRUCT_PLACE(STUResourceReference<__int64>, sound_state_1, 0xA0);
-//		STRUCT_PLACE(STUResourceReference<__int64>, sound_state_2, 0xB0);
-//		STRUCT_PLACE(STUResourceReference<__int64>, sound_state_3, 0xC0); //Hero Icon
-//
-//		STRUCT_PLACE(STUBullshitListFull<STUResourceReference<__int64>>, m_stats_list, 0xE0); //086000000000001F
-//		//Loadout: 2x strings (Name, Description), STUInputLogicalButton, 0C00000000001310 (nicht STU)
-//		STRUCT_PLACE(STUBullshitListFull<STUResourceReference<__int64>>, stu_loadout_array, 0xF0); //0B90000000000001 (4 bei tracer)
-//		STRUCT_PLACE(STUResourceReference<__int64>, stu_progresstion_unlocks, 0x110)
-//	};
-//};
-
 //can return empty, not a resload-struct but getting already loaded resource ptr
 inline __int64 try_load_resource(__int64 stu_id) {
 	__try {

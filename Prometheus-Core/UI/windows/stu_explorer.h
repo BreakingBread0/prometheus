@@ -48,8 +48,8 @@ private:
 		StatescriptInstance* ss = 0;
 
 		std::vector<FollowedItem> followed_path;
-	} root_item;
-	__int64 root_item_resource = 0;
+	} _root_item;
+	__int64 _root_item_resource = 0;
 
 	bool _show_inheritance = false;
 	history_helper<Item> _history{};

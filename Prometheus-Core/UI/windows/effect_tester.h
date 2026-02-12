@@ -43,7 +43,7 @@ private:
         _avail_effects.clear();
         for (int i = 0; i < 0x10000; i++) {
             __int64 effect = effect_type | i;
-            if (try_load_resource_2(effect)->valid()) {
+            if (try_load_resource(effect)) {
                 _avail_effects.push_back(effect);
             }
         }
