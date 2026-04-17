@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.31)
+cmake_minimum_required(VERSION 3.28)
 
 message("Prometheus-Atlas-IDA")
 
@@ -33,10 +33,13 @@ message(STATUS "Using IDAClang              : '${IDACLANG}'")
 message(STATUS "Target Triple               : '${IDACLANG_TUPLE}'")
 
 #Dummy project, this doesn't actually compile anything. Just fixes ide's being annoying
-add_library(Prometheus-Atlas-IDA SHARED Include.h Include.cpp)
-set_target_properties(Prometheus-Atlas-IDA PROPERTIES LINKER_LANGUAGE CXX)
-target_include_directories(Prometheus-Atlas-IDA PRIVATE ${PROJECT_SOURCE_DIR}/)
-target_link_libraries(Prometheus-Atlas-IDA PRIVATE Prometheus-Atlas)
+#Edit: what
+if(False)
+    add_library(Prometheus-Atlas-IDA SHARED Include.h Include.cpp)
+    set_target_properties(Prometheus-Atlas-IDA PROPERTIES LINKER_LANGUAGE CXX)
+    target_include_directories(Prometheus-Atlas-IDA PRIVATE ${PROJECT_SOURCE_DIR}/)
+    target_link_libraries(Prometheus-Atlas-IDA PRIVATE Prometheus-Atlas)
+endif()
 
 #IDA TIL gen
 add_custom_command(TARGET Prometheus-Atlas-IDA POST_BUILD

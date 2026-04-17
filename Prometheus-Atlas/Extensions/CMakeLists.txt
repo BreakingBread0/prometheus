@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.31)
+cmake_minimum_required(VERSION 3.28)
 
 project(Prometheus-Atlas-Extensions
         DESCRIPTION "Prometheus typing library runtime extensions."

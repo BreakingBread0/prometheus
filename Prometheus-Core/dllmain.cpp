@@ -6,7 +6,7 @@
 #define LAZY_IMPORTER_CASE_INSENSITIVE
 #include "lazy_importer.h"
 #include <mutex>
-#include <TlHelp32.h>
+#include <tlhelp32.h>
 #include <thread>
 #include <locale>
 #include <codecvt>
@@ -31,20 +31,23 @@
 #include "stringhash_library.h"
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "ntdll.lib")
-#pragma comment(lib, "Bcrypt.lib")
+#ifdef MINGW
+#pragma comment(lib, "crypt32.lib")
+#else
 #pragma comment(lib, "Crypt32.lib")
+#endif
 #include "Statescript.h"
 #include "game.h"
 #include "ResourceManager.h"
 #include "STU.h"
-#include "statescript_logger.h" 
-#include <imnodes/imnodes.h>
+#include "statescript_logger.h"
+#include "../external/imnodes/imnodes.h"
 #include "stu_resources.h"
 #include "entity_admin.h"
 #include <array>
 
 //Who needs a build system?
-#include <imnodes/imnodes.cpp>
+#include "../external/imnodes/imnodes.cpp"
 
 #include "Logs/Logs.h"
 #include "Utility/Exception.h"

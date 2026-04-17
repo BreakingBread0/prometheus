@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.31)
+cmake_minimum_required(VERSION 3.28)
 project(Prometheus-Core
         DESCRIPTION "Core DLL Project"
         HOMEPAGE_URL "https://github.com/BreakingBread0/prometheus"
@@ -6,11 +6,9 @@ project(Prometheus-Core
 
 message("Prometheus-Core")
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(DIR_BIN ${CMAKE_BINARY_DIR}/bin/core)
-set(DIR_LIB ${CMAKE_BINARY_DIR}/lib/core)
 
 file(GLOB_RECURSE SRC_FILES CONFIGURE_DEPENDS
         "${PROJECT_SOURCE_DIR}/*.cpp"
@@ -177,7 +175,6 @@ target_include_directories(Prometheus-Core PRIVATE ${PROJECT_SOURCE_DIR}/)
 # Project Config
 Pro_ProjectVersion(Prometheus-Core 1 0 0 0)
 Pro_ApplyPlatform(Prometheus-Core)
-Pro_SetOutput(Prometheus-Core ${DIR_BIN} ${DIR_LIB})
 
 # Dll Config
 set_target_properties(Prometheus-Core PROPERTIES OUTPUT_NAME "PrometheusCore")
@@ -203,9 +200,6 @@ target_link_libraries(Prometheus-Core PRIVATE nlohmann_json::nlohmann_json)
 
 find_path(FAST_CPP_CSV_PARSER_INCLUDE_DIRS "fast-cpp-csv-parser/csv.h")
 target_include_directories(Prometheus-Core PRIVATE ${FAST_CPP_CSV_PARSER_INCLUDE_DIRS})
-
-find_package(ixwebsocket CONFIG REQUIRED)
-target_link_libraries(Prometheus-Core PRIVATE ixwebsocket::ixwebsocket)
 
 find_package(imgui CONFIG REQUIRED)
 target_link_libraries(Prometheus-Core PRIVATE imgui::imgui)

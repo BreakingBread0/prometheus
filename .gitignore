@@ -402,5 +402,4 @@ FodyWeavers.xsd
 
 vcpkg_installed/
 output/
-external/
 !Prometheus-Core/Logs

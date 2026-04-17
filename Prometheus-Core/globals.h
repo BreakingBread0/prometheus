@@ -1,7 +1,13 @@
 ﻿ #pragma once
+#ifdef MINGW
+#include <windows.h>
+#else
+#include <Windows.h>
+#endif
+
 #include "intrin.h"
 #include "string"
-#include <Windows.h>
+
 #include <algorithm>
 #include <format>
 

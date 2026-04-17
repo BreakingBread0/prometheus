@@ -2,7 +2,11 @@
 
 #pragma once
 
+#ifdef MINGW
+#include <windows.h>
+#else
 #include <Windows.h>
+#endif
 #include <tlhelp32.h>
 #include <memory>
 #include <string>

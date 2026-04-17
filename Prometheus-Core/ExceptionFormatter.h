@@ -1,4 +1,4 @@
-#include <Windows.h>
+#include "globals.h"
 #include <string>
 
 namespace ExceptionFormatter {

@@ -13,7 +13,6 @@
         "win32-binding"
       ]
     },
-    "ixwebsocket",
     "minhook",
     "nlohmann-json",
     "spdlog",

@@ -5,9 +5,8 @@
    the type library 'GameClientApp_dump_SCY.exetreated.exe'
 */
 
-#include <Windows.h>
-#include "idadefs.h"
 #include "globals.h"
+#include "idadefs.h"
 #include <set>
 #include <stdexcept>
 #include "game.h"

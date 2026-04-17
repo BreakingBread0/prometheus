@@ -2,7 +2,7 @@
 #include "stringhash_library.h"
 #include "stu_explorer.h"
 #include "statescript_info.h"
-#include <imnodes/imnodes_internal.h>
+#include "../external/imnodes/imnodes_internal.h"
 #include "cvexpression_viewer.h"
 #include "CVD_List.h"
 #include "STU_Editable.h"

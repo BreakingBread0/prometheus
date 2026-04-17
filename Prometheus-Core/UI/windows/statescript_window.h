@@ -1,6 +1,6 @@
 #pragma once
 #include "../window_manager/window_manager.h"
-#include <imnodes/imnodes.h>
+#include "../external/imnodes/imnodes.h"
 #include <nlohmann/json.hpp>
 #include <fstream>
 #include "statescript_logger.h"

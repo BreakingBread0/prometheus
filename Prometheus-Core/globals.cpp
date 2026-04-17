@@ -1,6 +1,5 @@
 #include "globals.h"
 #include <mutex>
-#include <Windows.h>
 
 #include "Logs/Logs.h"
 

@@ -1,7 +1,6 @@
 #pragma once
 #include <memory>
 #include <imgui.h>
-#include <Windows.h>
 #include <string>
 #include <format>
 #include <set>

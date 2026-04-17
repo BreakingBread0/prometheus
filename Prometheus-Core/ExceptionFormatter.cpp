@@ -1,7 +1,5 @@
-#include <Windows.h>
 #include <string>
 #include <sstream>
-#include <Psapi.h>
 #include "game.h"
 
 namespace ExceptionFormatter {

@@ -3,7 +3,6 @@
 #include "memory.h"
 #include <memory>
 #include <mutex>
-#include <Windows.h>
 #include <vector>
 #include <map>
 #include <regex>

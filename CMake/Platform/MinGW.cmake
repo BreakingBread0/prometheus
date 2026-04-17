@@ -1,10 +1,11 @@
-if(!MinGW OR NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    message(FATAL_ERROR "Prometheus only supports building with MSVC and LLVM MinGW on Windows.")
-endif()
-
 add_compile_options("$<$<CONFIG:Debug,RelWithDebInfo,Release>:-gcodeview>")
-set(CMAKE_SHARED_LINKER_FLAGS "-static-libgcc -static-libstdc++")
+# set(CMAKE_SHARED_LINKER_FLAGS "-static-libgcc -static-libstdc++")
+
 set(CMAKE_SYSTEM_NAME Windows)
+set(CMAKE_INSTALL_LIBDIR "lib" CACHE PATH "") # CMake generation error
+set(CMAKE_SHARED_LIBRARY_PREFIX "") # Remove lib prefix
+
+# add_link_options(-v)
 
 function(Pro_ApplyPlatform TargetName)
     set(TARGET_COMPILE_OPTIONS
@@ -42,4 +43,8 @@ function(Pro_ApplyPlatform TargetName)
     target_compile_features(${TargetName} PRIVATE ${TARGET_COMPILE_FEATURES})
     set_target_properties(${TargetName} PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
     target_include_directories(${TargetName} PUBLIC ${VCPKG_IMPORT_PREFIX}/include)
+
+    add_compile_definitions(
+        MINGW # So we can include un-caputalized header files instead
+    )
 endfunction()
