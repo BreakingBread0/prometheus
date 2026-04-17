@@ -25,7 +25,8 @@ namespace stringhash_library {
 	}
 
 	void show_error() {
-		imgui_helpers::messageBox(std::format("Has error: %s\nError: %s", has_error ? "Yes" : "No", error), "Stringhash Library", nullptr);
+		error_shown = true;
+		imgui_helpers::messageBox(std::format("Has error: {:s}\nError: {:s}", has_error ? "Yes" : "No", error), "Stringhash Library", nullptr);
 	}
 
 	void display_hash(const int hash, const char* prepend) {

@@ -7,7 +7,8 @@
 
 void statescript_list::render() {
 	char buf[64];
-	if (IsBadReadPtr(_ss, sizeof(Component_23_Statescript))) {
+	bool valid = !IsBadReadPtr(_ss, sizeof(Component_23_Statescript));
+	if (!valid) {
 		strcpy_s(buf, "Invalid Component");
 	}
 	else {
@@ -37,9 +38,11 @@ void statescript_list::render() {
 		}
 
 		if (ImGui::BeginListBox("##scripts", ImVec2(-10, -30))) {
-			for (auto script : _ss->ss_inner.g1_instanceArr) {
-				if (!script->parent_instance_id) {
-					list_script(script);
+			if (valid) {
+				for (auto script : _ss->ss_inner.g1_instanceArr) {
+					if (!script->parent_instance_id) {
+						list_script(script);
+					}
 				}
 			}
 			ImGui::EndListBox();
@@ -47,9 +50,13 @@ void statescript_list::render() {
 
 		imgui_helpers::InputHex("##script", &_load_script);
 		ImGui::SameLine();
+		if (!valid)
+			ImGui::BeginDisabled();
 		if (ImGui::Button("Load Script")) {
 			_ss->vfptr->load_statescript_script(_ss, _load_script, 0, 0);
 		}
+		if (!valid)
+			ImGui::EndDisabled();
 	}
 	ImGui::End();
 }
