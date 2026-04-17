@@ -24,4 +24,4 @@ jobs:
       uses: spotdemo4/nix-init@v1.0.0
       
     - name: build
-      run: "nix --extra-experimental-features 'nix-command flakes' develop .#build"
+      run: bash -c "nix --extra-experimental-features 'nix-command flakes' develop .#build"
