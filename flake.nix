@@ -14,13 +14,15 @@
     cross-env = self.packages.${system}.cross-env;
 
     environment = {
-      CC = "${cross-env}/bin/x86_64-w64-mingw32-clang";
-      CXX = "${cross-env}/bin/x86_64-w64-mingw32-clang++";
-      RC = "${cross-env}/bin/x86_64-w64-mingw32-windres";
+      CC = "x86_64-w64-mingw32-clang";
+      CXX = "x86_64-w64-mingw32-clang++";
+      RC = "x86_64-w64-mingw32-windres";
+      
       LIBRARY_PATH = "${cross-env}/lib";
       C_INCLUDE_PATH = "${cross-env}/include";
-      VCPKG_ROOT = "${pkgs.vcpkg}/share/vcpkg";
       CMAKE_PREFIX_PATH = "${cross-env}/x86_64-w64-mingw32";
+
+      VCPKG_ROOT = "${pkgs.vcpkg}/share/vcpkg";
     };
 
     buildDeps = with pkgs; [
@@ -29,6 +31,7 @@
       pkg-config
       vcpkg
       powershell
+      cross-env
     ];
   in {
     packages.${system} = {
