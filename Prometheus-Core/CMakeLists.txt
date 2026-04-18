@@ -169,6 +169,8 @@ add_library(Prometheus-Core SHARED
         Components/Component_4_Model.h
         displaytext_resources.h
         stu_serializer.h
+        Components/Component_3_DataFlow.h
+        Managers/DataFlowManager.h
 )
 target_include_directories(Prometheus-Core PRIVATE ${PROJECT_SOURCE_DIR}/)
 

@@ -80,8 +80,9 @@ namespace stringhash_library {
 	std::thread save_thread = {};
 	//Mutexed
 	void save_all() {
-		if (has_error && !error_shown) {
-			show_error();
+		if (has_error) {
+			if (!error_shown)
+				show_error();
 			return;
 		}
 		//save_thread.joinable() is unreliable
@@ -118,6 +119,7 @@ namespace stringhash_library {
 				fstream.flush();
 				printf("Allmighty HASHLIB: saved :)\n");
 				save_thread.detach();
+				return;
 			}
 			catch (nlohmann::json::exception ex) {
 				imgui_helpers::messageBox("Failed to save hashlibrary.json. Saving is disabled. JSON Error: " + std::string(ex.what()), "Hashlib");
@@ -128,6 +130,7 @@ namespace stringhash_library {
 			catch (...) {
 				imgui_helpers::messageBox("Failed to save hashlibrary.json. Saving is disabled", "Hashlib");
 			}
+			has_error = true;
 		});
 	}
 
@@ -177,11 +180,7 @@ namespace stringhash_library {
 					hashes.emplace(expectedHash, value);
 				}
 			}
-			else {
-				error = "Failed to open input hash file.";
-				has_error = true;
-				return;
-			}
+
 			auto comm = json["comments"];
 			for (auto it = comm.begin(); it != comm.end(); ++it) {
 				__int64 expectedHash = _strtoi64(it.key().c_str(), nullptr, 16);
@@ -210,13 +209,13 @@ namespace stringhash_library {
 			return;
 		}
 		catch (nlohmann::json::exception ex) {
-			error = "Failed to open hashlibrary.json. Saving is disabled. JSON Error: %s\n", ex.what();
+			error = std::format("Failed to open hashlibrary.json. Saving is disabled. JSON Error: {:s}\n", ex.what());
 		}
 		catch (std::bad_alloc& ex) {
-			error = "Failed to open hashlibrary.json. Saving is disabled. Error: %s\n", ex.what();
+			error = std::format("Failed to open hashlibrary.json. Saving is disabled. Error: {:s}\n", ex.what());
 		}
 		catch (std::exception& ex) {
-			error = "Failed to open hashlibrary.json. Saving is disabled. Error: %s\n", ex.what();
+			error = std::format("Failed to open hashlibrary.json. Saving is disabled. Error: {:s}\n", ex.what());
 		}
 		catch (...) {
 			error = "Failed to open hashlibrary.json. Saving is disabled.\n";
