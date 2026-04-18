@@ -28,6 +28,10 @@ function(Pro_ApplyPlatform TargetName)
 
     set(TARGET_LINK_OPTIONS
             -shared -Wl,--gc-sections
+            -static
+            -static-libgcc
+            -static-libstdc++
+            -lc++
     )
 
     message("Configuring target: ${TargetName} with options:")

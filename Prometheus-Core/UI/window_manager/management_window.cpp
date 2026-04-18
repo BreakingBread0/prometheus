@@ -7,6 +7,7 @@
 #include "stu_resources.h"
 #include "entity_admin.h"
 #include "STU_Editable.h"
+#include "shellapi.h"
 
 std::map<int, std::string> s_worldstates = {
 	{ 0, "Shutdown" },
@@ -188,7 +189,7 @@ void management_window::render() {
 			}*/
 			if (ImGui::MenuItem("CE")) {
 				const char* path = "C:\\Program Files\\Cheat Engine\\cheatengine-x86_64.exe";
-				//ShellExecuteA(NULL, "open", path, NULL, NULL, 1);
+				ShellExecuteA(NULL, "open", path, NULL, NULL, 1);
 			}
 			/*if (ImGui::MenuItem("CMD")) {
 				const char* path = "C:\\windows\\system32\\cmd.exe";

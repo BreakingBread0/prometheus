@@ -7,6 +7,8 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/dist_sink.h>
+#include <spdlog/sinks/stdout_sinks.h>
+#include <spdlog/sinks/msvc_sink.h>
 
 #include "globals.h"
 
@@ -24,6 +26,7 @@ namespace Logs
 
         dist_sink->add_sink(latest);
         dist_sink->add_sink(timeStamp);
+        dist_sink->add_sink(std::make_shared<spdlog::sinks::stdout_sink_st>());
 
         return std::make_unique<Detail::Instance>(name, dist_sink);
     }

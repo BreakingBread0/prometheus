@@ -17,7 +17,7 @@
       CC = "x86_64-w64-mingw32-clang";
       CXX = "x86_64-w64-mingw32-clang++";
       RC = "x86_64-w64-mingw32-windres";
-      
+
       LIBRARY_PATH = "${cross-env}/lib";
       C_INCLUDE_PATH = "${cross-env}/include";
       CMAKE_PREFIX_PATH = "${cross-env}/x86_64-w64-mingw32";
