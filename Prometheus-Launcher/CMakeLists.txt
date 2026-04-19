@@ -9,7 +9,8 @@ message("Prometheus-Launcher")
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-configure_file("run.sh" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/prometheus.sh" COPYONLY)
+configure_file("prometheus-nixos.sh" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/prometheus-nixos.sh" COPYONLY)
+configure_file("prometheus.sh" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/prometheus.sh" COPYONLY)
 
 add_executable(Prometheus-Launcher
         "main.cpp"

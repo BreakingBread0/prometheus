@@ -91,7 +91,8 @@
         ];
         shellHook = ''
         echo "================================================"
-        echo "The build environment is ready. You can either use cmake directly or use your preferred IDE (like clion). In order to compile on Linux, use the MinGw (Release-MinGW, Debug-MinGW) presets."
+        echo "The build environment is ready. You can either use cmake directly or use your preferred IDE (like clion)."
+        echo "In order to compile on Linux, use the MinGw (Release-MinGW, Debug-MinGW) presets."
         echo "To run the launcher, use 'umu-run'."
         echo "To automatically build the launcher and core library automatically, execute 'nix develop .#build'"
         echo "================================================"
@@ -102,7 +103,7 @@
         shellHook = ''
           cmake --preset Release-MinGW
           # output path is set by binaryDir in presets
-          cmake --build output/Release --target Prometheus-Core
+          cmake --build output/Release --target Prometheus-Launcher
           exit
         '';
       } // environment);
@@ -111,7 +112,7 @@
         shellHook = ''
           rm -rf build
           cmake --preset Release-MinGW
-          cmake --build output/Release --target Prometheus-Core
+          cmake --build output/Release --target Prometheus-Launcher
           exit
         '';
       } // environment);

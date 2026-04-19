@@ -26,8 +26,8 @@ execute_process(
         OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 add_compile_definitions(
-        GIT_HASH=${GIT_HASH}
-        GIT_BRANCH=${GIT_BRANCH}
+        GIT_HASH="${GIT_HASH}"
+        GIT_BRANCH="${GIT_BRANCH}"
 )
 
 #Atlas
