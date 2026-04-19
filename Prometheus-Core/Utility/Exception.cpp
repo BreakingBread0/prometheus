@@ -6,13 +6,56 @@
 #include <algorithm>
 #include <winternl.h>
 
-#include "ExceptionFormatter.h"
 #include "Logs/Logs.h"
+#include "globals.h"
 
 namespace Utility::Exception
 {
     namespace
     {
+//
+// #include <backtrace.h>
+// #include <backtrace-supported.h>
+//
+// #if !BACKTRACE_SUPPORTED
+// #warning Backtrace is not supported even though we are compiling on MinGW! This is not supposed to happen.
+// #endif
+//
+//         void error_callback(void *data, const char *msg, int errnum)
+//         {
+//             LOG_CORE(Error, "backtrace error: {:} (:)", msg, errnum);
+//         }
+//
+//         int full_callback(void *data, uintptr_t pc, const char *filename,
+//                                  int lineno, const char *func)
+//         {
+//             printf("  0x%lx  %s\n        at %s:%d\n",
+//                 (unsigned long)pc,
+//                 func     ? func     : "??",
+//                 filename ? filename : "??",
+//                 lineno);
+//             return 0;
+//         }
+//
+//         std::once_flag init_backtrace;
+//         backtrace_state* state;
+//         void print_backtrace_mingw()
+//         {
+//             std::call_once(init_backtrace, []()
+//             {
+//                 char buf[256];
+//                 GetModuleFileName((HMODULE)globals::modBase, buf, sizeof(buf));
+//                 LOG_CORE(Info, "backtrace executable: {:}", buf);
+//                 state = backtrace_create_state(buf, 1, error_callback, NULL);
+//                 if (!state)
+//                     LOG_CORE(Warn, "backtrace_create_state failed.");
+//             });
+//             if (state)
+//             {
+//                 backtrace_full(state, 0, full_callback, error_callback, NULL);
+//             }
+//         }
+
         int __stdcall VectoredExceptionHandler(EXCEPTION_POINTERS* exception)
         {
             if (exception->ExceptionRecord->ExceptionCode == EXCEPTION_BREAKPOINT ||
@@ -30,6 +73,7 @@ namespace Utility::Exception
                 return EXCEPTION_CONTINUE_EXECUTION;
 
             LOG_CORE_e(exception);
+            // print_backtrace_mingw();
             return EXCEPTION_CONTINUE_SEARCH;
         }
     }

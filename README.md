@@ -29,7 +29,7 @@ Hey and welcome, thanks for stopping by!
 
 # 0. Thank you
 
-As I've said in [my talk](https://media.ccc.de/v/39c3-prometheus-reverse-engineering-overwatch), this was and is a labor of love. Please do not send any hate to current or past Overwatch developers, and please do not harrass them. It is still my favourite multiplayer game, and if you're reading this, chances are it is yours too. It probably wasn't easy to just stomp out a whole new multiplayer game within two years out of the broken shambles of Titan. 0.8, even if still a "beta" version, is very much feature-complete and very stable!
+As I've said in [my talk](https://media.ccc.de/v/39c3-prometheus-reverse-engineering-overwatch), this was and is a labor of love. Please do not send any hate to current or past Overwatch developers, and please do not harass them. It is still my favourite multiplayer game, and if you're reading this, chances are it is yours too. It probably wasn't easy to just stomp out a whole new multiplayer game within two years out of the broken shambles of Titan. 0.8, even if still a "beta" version, is very much feature-complete and very stable!
 
 # 1. Usage
 

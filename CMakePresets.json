@@ -68,7 +68,10 @@
         "VCPKG_TARGET_TRIPLET": "x64-mingw-static",
         "PRO_PLATFORM": "MinGW",
         "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-        "CMAKE_SYSTEM_NAME": "Windows"
+        "CMAKE_SYSTEM_NAME": "Windows",
+        "CMAKE_POLICY_VERSION_MINIMUM": "3.5",
+        "VCPKG_MANIFEST_DIR": "${sourceDir}/vcpkg-mingw",
+        "VCPKG_INSTALL_OPTIONS": "--allow-unsupported"
       },
       "architecture": {
         "value": "x64",

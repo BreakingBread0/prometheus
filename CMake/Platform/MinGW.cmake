@@ -7,6 +7,11 @@ set(CMAKE_SHARED_LIBRARY_PREFIX "") # Remove lib prefix
 
 # add_link_options(-v)
 
+function (Pro_ApplyPlatform_Dll TargetName)
+    Pro_ApplyPlatform(${TargetName})
+    target_link_options(${TargetName} PRIVATE -shared)
+endfunction()
+
 function(Pro_ApplyPlatform TargetName)
     set(TARGET_COMPILE_OPTIONS
             -w -ffunction-sections -fdata-sections -fbuiltin
@@ -27,11 +32,10 @@ function(Pro_ApplyPlatform TargetName)
     )
 
     set(TARGET_LINK_OPTIONS
-            -shared -Wl,--gc-sections
+            -Wl,--gc-sections
             -static
             -static-libgcc
             -static-libstdc++
-            -lc++
     )
 
     message("Configuring target: ${TargetName} with options:")

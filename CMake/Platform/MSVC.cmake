@@ -6,6 +6,11 @@ set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<$<CONFIG:Debug,RelWithDebInfo,Release
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
 set(CMAKE_SYSTEM_NAME Windows)
 
+function (Pro_ApplyPlatform_Dll TargetName)
+    Pro_ApplyPlatform(${TargetName})
+    target_link_options(${TargetName} PRIVATE /DLL)
+endfunction()
+
 function(Pro_ApplyPlatform TargetName)
     set(TARGET_COMPILE_OPTIONS
             /W0 /Gy /Oi /GS- /std:c++20 /Zc:preprocessor /permissive-
@@ -24,7 +29,7 @@ function(Pro_ApplyPlatform TargetName)
     )
 
     set(TARGET_LINK_OPTIONS
-            /DLL /DEBUG
+            # much empty, such wow
     )
 
     message("Configuring target: ${TargetName} with options:")

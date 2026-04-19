@@ -48,6 +48,9 @@ add_subdirectory(Prometheus-Generation/Generator)
 #Core
 add_subdirectory(Prometheus-Core)
 
+#Core
+add_subdirectory(Prometheus-Launcher)
+
 #Patcher (can just build from vs/rider tho)
 add_custom_target("Prometheus-Patcher"
         COMMAND dotnet restore

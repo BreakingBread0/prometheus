@@ -1,0 +1,1 @@
+This is a special directory to include libbacktrace on MinGW builds. Use the preset MinGW (Release-MinGw, Debug-MinGW) to build, this automatically sets all the required variables.

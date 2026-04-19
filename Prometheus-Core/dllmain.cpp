@@ -10,7 +10,6 @@
 #include <thread>
 #include <locale>
 #include <codecvt>
-#include "ExceptionFormatter.h"
 #include <winternl.h>
 #include <algorithm>
 #include <format>
@@ -85,7 +84,7 @@ void ow_dealloc(__int64 address) {
         return memmgr->vfptr->deallocate(memmgr, address);
     }
     __except (EXCEPTION_EXECUTE_HANDLER) {
-        printf("failed ow_dealloc for %p\n", address);
+        LOG_CORE(Warn, "failed ow_dealloc for {:x}\n", address);
     }
 }
 
@@ -93,8 +92,8 @@ void ow_dealloc(__int64 address) {
 //void patchJump(DWORD_PTR location, DWORD_PTR toAddr);
 //void patchToJump(DWORD_PTR location);
 
+const DWORD_PTR Start_Addr = 0x11fe3ac; //NOTE: Unused since usage of the launcher.
 const DWORD_PTR TlsCallback_Addr = 0x137f000;
-const DWORD_PTR Start_Addr = 0x11fe3ac;
 const DWORD_PTR TlsCallback2_Addr = 0x113cd10;
 //const DWORD_PTR TlsCallback2_Addr = 0x113cd10;
 //const DWORD_PTR owVEH_Addr = 0x13810d0;
@@ -120,50 +119,10 @@ std::string ws2s(const std::wstring& wstr)
     return converterX.to_bytes(wstr);
 }
 
-unsigned char TlsCallback_0[] =
-{
-  0x4C, 0x8B, 0xDC, 0x49, 0x89, 0x4B, 0x08, 0x55, 0x49, 0x8D,
-  0xAB, 0xB8, 0xF9, 0xFF, 0xFF, 0x48, 0x81, 0xEC, 0x40, 0x07,
-  0x00, 0x00, 0x53, 0x81, 0xCB, 0xF3, 0xA4, 0x27, 0x5A, 0x5B,
-  0x71, 0x02, 0x49, 0xBE, 0x83, 0xFA, 0x01, 0x0F, 0x85, 0x92,
-  0x20, 0x00, 0x00, 0x80, 0x3D, 0x0E, 0x5D, 0x49, 0x00, 0x00,
-  0x0F, 0x85, 0x85, 0x20, 0x00, 0x00, 0x88, 0x15, 0x02, 0x5D,
-  0x49, 0x00, 0x52, 0x81, 0xCA, 0x27, 0xB7, 0x61, 0x62, 0x5A,
-  0x71, 0x02, 0x48, 0xBD, 0xC7, 0x85, 0x58, 0x06, 0x00, 0x00,
-  0x60, 0x00, 0x00, 0x00, 0x8B, 0x85, 0x58, 0x06, 0x00, 0x00,
-  0x65, 0x48, 0x8B, 0x00, 0x48, 0x85, 0xC0, 0x0F, 0x84, 0x56,
-  0x20, 0x00, 0x00, 0x48, 0x8B, 0x40, 0x18, 0x48, 0x8B, 0x48,
-  0x20, 0x48, 0x83, 0xC0, 0x20, 0x48, 0x3B, 0xC8, 0x0F, 0x84,
-  0x41, 0x20, 0x00, 0x00, 0x4D, 0x89, 0x7B, 0xC8, 0x4C, 0x8D,
-  0x79, 0xF0, 0x4D, 0x85, 0xFF, 0x0F, 0x84, 0x28, 0x20, 0x00,
-  0x00, 0x52, 0x81, 0xE2, 0x29, 0x44, 0xB9, 0xB6, 0x5A, 0x73,
-  0x02, 0x48, 0xBB, 0xC7, 0x45, 0x38, 0x6B, 0x65, 0x72, 0x6E,
-  0xC7, 0x45, 0x3C, 0x65, 0x6C, 0x33, 0x32, 0xC7, 0x45, 0x40,
-  0x2E, 0x64, 0x6C, 0x6C, 0x50, 0x81, 0xC8, 0xD7, 0x3A, 0xA9,
-  0x6A, 0x58, 0x73, 0x02, 0x48, 0xBA, 0xC7, 0x85, 0x58, 0x06,
-  0x00, 0x00, 0x60, 0x00, 0x00, 0x00, 0x8B, 0x85, 0x58, 0x06,
-  0x00, 0x00, 0x65, 0x48, 0x8B, 0x08, 0x48, 0x85, 0xC9, 0x0F,
-  0x84, 0xDE, 0x1F, 0x00, 0x00, 0x49, 0x89, 0x5B, 0x18, 0x48,
-  0x8B, 0x59, 0x18, 0x4C, 0x8B, 0x53, 0x20, 0x48, 0x83, 0xC3,
-  0x20, 0x4C, 0x3B, 0xD3, 0x0F, 0x84, 0xBD, 0x1F, 0x00, 0x00,
-  0x49, 0x89, 0x73, 0xF0, 0x49, 0x89, 0x7B, 0xE8, 0x4D, 0x89,
-  0x6B, 0xD8, 0x45, 0x33, 0xED, 0x90, 0x45, 0x0F, 0xB7, 0x4A,
-  0x38, 0x4D, 0x8B, 0x42, 0x40, 0x4D, 0x8D, 0x5A, 0xF0, 0x49,
-  0x8B, 0xFD, 0x41, 0x8B, 0xF5, 0x45, 0x85, 0xC9, 0x0F, 0x8E,
-  0xCB, 0x01, 0x00, 0x00, 0x0F, 0x1F, 0x40, 0x00, 0x41, 0x0F,
-  0xB6, 0x08, 0x8D, 0x41, 0xBF, 0x3C, 0x19, 0x77, 0x03, 0x80,
-  0xC1, 0x20, 0x0F, 0xB6, 0x54, 0x3D, 0x38, 0x8D, 0x42, 0xBF,
-  0x3C, 0x19, 0x77, 0x03, 0x80, 0xC2, 0x20, 0x3A, 0xCA, 0x0F,
-  0x85, 0x8F, 0x01, 0x00, 0x00, 0x48, 0xFF, 0xC7, 0x48, 0x83,
-  0xFF, 0x0C, 0x0F, 0x85, 0x85, 0x01, 0x00, 0x00, 0x4D, 0x85,
-  0xDB, 0x0F, 0x84, 0x3A, 0x1F, 0x00, 0x00, 0x4C, 0x89, 0xA4,
-  0x24, 0x28, 0x07
-};
-
 DWORD GetMainThreadId() {
     auto snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
     if (snapshot == INVALID_HANDLE_VALUE) {
-        printf("Could not open handle to get main thread\n");
+        LOG_CORE(Error, "Could not open handle to get main thread\n");
         return 0;
     }
     THREADENTRY32 tEntry;
@@ -184,13 +143,13 @@ DWORD GetMainThreadId() {
 }
 
 void exit_handler() {
-    printf("=============== shutdown ===============\n");
+    LOG_CORE(Info, "=============== shutdown ===============\n");
     if (!globals::exit_normal)
         system("pause");
 }
 
 void __fastcall ExitProcessHook(int exitCode) {
-    printf("Process exit initiazed: %d\n", exitCode);
+    LOG_CORE(Info, "Process exit initiazed: %d\n", exitCode);
     ExitProcess_orig(exitCode);
 }
 
@@ -338,7 +297,7 @@ HRESULT __stdcall PresentHook(IDXGISwapChain* pSwapChain, UINT SyncInterval, UIN
             //http://kbdedit.com/manual/low_level_vk_list.html
             io.GetClipboardTextFn = getClipboard;
 
-            printf("Filling STU vfptr table\n");
+            LOG_CORE(Debug, "Filling STU vfptr table\n");
             STURegistryData::initialize();
             statescript_logger::Initialize();
             window_manager::add_window(new management_window);
@@ -388,7 +347,7 @@ HRESULT __stdcall PresentHook(IDXGISwapChain* pSwapChain, UINT SyncInterval, UIN
 
 __int64 __fastcall createwindow_hook(__int64 gameManager) {
     auto handle = createwindow_orig(gameManager);
-    printf("window handle: %x\n", handle);
+    LOG_CORE(Info, "window handle: %x\n", handle);
     globals::gameWindow = handle;
     std::thread([]() {
         constexpr int max_attempts = 100;  // Timeout after ~10 seconds
@@ -434,7 +393,7 @@ __int64 regedit_initialize(JamType13String* a1, JamType13String* a2, __int64 a3,
     auto str = std::string(readJamType13String(a2));
     //printf("regedit: %s\n", str.c_str());
     if (str == "REGION" || str == "LOCALE" || str == "LOCALE_AUDIO") {
-        printf("patch regedit get-region.\n");
+        LOG_CORE(Debug, "patch regedit get-region.\n");
         return 1;
     }
     return regedit_initialize_orig(a1, a2, a3, a4);
@@ -453,7 +412,7 @@ struct CascLogEntry {
 typedef __int64(__cdecl* cascLogHook_fn)(int, const char*, const char*);
 cascLogHook_fn cascLogHook_orig;
 __int64 cascLogHook(int level, const char* culprit, const char* msg) {
-    printf("CASC %d (%s): %s\n", level, culprit, msg);
+    LOG_CORE(Debug, "CASC %d (%s): %s\n", level, culprit, msg);
     auto result = cascLogHook_orig(level, culprit, msg);
     return result;
 }
@@ -518,7 +477,7 @@ __int64 __fastcall manager_14_init_hook(__int64 manager) {
             auto emplace_keystruct_fn = (tact_key_struct * (__fastcall*)(__int64, ULONGLONG*))(globals::gameBase + 0x9d0470);
             for (auto& key : casc_keys) {
                 tact_key_struct* key_struct = emplace_keystruct_fn(magic_fairy_dust + 8, &key.KeyName);
-                printf("Emplacing TACT key %llx\n", key.KeyName);
+                LOG_CORE(Info, "Emplacing TACT key %llx\n", key.KeyName);
                 memcpy(&key_struct->key, &key, sizeof(CASC_ENCRYPTION_KEY));
                 key_struct->what_is_this = 1;
             }
@@ -578,7 +537,7 @@ afterdatapackload_ afterdatapackload_fn;//0xf3eb10
 __int64 afterdatapackload_hook(__int64 a1, __int64 a2, __int64 a3, int a4, int a5) {
     __int64 result = afterdatapackload_fn(a1, a2, a3, a4, a5);
     if (a2 == 0x06E0000000000079) {
-        printf("Hook AfterDataPack\n");
+        LOG_CORE(Info, "Hook AfterDataPack\n");
         __int64 packs[] = {
             //Data Packs
             0x06e0000000000079,
@@ -678,7 +637,7 @@ __int64 afterdatapackload_hook(__int64 a1, __int64 a2, __int64 a3, int a4, int a
 
         unsigned char ret_1[] = { 0xB0, 0x01, 0xC3 };
         memcpy((void*)(globals::gameBase + 0xc7c960), ret_1, sizeof(ret_1));
-        printf("Force chat enabled\n"); //Must be done after data packs loaded
+        LOG_CORE(Debug, "Force chat enabled\n"); //Must be done after data packs loaded
     }
     return result;
 }
@@ -835,19 +794,76 @@ __int64 MapCreateSwitch_hook(__int64 a1, __int64 a2) {
     return MapCreateSwitch_orig(a1, a2);
 }
 
-void __cdecl StartHook(void*) {
-    //system("pause");
-    printf("hello monsieur\n");
+//https://stackoverflow.com/questions/557081/how-do-i-get-the-hmodule-for-the-currently-executing-code
+HMODULE GetCurrentModule()
+{ // NB: XP+ solution!
+    HMODULE hModule = NULL;
+    GetModuleHandleEx(
+        GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS,
+        (LPCTSTR)GetCurrentModule,
+        &hModule);
+
+    return hModule;
+}
+
+__int64 AddVehHook(__int64 old, __int64 func) {
+    if ((DWORD_PTR)_ReturnAddress() > globals::gameBase && (DWORD_PTR)_ReturnAddress() < globals::gameBase + globals::gameSize)
+        return AddVeh_orig(old, func);
+    LOG_CORE(Warn, "Caught RtlAddVectoredExceptionHandler %d %p ret: %p\n", old, func, _ReturnAddress());
+    return 0;
+}
+
+bool CheckDebuggerPresentHook() {
+    LOG_CORE(Warn, "CheckDebuggerPresent %p\n", _ReturnAddress());
+    return false;
+}
+
+void __cdecl StartHook() {
     atexit(exit_handler);
 
-    unsigned char orig[] = { 0x7E, 0x41, 0xDB, 0xB6, 0x8F, 0x68, 0x93, 0x42, 0x09, 0xC8, 0x5F, 0x4A };
-    memcpy((void*)(globals::gameBase + Start_Addr), orig, sizeof(orig));
-    printf("restored game start.\n");
+    globals::ensure_console_allocated();
+    Atlas::Utility::Modules::Initialize();
+    Logs::Initialize(); //soz i defo shouldnt be putting this inside dllmain but like idk where else to put it rn
 
-    typedef int(__stdcall* _TlsCallbackFunc)(DWORD_PTR, DWORD, PVOID);
-    ((_TlsCallbackFunc)(globals::gameBase + 0x137f000))(globals::gameBase, 1, 0);
-    printf("called iat decryptor (TlsCallback1)\n");
+    printf("Hello World!\n");
 
+    LOG_CORE(Info, "Adding VEH: %p\n", AddVectoredExceptionHandler(true, Utility::Exception::GetExceptionHandler()));
+    globals::gameBase = (DWORD_PTR)GetModuleHandleA(nullptr);
+    globals::modBase = (DWORD_PTR)GetCurrentModule();
+    const auto pe = Pe::PeNative::fromModule(GetModuleHandleA(NULL));
+    globals::gameSize = pe.imageSize();
+    const auto modpe = Pe::PeNative::fromModule(GetCurrentModule());
+    globals::modSize = modpe.imageSize();
+    mainThreadId = GetMainThreadId();
+
+    if (GetCurrentThreadId() == mainThreadId)
+    {
+        LOG_CORE(Error, "Error: Prometheus loaded in an unsupported way. Not proceeding!\n");
+        return;
+    }
+    LOG_CORE(Info, "Main Thread: {:x}\n", mainThreadId);
+
+    MH_VERIFY(MH_Initialize());
+
+    MH_VERIFY(MH_CreateHook((LPVOID)ExitProcess, (LPVOID)ExitProcessHook, (LPVOID*)&ExitProcess_orig));
+    MH_VERIFY(MH_EnableHook((LPVOID)ExitProcess));
+
+    auto addVeh = GetProcAddress(LoadLibraryA("ntdll.dll"), "RtlAddVectoredExceptionHandler");
+    MH_VERIFY(MH_CreateHook((LPVOID)addVeh, (LPVOID)AddVehHook, (LPVOID*)&AddVeh_orig));
+    MH_VERIFY(MH_EnableHook((LPVOID)addVeh));
+
+    MH_VERIFY(MH_CreateHook((LPVOID)IsDebuggerPresent, (LPVOID)CheckDebuggerPresentHook, 0));
+    MH_VERIFY(MH_EnableHook((LPVOID)IsDebuggerPresent));
+
+    MH_VERIFY(MH_CreateHook((LPVOID)CheckRemoteDebuggerPresent, (LPVOID)CheckDebuggerPresentHook, 0));
+    MH_VERIFY(MH_EnableHook((LPVOID)CheckRemoteDebuggerPresent));
+
+    //The TlsCallbacks handle page decryption and import table decryption.
+    LOG_CORE(Debug, "Calling original TlsCallbacks before hooking.");
+    ((void(*)(DWORD_PTR, int, int))(globals::gameBase + TlsCallback_Addr))(globals::gameBase, 1, 0);
+    ((void(*)(DWORD_PTR, int, int))(globals::gameBase + TlsCallback2_Addr))(globals::gameBase, 1, 0);
+
+    LOG_CORE(Info, "Decrypting pages.");
     decryptPage(Start_Addr); //yes this is wanted
     decryptPage(Start_Addr); //yes this is wanted
     decryptPage(0x1000); //yes this is wanted
@@ -858,21 +874,17 @@ void __cdecl StartHook(void*) {
         DWORD old;
         VirtualProtect((LPVOID)(globals::gameBase + i), 0x100, PAGE_EXECUTE_READWRITE, &old);
     }
-    printf("called text decryptor (veh)\n");
 
     unsigned char verify[] = { 0x48, 0x83, 0xEC, 0x28, 0xE8, 0xFF, 0xD8, 0x00, 0x00 };
     for (int i = 0; i < sizeof(verify); i++) {
         if (*(unsigned char*)(globals::gameBase + Start_Addr + i) != verify[i]) {
-            printf(".text decryption failed! expected: %02x got: %02x at offset %x\n", verify[i], *(char*)(globals::gameBase + Start_Addr + i), i);
-            system("pause");
+            LOG_CORE(Error, ".text decryption failed! expected: %02x got: %02x at offset %x\n", verify[i], *(char*)(globals::gameBase + Start_Addr + i), i);
+            return;
         }
     }
 
-    memset((void*)(globals::gameBase + TlsCallback_Addr), 0xc3, 0x10);
-    printf("patched tls callbacks\n");
-
     memset((void*)(globals::gameBase + 0x1133D81), 0x90, 0x4); //illegal instruction at end of crash_me__.
-    printf("patched debugger trap 1 (illegal isntruction)\n");
+    LOG_CORE(Debug, "patched debugger trap 1 (illegal isntruction)\n");
 
     //ud2
     MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0x5abd00), (LPVOID)DebuggerTrapHook, 0));
@@ -895,11 +907,11 @@ void __cdecl StartHook(void*) {
 
     unsigned char return_zero[] = { 0x31, 0xC0, 0xC3 };
     memcpy((void*)(globals::gameBase + 0x804740), return_zero, sizeof(return_zero));
-    printf("patched debugger trap 2 (return value check)\n");
+    LOG_CORE(Debug, "patched debugger trap 2 (return value check)\n");
 
     MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0x5ac130), (LPVOID)regedit_initialize, (PVOID*)&regedit_initialize_orig));
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0x5ac130)));
-    printf("patched regedit launch options\n");
+    LOG_CORE(Debug,"patched regedit launch options\n");
 
     // MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0x80f7c0), (LPVOID)emplace_entity_hook, (PVOID*)&emplace_entity_orig));
     // MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0x80f7c0)));
@@ -907,11 +919,11 @@ void __cdecl StartHook(void*) {
 
     MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xf3eb10), (LPVOID)afterdatapackload_hook, (PVOID*)&afterdatapackload_fn));
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0xf3eb10)));
-    printf("after data pack load hook\n");
+    LOG_CORE(Debug, "after data pack load hook\n");
 
     MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xa485d0), (LPVOID)MapCreateSwitch_hook, (PVOID*)&MapCreateSwitch_orig));
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0xa485d0)));
-    printf("mapcreate hook\n");
+    LOG_CORE(Debug, "mapcreate hook\n");
 
     // MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xa00450), (LPVOID)componen1_oncreate_hook, (PVOID*)&component_1_oncreate_orig));
     // MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0xa00450)));
@@ -1099,7 +1111,7 @@ void __cdecl StartHook(void*) {
     memcpy((void*)(globals::gameBase + 0x00000000005A14C9), std::array<unsigned char, 5>{0xe9, 0x4b, 0x1, 0x0, 0x0}.data(), 0x5);
     memcpy((void*)(globals::gameBase + 0x0000000000808E91), std::array<unsigned char, 5>{0xe9, 0x96, 0x3, 0x0, 0x0}.data(), 0x5);
     memcpy((void*)(globals::gameBase + 0x00000000007FD729), std::array<unsigned char, 5>{0xe9, 0x48, 0x1, 0x0, 0x0}.data(), 0x5);
-    printf("patched all antidebug traps\n");
+    LOG_CORE(Debug,"patched all antidebug traps\n");
 
     memcpy((void*)(globals::gameBase + 0x7ed74a), std::array<unsigned char, 5>{0xe9, 0x5b, 0x1, 0x0, 0x0}.data(), 0x5);
     memcpy((void*)(globals::gameBase + 0x7edf96), std::array<unsigned char, 5>{0xe9, 0x7d, 0x1, 0x0, 0x0}.data(), 0x5);
@@ -1436,13 +1448,13 @@ void __cdecl StartHook(void*) {
     memcpy((void*)(globals::gameBase + 0x1084684), std::array<unsigned char, 5>{0xe9, 0xc8, 0x0, 0x0, 0x0}.data(), 0x5);
     memcpy((void*)(globals::gameBase + 0x1084dee), std::array<unsigned char, 5>{0xe9, 0xf1, 0x0, 0x0, 0x0}.data(), 0x5);
     memcpy((void*)(globals::gameBase + 0x108516a), std::array<unsigned char, 5>{0xe9, 0xa0, 0x0, 0x0, 0x0}.data(), 0x5);
-    printf("patched retaddr checks\n"); //i think those are like 335/342?
+    LOG_CORE(Debug, "patched retaddr checks\n"); //i think those are like 335/342?
 #pragma endregion
 
     memset((void*)(globals::gameBase + 0x805607), 0x85, 1);
-    printf("patched veh set trap\n");
+    LOG_CORE(Debug, "patched veh set trap\n");
 
-    printf("casc log hook\n");
+    LOG_CORE(Debug, "casc log hook\n");
     MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xba00e0), (LPVOID)cascLogHook, (LPVOID*)&cascLogHook_orig));
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0xba00e0)));
 
@@ -1451,19 +1463,19 @@ void __cdecl StartHook(void*) {
 
     MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xb2ae70), (LPVOID)stuux_string_hash_hook, (LPVOID*)&stuux_string_hash_orig));
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0xb2ae70)));
-    printf("stuux string hash uxlink\n");
+    LOG_CORE(Debug, "stuux string hash uxlink\n");
 
     MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0x9c3500), (LPVOID)manager_14_init_hook, (LPVOID*)&manager_14_orig));
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0x9c3500)));
-    printf("Manager 14 initialization hook\n");
+    LOG_CORE(Debug, "Manager 14 initialization hook\n");
 
     MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xcd0590), (LPVOID)dataflow_bugfix_fn, (LPVOID*)&dataflow_bugfix_orig));
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0xcd0590)));
-    printf("filterbits dataflow fix\n");
+    LOG_CORE(Debug, "filterbits dataflow fix\n");
 
     MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xc541c0), (LPVOID)Construct_GameEntityAdmin_fn, (LPVOID*)&Construct_GameEntityAdmin_orig));
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0xc541c0)));
-    printf("gameEA initialize hook\n");
+    LOG_CORE(Debug, "gameEA initialize hook\n");
 
     unsigned char ret_1[] = { 0xB0, 0x01, 0xC3 };
     memcpy((void*)(globals::gameBase + 0xf4c920), ret_1, sizeof(ret_1)); //Debug Statescript log enabled
@@ -1471,29 +1483,32 @@ void __cdecl StartHook(void*) {
     memset((void*)(globals::gameBase + 0x7e1f69), 0x90, 8);
     memset((void*)(globals::gameBase + 0xf44bba), 0x90, 0x13);
 
-    //Return address checks from getHealth func
-    memset((void*)(globals::gameBase + 0xcc6110), 0x90, 0xcc67f5 - 0xcc6110);
-    memset((void*)(globals::gameBase + 0xcc57d3), 0x90, 0xcc5f92 - 0xcc57d3);
+    // //Return address checks from getHealth func, should be handled by Anti-Anti-Debug now.
+    // memset((void*)(globals::gameBase + 0xcc6110), 0x90, 0xcc67f5 - 0xcc6110);
+    // memset((void*)(globals::gameBase + 0xcc57d3), 0x90, 0xcc5f92 - 0xcc57d3);
 
     MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xc43a40), (LPVOID)selectiveResLoad_hook, (PVOID*)&selectiveResLoad_orig));
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0xc43a40)));
-    printf("selectiveResLoad_hook\n");
+    LOG_CORE(Debug, "selectiveResLoad_hook\n");
 
     MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0xc43ab0), (LPVOID)System63_hook, (PVOID*)&System63_orig));
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0xc43ab0)));
-    printf("system63 bugfix\n");
+    LOG_CORE(Debug,"system63 bugfix\n");
 
     //0x7fc6b0
     MH_VERIFY(MH_CreateHook((PVOID)(globals::gameBase + 0x7fc6b0), (LPVOID)CreateAllocator_hook, (PVOID*)&CreateAllocator_orig));
     MH_VERIFY(MH_EnableHook((PVOID)(globals::gameBase + 0x7fc6b0)));
-    printf("memallocator hook\n");
+    LOG_CORE(Debug, "memallocator hook\n");
 
-    ((_TlsCallbackFunc)(globals::gameBase + TlsCallback2_Addr))(globals::gameBase, 3, 0);
+    ((void(*)(DWORD_PTR, int, int))(globals::gameBase + TlsCallback2_Addr))(globals::gameBase, 3, 0);
+    memset((void*)(globals::gameBase + TlsCallback_Addr), 0xc3, 0x10);
+    memset((void*)(globals::gameBase + TlsCallback2_Addr), 0xc3, 0x10);
+    LOG_CORE(Debug, "patched tls callbacks\n");
 
-    printf("Calling static prelaunch window initializers\n");
+    LOG_CORE(Debug, "Calling static prelaunch window initializers\n");
     window_manager::call_preStartInitialize();
 
-    printf("Loading hashlib\n");
+    LOG_CORE(Debug, "Loading hashlib\n");
     stringhash_library::initialize();
     resource_handler_helper::initialize();
     stu_resources::initialize();
@@ -1506,39 +1521,16 @@ void __cdecl StartHook(void*) {
     //VirtualProtect(retaddr_bypasser_9000, 2, PAGE_READWRITE, &old);
     //*retaddr_bypasser_9000 = 0;
 
-    printf("Prepared to launch %p.\n", globals::gameBase + Start_Addr);
-    //system("pause");
-    void(*pFunc)() = (void(*)())(globals::gameBase + Start_Addr);
-    pFunc();
-}
+    LOG_CORE(Info, "Prepared to launch {:x}.\n", globals::gameBase + Start_Addr);
 
-__int64 AddVehHook(__int64 old, __int64 func) {
-    if ((DWORD_PTR)_ReturnAddress() > globals::gameBase && (DWORD_PTR)_ReturnAddress() < globals::gameBase + globals::gameSize)
-        return AddVeh_orig(old, func);
-    printf("Caught RtlAddVectoredExceptionHandler %d %p ret: %p\n", old, func, _ReturnAddress());
-    return 0;
-}
-
-bool CheckDebuggerPresentHook() {
-    printf("CheckDebuggerPresent %p\n", _ReturnAddress());
-    return false;
-}
-
-//https://stackoverflow.com/questions/557081/how-do-i-get-the-hmodule-for-the-currently-executing-code
-HMODULE GetCurrentModule()
-{ // NB: XP+ solution!
-    HMODULE hModule = NULL;
-    GetModuleHandleEx(
-        GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS,
-        (LPCTSTR)GetCurrentModule,
-        &hModule);
-
-    return hModule;
+    HANDLE mainThread = OpenThread(THREAD_ALL_ACCESS, false, mainThreadId);
+    ResumeThread(mainThread);
+    CloseHandle(mainThread);
 }
 
 //Initial entry for the executable.
-//Making hooks / calling stuff here isnt really a good idea, since this is called from TlsCallback_0 which is very restrictive
-//(example: creating threads doesnt work)
+//Making hooks / calling stuff here isnt really a good idea, since this is called before TlsCallback_0 which is very restrictive.
+//Place your hooks after .text decryption
 BOOL APIENTRY DllMain(HMODULE hModule,
     DWORD  ul_reason_for_call,
     LPVOID lpReserved
@@ -1549,58 +1541,12 @@ BOOL APIENTRY DllMain(HMODULE hModule,
     switch (ul_reason_for_call) {
         case DLL_PROCESS_ATTACH:
             std::call_once(entrypoint_mutex, [] {
-                globals::ensure_console_allocated();
-                Atlas::Utility::Modules::Initialize();
-                Logs::Initialize(); //soz i defo shouldnt be putting this inside dllmain but like idk where else to put it rn
-
-                printf("Hello World!\n");
-
-                printf("Adding VEH: %p\n", AddVectoredExceptionHandler(true, Utility::Exception::GetExceptionHandler()));
-                globals::gameBase = (DWORD_PTR)GetModuleHandleA(nullptr);
-                globals::modBase = (DWORD_PTR)GetCurrentModule();
-                const auto pe = Pe::PeNative::fromModule(GetModuleHandleA(NULL));
-                globals::gameSize = pe.imageSize();
-                const auto modpe = Pe::PeNative::fromModule(GetCurrentModule());
-                globals::modSize = modpe.imageSize();
-                printf("Module Base: %p %p\n", globals::modBase, globals::modSize);
-                printf("Game Base: %p %p\n", globals::gameBase, globals::gameSize);
-                mainThreadId = GetCurrentThreadId();
-                printf("Main Thread: %d (%x)\n", mainThreadId, mainThreadId);
-                printf("Patching back TLSCallback0 at %p!\n");
-                DWORD_PTR tlsCallback = TlsCallback_Addr + globals::gameBase;
-                DWORD old;
-                VirtualProtect((void*)(tlsCallback), sizeof(TlsCallback_0), PAGE_EXECUTE_READWRITE, &old);
-                memcpy((void*)tlsCallback, TlsCallback_0, sizeof(TlsCallback_0));
-
-                MH_VERIFY(MH_Initialize());
-
-                MH_VERIFY(MH_CreateHook((LPVOID)ExitProcess, (LPVOID)ExitProcessHook, (LPVOID*)&ExitProcess_orig));
-                MH_VERIFY(MH_EnableHook((LPVOID)ExitProcess));
-
-                auto addVeh = GetProcAddress(LoadLibraryA("ntdll.dll"), "RtlAddVectoredExceptionHandler");
-                MH_VERIFY(MH_CreateHook((LPVOID)addVeh, (LPVOID)AddVehHook, (LPVOID*)&AddVeh_orig));
-                MH_VERIFY(MH_EnableHook((LPVOID)addVeh));
-
-                MH_VERIFY(MH_CreateHook((LPVOID)IsDebuggerPresent, (LPVOID)CheckDebuggerPresentHook, 0));
-                MH_VERIFY(MH_EnableHook((LPVOID)IsDebuggerPresent));
-
-                MH_VERIFY(MH_CreateHook((LPVOID)CheckRemoteDebuggerPresent, (LPVOID)CheckDebuggerPresentHook, 0));
-                MH_VERIFY(MH_EnableHook((LPVOID)CheckRemoteDebuggerPresent));
-
-                printf("Creating WinMain Hook...\n");
-                unsigned char starthook[] = {
-                    0x48, 0xB8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, //mov rax,0
-                    0xFF, 0xE0 //jmp rax
-                };
-                VirtualProtect((void*)(globals::gameBase + Start_Addr), sizeof(starthook), PAGE_EXECUTE_READWRITE, &old);
-                memcpy((void*)(globals::gameBase + Start_Addr), starthook, sizeof(starthook));
-                DWORD_PTR thatAddr = (DWORD_PTR)&StartHook;
-                memcpy((void*)(globals::gameBase + Start_Addr + 2), (void*)&thatAddr, 8);
+                StartHook();
             });
             break;
         case DLL_PROCESS_DETACH:
             std::call_once(exitpoint_mutex, [] {
-                printf("Goodbye World!\n");
+                LOG_CORE(Info, "Goodbye World (unloading DLL)!\n");
                 MH_VERIFY(MH_Uninitialize());
                 Logs::Uninitialize();
                 Atlas::Utility::Modules::Uninitialize();

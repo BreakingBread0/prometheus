@@ -32,6 +32,11 @@
       vcpkg
       powershell
       cross-env
+
+      # This is for installing libbacktrace.
+      autoconf
+      automake
+      libtool
     ];
   in {
     packages.${system} = {
@@ -45,23 +50,13 @@
           sha256 = "sha256-w5rrSCO7yJzipAgglkoRRhSlJMLLe+Hj2v0W94D6ObE=";
         };
 
-        preFixup = ''
-          rm -f \
-            $out/bin/lldb \
-            $out/bin/lldb-mi \
-            $out/bin/lldb-server \
-            $out/bin/lldb-dap \
-            $out/lib/liblldb.so* \
-            $out/lib/liblldbIntelFeatures.so*
-        '';
-
         nativeBuildInputs = [ pkgs.autoPatchelfHook ];
 
         buildInputs = with pkgs; [
           stdenv.cc.cc.lib
           glibc
           zlib
-          libxml2
+          libxml2_13
           xz
           zstd
           ncurses
@@ -90,7 +85,17 @@
     };
     devShells.${system} = {
       default = pkgs.mkShellNoCC ({
-        packages = buildDeps;
+        packages = buildDeps ++ [
+          pkgs.umu-launcher
+#          pkgs.wine64
+        ];
+        shellHook = ''
+        echo "================================================"
+        echo "The build environment is ready. You can either use cmake directly or use your preferred IDE (like clion). In order to compile on Linux, use the MinGw (Release-MinGW, Debug-MinGW) presets."
+        echo "To run the launcher, use 'umu-run'."
+        echo "To automatically build the launcher and core library automatically, execute 'nix develop .#build'"
+        echo "================================================"
+        '';
       } // environment );
       build = pkgs.mkShellNoCC ({
         packages = buildDeps;

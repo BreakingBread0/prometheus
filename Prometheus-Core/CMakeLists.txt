@@ -18,7 +18,6 @@ add_library(Prometheus-Core SHARED
         $<TARGET_OBJECTS:Prometheus-Atlas-Extensions-Obj>
         "Common.h"
         "entity_admin.h"
-        "ExceptionFormatter.h"
         "filetype_library.h"
         "framework.h"
         "game.h"
@@ -128,7 +127,6 @@ add_library(Prometheus-Core SHARED
         "Logs/Patterner.h"
         "dllmain.cpp"
         "entity_admin.cpp"
-        "ExceptionFormatter.cpp"
         "filetype_library.cpp"
         "globals.cpp"
         "ImguiRenderer.cpp"
@@ -176,7 +174,7 @@ target_include_directories(Prometheus-Core PRIVATE ${PROJECT_SOURCE_DIR}/)
 
 # Project Config
 Pro_ProjectVersion(Prometheus-Core 1 0 0 0)
-Pro_ApplyPlatform(Prometheus-Core)
+Pro_ApplyPlatform_Dll(Prometheus-Core)
 
 # Dll Config
 set_target_properties(Prometheus-Core PROPERTIES OUTPUT_NAME "PrometheusCore")
@@ -219,3 +217,19 @@ target_link_libraries(Prometheus-Core PRIVATE d3dcompiler dwmapi)
 #
 #message(STATUS IMGUI DIRS ${IMGUI_INCLUDE_DIRS})
 #target_include_directories(Prometheus-Core ${IMGUI_INCLUDE_DIRS})
+
+# TODO: PE does not support >8 characters and libbacktrace cannot find dwarf data?
+# if (${PRO_PLATFORM} STREQUAL "MinGW")
+#     message("Using MinGW compiler, enabling libbacktrace.")
+#
+#     find_library(BACKTRACE_LIB backtrace REQUIRED
+#             PATHS "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib")
+#     find_path(BACKTRACE_INCLUDE backtrace.h REQUIRED
+#             PATHS "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include")
+#
+#     target_include_directories(Prometheus-Core PRIVATE ${BACKTRACE_INCLUDE})
+#     target_link_libraries(Prometheus-Core PRIVATE ${BACKTRACE_LIB})
+#
+#     # Required for symbol resolution
+#     target_compile_options(Prometheus-Core PRIVATE -g -gdwarf-2 -mllvm -no-dwarf-pub-sections)
+# endif ()
