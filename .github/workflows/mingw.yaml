@@ -32,6 +32,9 @@ jobs:
 
     - name: disk check
       run: "df -h"
+
+    - name: disk check 2
+      run: "du -ah /"
     
     - name: build
       run: "nix --extra-experimental-features 'nix-command flakes' develop .#build --command true"
