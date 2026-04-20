@@ -24,17 +24,17 @@ jobs:
       # You may pin to the exact commit or the version.
       # uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be
       uses: jlumbroso/free-disk-space@v1.3.1
+
+    - name: disk check 1
+      run: "df -h"
         
     - name: init nix
       # You may pin to the exact commit or the version.
       # uses: aldoborrero/use-nix-action@2e52fec86f4d463a27615bd4a1551dd38bda361e
       uses: spotdemo4/nix-init@v1.0.0
 
-    - name: disk check
-      run: "df -h"
-
     - name: disk check 2
-      run: "du -ah /"
+      run: "df -h"
     
     - name: build
       run: "nix --extra-experimental-features 'nix-command flakes' develop .#build --command true"
