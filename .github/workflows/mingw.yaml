@@ -38,6 +38,6 @@ jobs:
       # Why move a file when you can just upload it twice?
       run: |
         curl -X PUT -H "PW: $CI_UPLOAD_TOKEN" --data-binary @output.zip https://cdn.owdev.wiki/ci/prometheus/$GITHUB_REF_NAME/prometheus-$(date -u +'%Y-%m-%dT%H:%M:%S')-${GITHUB_SHA::7}.zip|
-        curl -X PUT -H "PW: $CI_UPLOAD_TOKEN" --data-binary @output.zip https://cdn.owdev.wiki/ci/prometheus/$GITHUB_REF_NAME/prometheus-latest.zip
+        curl -X PUT -H "PW: $CI_UPLOAD_TOKEN" -H "Replace: true" --data-binary @output.zip https://cdn.owdev.wiki/ci/prometheus/$GITHUB_REF_NAME/prometheus-latest.zip
       env: # Or as an environment variable
         CI_UPLOAD_TOKEN: ${{ secrets.CI_UPLOAD_TOKEN }}
