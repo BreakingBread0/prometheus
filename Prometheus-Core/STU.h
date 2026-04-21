@@ -185,7 +185,8 @@ struct MisalignedResourceLoadEntry {
 	}
 
 	inline bool valid() {
-		return align() != nullptr && (uint64_t)this != 0xFFFFFFFFFFFFFFFF;
+		static uintptr_t INVALID_ADDR = 0xFFFFFFFFFFFFFFFF;
+		return align() != nullptr && reinterpret_cast<uintptr_t>(this) != INVALID_ADDR;
 	}
 };
 

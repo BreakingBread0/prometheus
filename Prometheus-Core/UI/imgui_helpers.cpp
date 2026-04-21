@@ -1,7 +1,3 @@
-//
-// Created by cereal on 16.01.2026.
-//
-
 #include "imgui_helpers.h"
 
 #include "filetype_library.h"

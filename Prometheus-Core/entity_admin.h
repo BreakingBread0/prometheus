@@ -9,6 +9,7 @@
 #include <mutex>
 #include <Components/Component.h>
 
+struct Component_2_AssetManager;
 struct Entity;
 struct EntityAdminBase;
 struct Component_23_Statescript;
@@ -76,50 +77,6 @@ struct Component_50_Input {
         STRUCT_PLACE(InputStruct, stru3, 0x454);
         STRUCT_PLACE_CUSTOM(stru4, 0x5E6, char stru4[0xc3]);
     };
-};
-
-struct teScene {
-    union {
-        // 0: load stopped
-        // 1: loading
-        // 3: Map Load Complete
-        // 4: map loaded
-        STRUCT_PLACE(int, load_map_state, 0x160); //not world system / engine state!
-    };
-};
-
-struct Component_2_AssetManager {
-    union {
-        ComponentBase base;
-        STRUCT_PLACE(teScene*, scene, 0x3A8);
-    };
-};
-
-//Embedded Entity Admin!
-struct Component_54_Lobbymap {
-    union {
-        ComponentBase base;
-        STRUCT_PLACE(EntityAdminBase*, embedded_game_ea, 0x28);
-        STRUCT_PLACE(__int64, wanted_map_id, 0x30);
-        STRUCT_PLACE(Component_2_AssetManager*, component_2_ref, 0x18);
-    };
-
-    void UnloadMap() {
-        auto forceunload_lobbymap = (void(*)(Component_54_Lobbymap*))(globals::gameBase + 0xce74a0);
-        forceunload_lobbymap(this);
-    }
-
-    void LoadMap(__int64 mapId) {
-        wanted_map_id = mapId;
-        auto forceload_lobbymap = (void(*)(Component_54_Lobbymap*))(globals::gameBase + 0xce6ef0);
-        forceload_lobbymap(this);
-    }
-
-    int GetMapLoadState() {
-        if (component_2_ref && component_2_ref->scene)
-            return component_2_ref->scene->load_map_state;
-        return 0;
-    }
 };
 
 struct Component_20_ModelReference {
@@ -558,7 +515,7 @@ struct EntityAdmin_vt // sizeof=0xF8
     __int64 (*field_9)();
     __int64 (*field_11)();
     __int64 (*field_12)();
-    const char* (*GetIsLiveReplayOrDeathStar)();
+    const char* (*GetIsLiveReplayOrDeathStar)(EntityAdminBase*);
     __int64(__fastcall * field_D0)(__int64, __int64);
     __int64(__fastcall * field_D8)(__int64);
 	    __int64(__fastcall * StrangeFuncWithGamepadRenderDebug)(__int64);
@@ -649,9 +606,12 @@ struct EntityAdminTiming {
     };
 };
 
-struct System1_idk_vt {
+struct System1_scene_system_vt {
     union {
-        Component_2_AssetManager* (*GetComponent2WarumAuchImmer)(System1_idk_vt**);
+        //This pointer contains the teScene struct for the map.
+        //WARNING: Component 2 is null here if no map is loaded.
+        //It only gets populated once the map was successfully loaded.
+        Component_2_AssetManager* (*Get_teScene_Comp2)(System1_scene_system_vt**);
     };
 };
 
@@ -679,7 +639,7 @@ struct EntityAdminBase {
         //STRUCT_PLACE(int, local_entity_id, 0x108);
         STRUCT_PLACE(uint, local_entid, 0x220);
         STRUCT_PLACE(teList<movement_vt**>, movement_systems, 0xF0);
-        STRUCT_PLACE(System1_idk_vt**, system_1_ref, 0x130); //all EA
+        STRUCT_PLACE(System1_scene_system_vt**, system_1_sceneSystem, 0x130); //all EA
 
         STRUCT_PLACE(teList<mapsystem_callback_vt**>, GameEA_mapfunc_arr, 0x180);
         STRUCT_PLACE(EntityAdminTiming*, GameEA_timing, 0x218);

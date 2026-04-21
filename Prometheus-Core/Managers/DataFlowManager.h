@@ -1,7 +1,3 @@
-//
-// Created by cereal on 18.04.26.
-//
-
 #ifndef PROMETHEUS_DATAFLOWMANAGER_H
 #define PROMETHEUS_DATAFLOWMANAGER_H
 

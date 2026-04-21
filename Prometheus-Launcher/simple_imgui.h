@@ -1,7 +1,3 @@
-//
-// Created by cereal on 19.04.26.
-//
-
 #ifndef PROMETHEUS_SIMPLE_IMGUI_H
 #define PROMETHEUS_SIMPLE_IMGUI_H
 

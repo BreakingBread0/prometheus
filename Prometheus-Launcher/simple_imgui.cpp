@@ -1,7 +1,3 @@
-//
-// Created by cereal on 19.04.26.
-//
-
 #include "simple_imgui.h"
 
 

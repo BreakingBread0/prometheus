@@ -1,7 +1,3 @@
-//
-// Created by cereal on 03.02.2026.
-//
-
 #ifndef PROMETHEUS_TIMESCALE_H
 #define PROMETHEUS_TIMESCALE_H
 #include "globals.h"

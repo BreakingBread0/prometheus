@@ -11,6 +11,9 @@
 #include "movstate_visualizer.h"
 #include "STU_Editable.h"
 #include "Components/Component_4_Model.h"
+#include "Components/Component_54_LobbyMap.h"
+#include "teScene_window.h"
+#include "Logs/Logs.h"
 
 struct MovementState;
 
@@ -61,6 +64,10 @@ void entity_window::render() {
 			ImGui::SameLine();
 			if (ImGui::Checkbox("Compo IDs", &_search_components)) {
 				_search.set_needs_haystack();
+			}
+			if (ImGui::Button("Open teScene"))
+			{
+				teScene_window::get_latest_or_create(this)->set(_entity_admin);
 			}
 			if (_is_gameEA) {
 				ImGui::Text("Local Entity: %x", _entity_admin->local_entid);

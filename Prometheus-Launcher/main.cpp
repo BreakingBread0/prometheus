@@ -1,7 +1,3 @@
-//
-// Created by cereal on 18.04.26.
-//
-
 #include <cstdio>
 #include <direct.h>
 #include <imgui.h>

@@ -1,7 +1,3 @@
-//
-// Created by cereal on 19.04.26.
-//
-
 #ifndef PROMETHEUS_SIGNATURE_H
 #define PROMETHEUS_SIGNATURE_H
 

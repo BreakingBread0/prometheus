@@ -169,6 +169,10 @@ add_library(Prometheus-Core SHARED
         stu_serializer.h
         Components/Component_3_DataFlow.h
         Managers/DataFlowManager.h
+        UI/windows/dataflow_window.h
+        Components/Component_2_AssetManager.h
+        Components/Component_54_LobbyMap.h
+        UI/windows/teScene_window.h
 )
 target_include_directories(Prometheus-Core PRIVATE ${PROJECT_SOURCE_DIR}/)
 

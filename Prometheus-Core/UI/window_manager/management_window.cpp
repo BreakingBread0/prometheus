@@ -7,7 +7,8 @@
 #include "stu_resources.h"
 #include "entity_admin.h"
 #include "STU_Editable.h"
-#include "shellapi.h"
+#include <shellapi.h>
+#include "Components/Component_54_LobbyMap.h"
 
 std::map<int, std::string> s_worldstates = {
 	{ 0, "Shutdown" },

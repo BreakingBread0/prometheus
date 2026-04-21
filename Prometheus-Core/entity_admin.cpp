@@ -14,6 +14,7 @@
 #include "demo_cammoves.cpp"
 #include "TimeScale.h"
 #include "Logs/Logs.h"
+#include "Components/Component_54_LobbyMap.h"
 
 __int64 PrometheusSystem::get_inheritance() {
 	return NULL;

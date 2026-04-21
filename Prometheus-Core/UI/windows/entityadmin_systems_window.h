@@ -1,6 +1,7 @@
 #pragma once
 #include "../window_manager/window_manager.h"
 #include "entity_admin.h"
+#include "Components/Component_54_LobbyMap.h"
 
 class entityadmin_systems_window : public window {
 	WINDOW_DEFINE(entityadmin_systems_window, "ECS", "Systems", true);
