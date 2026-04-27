@@ -24,3 +24,18 @@ namespace globals {
 		});
 	}
 }
+
+Vector3::Vector3(const Vector4& vec)
+{
+	X = vec.X;
+	Y = vec.Y;
+	Z = vec.Z;
+}
+
+Vector4::Vector4(const Vector3& vec)
+{
+	X = vec.X;
+	Y = vec.Y;
+	Z = vec.Z;
+	W = 0;
+}

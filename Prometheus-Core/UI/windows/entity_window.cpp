@@ -65,7 +65,7 @@ void entity_window::render() {
 			if (ImGui::Checkbox("Compo IDs", &_search_components)) {
 				_search.set_needs_haystack();
 			}
-			if (ImGui::Button("Open teScene"))
+			if (_entity_admin && ImGui::Button("Open teScene"))
 			{
 				teScene_window::get_latest_or_create(this)->set(_entity_admin);
 			}

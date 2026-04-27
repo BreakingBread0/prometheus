@@ -6,6 +6,7 @@
 
 //TODO: teStagedObjectMgr
 
+
 //https://github.com/overtools/OWLib/blob/develop/TankLib/Enums.cs
 //NOTE: Not everything is implemented in 0.8 yet (for example Text is not)
 enum teMAP_PLACEABLE_TYPE : char {
@@ -35,11 +36,56 @@ enum teMAP_PLACEABLE_TYPE : char {
     SEQUENCE = 0x18
 };
 
+inline std::string teMAP_PLACEABLE_toString(teMAP_PLACEABLE_TYPE type)
+{
+    switch (type)
+    {
+    case MODEL_GROUP:
+        return "MODEL_GROUP";
+    case SINGLE_MODEL:
+        return "SINGLE_MODEL";
+    case OCCLUDER:
+        return "OCCLUDER";
+    case REFLECTIONPOINT:
+        return "REFLECTIONPOINT";
+    case CLUTTER:
+        return "CLUTTER";
+    case LABEL:
+        return "LABEL";
+    case TEXT:
+        return "TEXT";
+    case MODEL:
+        return "MODEL";
+    case LIGHT:
+        return "LIGHT";
+    case AREA:
+        return "AREA";
+    case ENTITY:
+        return "ENTITY";
+    case SOUND:
+        return "SOUND";
+    case EFFECT:
+        return "EFFECT";
+    case FOG:
+        return "FOG";
+    case INDOORBOX:
+        return "INDOORBOX";
+    case POSTPROCESSING:
+        return "POSTPROCESSING";
+    case PLANAR_REFLECTION_SURFACE:
+        return "PLANAR_REFLECTION_SURFACE";
+    case UNKNOWN:
+    default:
+        return "UNKNOWN (" + std::to_string(type) + ")";
+    }
+}
+
 enum Placeable_LoadState : char
 {
     LoadState_Error = 2,
     LoadState_Loading = 3,
     LoadState_Loaded = 4,
+    LoadState_Spawned = 5, //Final state
     LoadState_NeedsEntitySpawn = 8,
 };
 
@@ -47,7 +93,7 @@ enum Placeable_LoadState : char
 enum Placeable_FilterFlags : unsigned char
 {
     FilterFlag_NeedsFilter = 0x40, //Server side placeable => not loaded by client?
-    FilterFlag_DontLoad = 0x80,
+    FilterFlag_DontLoad = 0x80, //Dont load resource, loadstate will stay at 0
 };
 
 
@@ -55,21 +101,20 @@ enum Placeable_FilterFlags : unsigned char
 //The OWLib name for this is CommonStructure.
 struct Placeable_Base
 {
-    __int64 UUID_1;
-    __int64 UUID_2;
-    char field_10;
+    teUUID uuid;
+    char field_10; //is server side?
     char field_11;
     char field_12;
     int size;
 };
 
-struct teScene_PlaceableLoader
+struct Placeable_LoadEntry
 {
     union
     {
         //forward and back? idk... the PlaceableLoader is basically just an array in ResourceLoader
-        teScene_PlaceableLoader* field_0;
-        STRUCT_PLACE(teScene_PlaceableLoader*, field_8, 8);
+        Placeable_LoadEntry* field_0;
+        STRUCT_PLACE(Placeable_LoadEntry*, field_8, 8);
 
         STRUCT_PLACE(__int64, hash, 0x10); //fnv1a_16bytes von ptr_for_loadFilter
         STRUCT_PLACE(Placeable_Base*, placeable_resource, 0x18);
@@ -100,7 +145,7 @@ struct teScene_ResourceLoader
         STRUCT_PLACE(__int16, field_28, 0x28);
         STRUCT_PLACE(__int16, field_2A, 0x2A);
         STRUCT_PLACE(__int32, field_2C, 0x2C);
-        STRUCT_PLACE(teScene_PlaceableLoader*, placeables, 0x30);
+        STRUCT_PLACE(Placeable_LoadEntry*, placeables, 0x30);
     };
 };
 

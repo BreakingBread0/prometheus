@@ -41,6 +41,7 @@
 __int64 ow_memalloc(int size); //dllmain
 void ow_dealloc(__int64 address);
 
+struct Vector4;
 struct Vector3 {
 	float X;
 	float Y;
@@ -66,6 +67,8 @@ struct Vector3 {
 		Z(z)
 	{
 	}
+
+	Vector3(const Vector4& vec);
 
 	Vector3 operator+(const Vector3& right) {
 		return Vector3(X + right.X, Y + right.Y, Z + right.Z);
@@ -134,6 +137,8 @@ struct Vector4 {
 		W(w)
 	{
 	}
+
+	Vector4(const Vector3& vec);
 };
 
 struct Matrix4x4 {
@@ -141,6 +146,12 @@ struct Matrix4x4 {
 	Vector4 row_2;
 	Vector4 row_3;
 	Vector4 row_4;
+};
+
+struct teUUID
+{
+	__int64 low;
+	__int64 high;
 };
 
 template <typename T>

@@ -19,15 +19,12 @@ struct MisalignedResourceLoadEntry;
 struct PrometheusSystem;
 struct ComponentBase;
 
-inline void EntityIDToString(uint* entid, char* buf, int sz) {
-    ((void(*)(uint*, char*, int))(globals::gameBase + 0x7f91d0))(entid, buf, sz);
-}
-
 struct Entity {
 	union {
         Entity* parent;
         STRUCT_PLACE(Entity*, child, 0x8);
         STRUCT_PLACE(Entity*, next_child, 0x10);
+	    STRUCT_PLACE(teUUID, entity_uuid, 0x18);
         STRUCT_PLACE(EntityAdminBase*, entity_admin_backref, 0x28);
         //STRUCT_PLACE(Entity*, field_20_ent, 0x20); // falsch
 		//Immer count - 1
@@ -58,6 +55,17 @@ struct Entity {
 
     static Entity* getFromGlobalEntitylist(unsigned int global_entitylist_id) {
         return ((Entity*(*)(uint))(globals::gameBase + 0x80e6c0))(global_entitylist_id);
+    }
+
+    static void toString(uint* entid, char* buf, int sz) {
+        ((void(*)(uint*, char*, int))(globals::gameBase + 0x7f91d0))(entid, buf, sz);
+    }
+
+    inline std::string toString()
+    {
+        char buf[32];
+        toString(&entity_id, buf, sizeof(buf));
+        return buf;
     }
 };
 
@@ -121,6 +129,16 @@ struct Component_3F_PlayerInfo {
 };
 
 struct Component_10_FilterBits {
+    enum FilterBit
+    {
+        //STUConfigVarGetEntityPassesFilter returns this (entity of statescript) is non-existent -> "YOU" will get drawn above your head
+        // => or is live?
+        FilterBit_IsLocal = 0x100,
+        FilterBit_Team0 = 0x40000,
+        FilterBit_Team1 = 0x80000,
+        FilterBit_Team2 = 0x100000,
+        FilterBit_Team3 = 0x200000
+    };
     union {
         ComponentBase base;
 
@@ -344,12 +362,22 @@ struct Component_4F_Camera {
         STRUCT_PLACE(teList<OverrideView>, override_views, 0x18);
         STRUCT_PLACE(View*, default_view, 0x50);
         STRUCT_PLACE(Camera*, camera, 0x40);
-        STRUCT_PLACE(__int64, crosshair_struct, 0x48);
+        STRUCT_PLACE(Camera*, crosshair_struct, 0x48);
     };
 
-    Vector3 WorldToScreen(Vector3 input) {
-        auto w2s_fn = (void(*)(__int64 crosshair_stru, Vector3*, Vector3*))(globals::gameBase + 0xa1fa70);
-        Vector3 result;
+    Vector4 WorldToScreen(Vector4 input)
+    {
+        auto w2s_fn = (void(*)(Camera*, Vector4* in, Vector4* out))(globals::gameBase + 0xa1fa70);
+        Vector4 result{};
+        w2s_fn(camera, &input, &result);
+        return result;
+    }
+
+    //Has a weird field of view
+    //Is probably for UI.
+    Vector4 WorldToScreen_UI(Vector4 input) {
+        auto w2s_fn = (void(*)(Camera*, Vector4*, Vector4*))(globals::gameBase + 0xa1fa70);
+        Vector4 result;
         w2s_fn(crosshair_struct, &input, &result);
         return result;
     }
@@ -392,10 +420,13 @@ struct Component_1_SceneRendering {
     union {
         ComponentBase base;
 
-        STRUCT_PLACE(uint64, rendering_flags, 0x180);
         STRUCT_PLACE(Vector4, rotation, 0x40);
         STRUCT_PLACE(Vector4, scaling, 0x50);
         STRUCT_PLACE(Vector4, position, 0x60);
+        STRUCT_PLACE(Matrix4x4, rotation_matrix, 0xA0); //!! Take a look at comment at 0x1D0
+        STRUCT_PLACE(uint64, rendering_flags, 0x180);
+        STRUCT_PLACE(char, needs_rotmatrix_compute, 0x1D0); //Compute with 0x896d20, if false use matrix at 0xA0
+
     };
 
     void RemoveFlag(uint64 flag) {
@@ -430,6 +461,19 @@ struct Component_1_SceneRendering {
 
     void SetPosRotation(Vector4 position, Vector4 rotation) {
         ((void(*)(Component_1_SceneRendering*, Vector4 * rot, Vector4 * pos))(globals::gameBase + 0xa04000))(this, &rotation, &position);
+    }
+
+    //Output: 8 Vector4's
+    void GetBoundingBoxes(Vector4* vecs)
+    {
+        //baseX,Y,Z, origin, extents?
+        Vector4 bounding_box_base[5]{};
+
+        auto get_base_fn = (char(*)(Component_1_SceneRendering*, Vector4*))(globals::gameBase + 0xa03250);
+        get_base_fn(this, bounding_box_base);
+
+        auto convert_to_bb_fn = (void(*)(Vector4*, Vector4*))(globals::gameBase + 0x960f30);
+        convert_to_bb_fn(bounding_box_base, vecs);
     }
 };
 
@@ -519,7 +563,7 @@ struct EntityAdmin_vt // sizeof=0xF8
     __int64(__fastcall * field_D0)(__int64, __int64);
     __int64(__fastcall * field_D8)(__int64);
 	    __int64(__fastcall * StrangeFuncWithGamepadRenderDebug)(__int64);
-	    __int64 (*field_E8)();
+    Component_4F_Camera *(*GetCameraComponent)(EntityAdminBase *);
     __int64(__fastcall * some_deallocator)(__int64);
 };
 
@@ -690,6 +734,18 @@ struct EntityAdminBase {
         auto it = &component_iterator[compid];
         if (it->component_list.num > 0)
             return (T*)it->component_list.ptr[0];
+        return nullptr;
+    }
+
+    inline Entity* getByUUID(teUUID uuid)
+    {
+        EntityAdminMutex mut = getMutex();
+        std::lock_guard lock{mut};
+        for (auto ent : *this)
+        {
+            if (ent->entity_uuid.low == uuid.low && ent->entity_uuid.high == uuid.high)
+                return ent;
+        }
         return nullptr;
     }
 

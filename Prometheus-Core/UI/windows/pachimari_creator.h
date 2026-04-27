@@ -15,9 +15,7 @@ class pachimari_creator : public window {
 						continue;
 					}
 					ImGui::PushID(item);
-					char buf[32];
-					EntityIDToString(&item->entity_id, buf, sizeof(buf));
-					if (ImGui::RadioButton(buf, _selected_ent == item)) {
+					if (ImGui::RadioButton(item->toString().c_str(), _selected_ent == item)) {
 						_selected_ent = item;
 					}
 					ImGui::PopID();
