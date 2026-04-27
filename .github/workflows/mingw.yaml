@@ -31,13 +31,17 @@ jobs:
       run: "nix --extra-experimental-features 'nix-command flakes' develop .#build --command true"
 
     - name: zip
-      run: "zip output.zip output/Release/bin/*"
+      run: |
+        cd output/Release/bin
+        zip ../../../output.zip .*
     
     - name: upload
       shell: bash
       # Why move a file when you can just upload it twice?
+      # Also why does ?replace not work, TODO
       run: |
         curl -X PUT -H "PW: $CI_UPLOAD_TOKEN" --data-binary @output.zip https://cdn.owdev.wiki/ci/prometheus/$GITHUB_REF_NAME/prometheus-$(date -u +'%Y-%m-%dT%H:%M:%S')-${GITHUB_SHA::7}.zip
-        curl -X PUT -H "PW: $CI_UPLOAD_TOKEN" --data-binary @output.zip https://cdn.owdev.wiki/ci/prometheus/$GITHUB_REF_NAME/prometheus-latest.zip?replace
+        curl -X DELETE -H "PW: $CI_UPLOAD_TOKEN" https://cdn.owdev.wiki/ci/prometheus/$GITHUB_REF_NAME/prometheus-latest.zip
+        curl -X PUT -H "PW: $CI_UPLOAD_TOKEN" --data-binary @output.zip https://cdn.owdev.wiki/ci/prometheus/$GITHUB_REF_NAME/prometheus-latest.zip
       env: # Or as an environment variable
         CI_UPLOAD_TOKEN: ${{ secrets.CI_UPLOAD_TOKEN }}
