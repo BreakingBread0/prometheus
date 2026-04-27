@@ -33,7 +33,7 @@ jobs:
     - name: zip
       run: |
         cd output/Release/bin
-        zip ../../../output.zip .*
+        zip ../../../output.zip ./*
     
     - name: upload
       shell: bash
