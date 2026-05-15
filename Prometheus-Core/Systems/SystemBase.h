@@ -5,6 +5,28 @@
 #include <vector>
 #include "entity_admin.h"
 
+//This is used for Preexisting VTables
+struct SystemVTBase {
+    __int64 (*get_inheritance());
+    bool (*is_assignable_to(__int64));
+    bool (*is_instance_of(__int64));
+
+    const char* (*get_system_name());
+    void (*deallocate());
+
+    void (*OnInitialize());
+    //Unknown what this is
+    void (*field_1());
+    void (*PreDelete());
+
+    char* (*GetSubscriptions(int* count));
+    void (*OnCreationAfterEmplaced(Entity*));
+    void (*OnCreation(Entity*));
+    void (*field_3());
+    void (*OnDeletion(Entity*));
+
+    void (*OnTick(float));
+};
 
 /**
  *
@@ -13,7 +35,7 @@
  */
 class SystemBase {
 public:
-    virtual __int64 get_inheritance() { return 0; }
+    __int64 get_inheritance() { return 0; }
     virtual bool is_assignable_to(__int64) { return false; }
     virtual bool is_instance_of(__int64) { return false; }
 

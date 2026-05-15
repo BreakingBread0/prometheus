@@ -59,7 +59,8 @@ class blizzbbqueueq_window : public window {
 			{ "Viewmodel shit", 0x18097b8 },
 			{"Compo strange 1 0x4", 0x17a5ad0},
 			{"Compo strange 2 0x5", 0x17a5ad0},
-			{"Compo strange 3 0xb", 0x17a6380}
+			{"Compo strange 3 0xb", 0x17a6380},
+			{"statescript interesting", 0x17aae50}
 		};
 		if (open_window()) {
 			if (ImGui::Button("Load Component Creators")) {

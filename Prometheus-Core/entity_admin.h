@@ -67,6 +67,8 @@ struct Entity {
         toString(&entity_id, buf, sizeof(buf));
         return buf;
     }
+
+    bool Debug_Highlight(uint color);
 };
 
 struct Component_50_Input {
@@ -408,6 +410,7 @@ struct Component_1_SceneRendering {
      * 8: Has an entry in component2 list 0x98
      *
      * 0x8000: Invisible
+     * 0x30000000: Use custom entity scaling at 0x50 when computing scale / rotation / pos
      * 0x200000000000: Invisible
      * 0x10000000000000: Set on map entities, idk 0xa490e7
      *
@@ -478,20 +481,33 @@ struct Component_1_SceneRendering {
 };
 
 struct HashMap_vt {
-    void deallocate(HashMap_vt**, char deallocate);
-    void deallocate_outer(HashMap_vt**);
+    void destructor(HashMap_vt**, char deallocate);
+    void destructor_outer(HashMap_vt**);
 };
 
 //TODO
 //key must be >= 8 bytes!!!
-template <typename key, typename value>
+template <
+    typename Key_Type,
+    typename Value_Type,
+    bool key_before_hash,
+    int entries_map_size = 0x200 //Meaning the size of the ptr array "entries".
+>
 struct TemplatedHashMap {
-    struct HashMapEntry {
-        HashMapEntry* next_ptr;
-        value* value_ptr;
-        key id_unhashed;
+    struct HashMapEntry_Variant1 {
+        HashMapEntry_Variant1* next_ptr;
+        Value_Type* value_ptr;
+        Key_Type id_unhashed; //8-byte aligned
         __int64 hash;
     };
+    struct HashMapEntry_Variant2
+    {
+        HashMapEntry_Variant2* next_ptr;
+        Value_Type* value_ptr;
+        __int64 hash;
+        Key_Type id_unhashed;
+    };
+    using HashMapEntry = std::conditional_t<key_before_hash, HashMapEntry_Variant1, HashMapEntry_Variant2>;
 
     union {
         HashMap_vt* vfptr;
@@ -502,7 +518,9 @@ struct TemplatedHashMap {
         STRUCT_PLACE(HashMapEntry**, entries, 0x18); //Base map is 0x200 elements big
     };
 
-    /*static __int64 HashKey(key input) {
+    //This is for __int64 and may be different for something else
+    static __int64 HashKey(Key_Type input) {
+        Key_Type v10 = input;
         return 0x80000001
             * ((0x15
                 * ((0x109 * ((~v10 + (v10 << 0x15)) ^ ((unsigned __int64)(~v10 + (v10 << 0x15)) >> 0x18)))
@@ -510,7 +528,79 @@ struct TemplatedHashMap {
                 ^ ((0x15
                     * ((0x109 * ((~v10 + (v10 << 0x15)) ^ ((unsigned __int64)(~v10 + (v10 << 0x15)) >> 0x18)))
                         ^ ((0x109 * ((~v10 + (v10 << 0x15)) ^ ((unsigned __int64)(~v10 + (v10 << 0x15)) >> 0x18))) >> 0xE))) >> 0x1C));
-    }*/
+    }
+
+    class Iterator {
+    public:
+        using value_type = std::pair<Key_Type, Value_Type*>;
+        using iterator_category = std::forward_iterator_tag;
+        using difference_type = std::ptrdiff_t;
+
+        Iterator() {}
+        Iterator(TemplatedHashMap* ptr) : _ptr(ptr)
+        {
+            operator++();
+        }
+
+        Iterator& operator++() {
+            if (_current_entry)
+            {
+                _current_entry = _current_entry->next_ptr;
+            }
+            if (!_current_entry)
+            {
+                do
+                {
+                    if (++_current_pos >= entries_map_size)
+                    {
+                        _ptr = nullptr;
+                        _current_pos = -1;
+                        break;
+                    }
+                    _current_entry = _ptr->entries[_current_pos];
+                }
+                while (!_current_entry);
+                if (_current_pos != -1 && IsBadReadPtr(_current_entry, sizeof(HashMapEntry)))
+                {
+                    //An example initialization functino for a hashmap: 0x61d7b0
+                    //The second argument of this function is entries_map_size
+                    LOG_CORE(Warn, "(Hashmap {:x}) Failed to read item index 0x{:x} (0x{:x}): Is the hashmap size too big?", reinterpret_cast<uint64_t>(_ptr), _current_pos, reinterpret_cast<uint64_t>(_current_entry));
+                }
+            }
+            // printf("%p %x\n", _ptr ? _ptr->entries : 0, _current_pos);
+            return *this;
+        }
+
+        Iterator operator++(int) {
+            Iterator tmp = *this;
+            ++(*this);
+            return tmp;
+        }
+
+        value_type operator*() const {
+            if (!_ptr)
+                throw std::out_of_range("Iterator out of range");
+            // printf("ptr %p\n", _current_entry);
+
+            return std::pair<Key_Type, Value_Type*>{_current_entry->id_unhashed, _current_entry->value_ptr};
+        }
+
+        bool operator==(const Iterator& it) const {
+            return it._current_pos == _current_pos && it._ptr == _ptr && it._current_entry == _current_entry;
+        }
+    private:
+        TemplatedHashMap* _ptr = nullptr;
+        int _current_pos = -1;
+        HashMapEntry* _current_entry = nullptr;
+    };
+
+    Iterator begin() {
+        return Iterator(this);
+    }
+
+    Iterator end() {
+        return Iterator();
+    }
 };
 
 struct Component_53_Settings {
@@ -627,7 +717,7 @@ struct EntityAdminTiming {
         STRUCT_PLACE(CommandFrameTime, cf_timer_1, 8);
         STRUCT_PLACE(CommandFrameTime, cf_timer_2, 0x20);
         STRUCT_PLACE(int, tick_count, 0x38);
-        STRUCT_PLACE(int, field_3C, 0x3C);
+        STRUCT_PLACE(float, field_3C, 0x3C);
         STRUCT_PLACE(__int64, field_40, 0x40);
         STRUCT_PLACE(float, field_48, 0x48);
         STRUCT_PLACE(float, field_50, 0x50);
@@ -689,6 +779,7 @@ struct EntityAdminBase {
         STRUCT_PLACE(EntityAdminTiming*, GameEA_timing, 0x218);
         STRUCT_PLACE(EntityAdminCreationInfo*, creation_info, 0x60);
 
+        STRUCT_PLACE(__int64, timestamp_cf, 0xC8);
     };
 
     //TODO: Cann lock() and unlock() just be on the main EntityAdminBase?

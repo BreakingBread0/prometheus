@@ -28,6 +28,7 @@
 #include "globals.h"
 #include "JAM.h"
 #include "stringhash_library.h"
+#include "Components/Component_54_LobbyMap.h"
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "ntdll.lib")
 #ifdef MINGW
@@ -814,7 +815,8 @@ __int64 AddVehHook(__int64 old, __int64 func) {
 }
 
 bool CheckDebuggerPresentHook() {
-    LOG_CORE(Warn, "CheckDebuggerPresent %p\n", _ReturnAddress());
+    LOG_CORE(Warn, "CheckDebuggerPresent {:x}", reinterpret_cast<uintptr_t>(_ReturnAddress()));
+    // stacktrace();
     return false;
 }
 
@@ -1513,6 +1515,7 @@ void __cdecl StartHook() {
     resource_handler_helper::initialize();
     stu_resources::initialize();
     displaytext_resources::initialize();
+    Component_54_Lobbymap::initialize();
 
     //force all retaddr checks to fail to check if any remain
     //const auto pe = Pe::PeNative::fromModule(GetModuleHandleA(NULL));

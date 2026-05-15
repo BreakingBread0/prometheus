@@ -67,7 +67,7 @@ struct StatescriptRTTI
 	__int64 field_8;                      ///< reference to factory func?
 	__int64* (*factory_func)(); //Factory function for the implementation class.
 	InheritanceInfo* stuclass_inherit; //Inheritance for the STU data.
-	__int32 field_20;                     ///< zero
+	__int32 implementation_type;                     ///< zero
 	__int32 field_24;
 	__int64 field_28;                     ///< 0x1854d20 bei stustatescriptstatewait
 	///< int ref for statistics?
@@ -743,6 +743,11 @@ public:
 		STRUCT_PLACE(teList<__int64>, list_120, 0x120);
 		STRUCT_PLACE(__int64, script_id, 0x150);
 		STRUCT_PLACE(STUStatescriptGraph*, graph, 0x160);
+		//0x800 = is hot reloading
+		//0x1000 == 0 && 0x400000 != 0: clientOnly 0xd739b5
+		//0x200000: graph->m_predictionBehaviour <= 0
+		//0x400000 is local? 0x10aa355
+		//0x100000: Wants Delete
 		STRUCT_PLACE(int, script_flags, 0x258);
 		STRUCT_PLACE(StatescriptVar_VarBag*, second_inst_varbag, 0x270);
 		STRUCT_PLACE(StatescriptVar_VarBag*, third_inst_varbag, 0x280);

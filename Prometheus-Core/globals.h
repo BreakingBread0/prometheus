@@ -10,8 +10,9 @@
 
 #include <algorithm>
 #include <format>
+#include "Logs/Logs.h"
 
-#define owassert(expr) if (!(expr)) { printf("%s:%d\n", "FAILED ASSERTION:\nAssertion: " #expr "\nAt: " __FILE__, __LINE__); }
+#define owassert(expr) if (!(expr)) { LOG_CORE(Error, "FAILED ASSERTION:\nAssertion: " #expr "\nAt: " __FILE__ ":{:d}", __LINE__); }
 
 #define emoji(str) (char*)u8##str
 
@@ -31,8 +32,8 @@
 #define EMOJI_PLAY emoji("") //play
 #define EMOJI_STOP emoji("") //stop
 
-#define MH_VERIFY(returnVal) { auto mh_ret = returnVal; if (mh_ret != 0) { printf(#returnVal " failed! (status code: %d)\n", mh_ret); return; } }
-#define MH_VERIFY_RET(returnVal, retError) { auto mh_ret = returnVal; if (mh_ret != 0) { printf(#returnVal " failed! (status code: %d)\n", mh_ret); return retError; } }
+#define MH_VERIFY(returnVal) { auto mh_ret = returnVal; if (mh_ret != 0) { LOG_CORE(Error, "{:s} failed! (status code: {:d})", #returnVal, (int)mh_ret); return; } }
+#define MH_VERIFY_RET(returnVal, retError) { auto mh_ret = returnVal; if (mh_ret != 0) { LOG_CORE(Error, "{:s} failed! (status code: {:d})", #returnVal, (int)mh_ret); return retError; } }
 
 #define GetUniqueHash(addr) static_cast<int32>((static_cast<uint32>(addr) + 2u 								\
 + (static_cast<uint32>(ImGui::TableGetRowIndex()) * static_cast<uint32>(ImGui::GetColumnIndex()))		\

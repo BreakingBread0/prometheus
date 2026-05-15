@@ -68,7 +68,7 @@ void statescript_registry::render() {
 				display_addr((__int64)rtti->stuclass_inherit);
 
 				ImGui::TableNextColumn();
-				display_addr(rtti->field_20);
+				display_addr(rtti->implementation_type);
 
 				ImGui::TableNextColumn();
 				display_addr(rtti->field_28);

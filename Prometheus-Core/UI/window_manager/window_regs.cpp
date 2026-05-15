@@ -22,7 +22,6 @@
 #include "../windows/comments_window.h"
 #include "../windows/CVD_Edit.h"
 #include "../windows/logicalbutton_names.h"
-#include "../windows/statescript_fuzzer.h"
 #include "../windows/entityadmin_window.h"
 #include "../windows/game_msg_window.h"
 #include "../windows/entity_window.h"
@@ -64,3 +63,5 @@
 #include "../windows/stu_object_edit.h"
 #include "../windows/component_window.h"
 #include "../windows/effect_tester.h"
+#include "../windows/gamestate_window.h"
+#include "../windows/MirrorSystem_explorer.h"

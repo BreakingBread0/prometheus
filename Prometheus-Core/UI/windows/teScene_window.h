@@ -66,7 +66,7 @@ class teScene_window : public window {
 					auto loader = comp_2->scene->resource_loader;
 					print_resload_entry("loader", loader->resload_entry);
 					STRUCT_MODIFIABLE(loader, field_10);
-					STRUCT_MODIFIABLE(loader, count_placeables);
+					STRUCT_MODIFIABLE(loader, placeables_num);
 					STRUCT_MODIFIABLE(loader, field_18);
 					STRUCT_MODIFIABLE(loader, field_20);
 					STRUCT_MODIFIABLE(loader, field_24);
@@ -76,7 +76,7 @@ class teScene_window : public window {
 
 					if (imgui_helpers::beginTable("placeables", {"Addr", "Type", "CASCData", "LoadState", "FilterFlags", "field_33", "field_34"}))
 					{
-						for (int i = 0; i < loader->count_placeables; i++)
+						for (int i = 0; i < loader->placeables_num; i++)
 						{
 							auto item = &loader->placeables[i];
 							ImGui::PushID(i);

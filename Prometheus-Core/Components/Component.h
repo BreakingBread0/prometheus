@@ -1,5 +1,6 @@
 #ifndef PROMETHEUS_COMPONENT_H
 #define PROMETHEUS_COMPONENT_H
+#include <game.h>
 
 struct ComponentBase;
 struct ComponentCreator;

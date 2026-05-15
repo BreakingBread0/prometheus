@@ -175,6 +175,10 @@ void player_spawner::template_localPlayer() {
 std::pair<Entity*, Entity*> player_spawner::spawn() {
 	controller_ent = spawn_ent(controller_info);
 	model_ent = spawn_ent(model_info);
+	auto filter_bits = model_ent->getById<Component_10_FilterBits>(0x10);
+	owassert(filter_bits);
+	filter_bits->filter_bits |= 0x100;
+	filter_bits->FilterBitsMakeFinal();
 	if (!controller_ent || !model_ent) {
 		return {};
 	}

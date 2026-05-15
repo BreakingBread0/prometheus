@@ -6,6 +6,7 @@
 
 //TODO: teStagedObjectMgr
 
+struct Component_2_AssetManager;
 
 //https://github.com/overtools/OWLib/blob/develop/TankLib/Enums.cs
 //NOTE: Not everything is implemented in 0.8 yet (for example Text is not)
@@ -138,7 +139,7 @@ struct teScene_ResourceLoader
         Component_2_AssetManager* comp2_backref;
         STRUCT_PLACE(MisalignedResourceLoadEntry*, resload_entry, 0x8);
         STRUCT_PLACE(__int32, field_10, 0x10);
-        STRUCT_PLACE(__int32, count_placeables, 0x14);
+        STRUCT_PLACE(__int32, placeables_num, 0x14);
         STRUCT_PLACE(__int64, field_18, 0x18);
         STRUCT_PLACE(__int32, field_20, 0x20);
         STRUCT_PLACE(__int32, field_24, 0x24);

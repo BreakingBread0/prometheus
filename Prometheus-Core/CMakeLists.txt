@@ -96,7 +96,6 @@ add_library(Prometheus-Core SHARED
         "UI/windows/pvpgame_explorer.h"
         "UI/windows/radio_selector_window.h"
         "UI/windows/statescript_fake_logicalbtn.h"
-        "UI/windows/statescript_fuzzer.h"
         "UI/windows/statescript_graph_window.h"
         "UI/windows/statescript_info.h"
         "UI/windows/statescript_list.h"
@@ -173,6 +172,12 @@ add_library(Prometheus-Core SHARED
         Components/Component_2_AssetManager.h
         Components/Component_54_LobbyMap.h
         UI/windows/teScene_window.h
+        UI/windows/gamestate_window.h
+        Systems/Preexisting/System_29_MirrorSystem.h
+        Systems/Preexisting/System_22_NetworkEventSystem.h
+        Systems/Preexisting/System_29_MirrorSystem.h
+        UI/windows/MirrorSystem_explorer.h
+        Components/Component_54_LobbyMap.cpp
 )
 target_include_directories(Prometheus-Core PRIVATE ${PROJECT_SOURCE_DIR}/)
 

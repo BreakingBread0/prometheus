@@ -8,6 +8,18 @@ class entityadmin_timing : public window {
 	inline void render() override {
 		if (open_window()) {
 			auto ea = GameEntityAdmin();
+
+			ImGui::Text("Timestamp CF (EA): %d", ea->timestamp_cf);
+
+			auto local_ent = ea->getLocalEnt();
+			if (local_ent)
+			{
+				ImGui::Text("Local Ent: %s", local_ent->toString().c_str());
+				auto fn = (double(*)(Entity*, EntityAdminBase*))(globals::gameBase + 0x103eb50);
+				double timing_frame = fn(local_ent, ea);
+				ImGui::Text("Timing Frame: %lf", timing_frame);
+			}
+
 			auto timing = ea->GameEA_timing;
 
 			display_addr((__int64)timing, "Timing Addr");

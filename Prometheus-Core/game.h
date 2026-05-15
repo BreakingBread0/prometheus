@@ -5,6 +5,32 @@
 #include "idadefs.h"
 #include "Atlas/STU/RTTI/STUInfo.h"
 
+struct MisalignedResourceLoadEntry {
+	__int64 resource_ptr;
+	__int32 flags;
+	__int32 field_C;
+	__int64 resource_id;
+	MisalignedResourceLoadEntry* hashlist_next;
+	__int64 resource_load_entry; //NULL wenn geladen
+	__int64 assetpackItem_backref; //NULL wenn geladen
+	__int32 field_30;
+	__int32 mutex;
+
+	template <typename T>
+	T* get_as() {
+		return (T*)resource_ptr;
+	}
+
+	inline MisalignedResourceLoadEntry* align() {
+		return (MisalignedResourceLoadEntry*)((__int64)this & 0xFFFFFFFFFFFFFFC0);
+	}
+
+	inline bool valid() {
+		static uintptr_t INVALID_ADDR = 0xFFFFFFFFFFFFFFFF;
+		return align() != nullptr && reinterpret_cast<uintptr_t>(this) != INVALID_ADDR;
+	}
+};
+
 struct LogicalButtonName // sizeof=0x18
 {
 	__int32 key_id;
@@ -134,10 +160,18 @@ inline const char* GetGameStateStr(GameState state) {
 	return "Unknown";
 }
 
+struct GameStateSubscriber
+{
+	__int64 callback;
+	__int64 arg;
+};
+
 struct GameStateStru {
 	GameState current_state;
 	GameState wanted_state;
 	const char* state_str;
+	char field_10;
+	teList<GameStateSubscriber> subscribers; //Only 0xc9b3f0.
 };
 
 inline GameStateStru* GetGameState() {

@@ -205,9 +205,10 @@ public:
 
 	template <typename T>
 	static inline std::shared_ptr<window> create_by_type(window* from) {
-		auto self = from->this_instance.lock();
-		if (!self)
-			return {};
+		//TODO: Why is this here
+		// auto self = from->this_instance.lock();
+		// if (!self)
+		// 	return {};
 		for (auto& wind : s_all_windows()) {
 			if (dynamic_cast<T*>(wind.second.helper_instance.get()) != nullptr) {
 				return add_window(wind.second.helper_instance->create_self(), from);
