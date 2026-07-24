@@ -7,6 +7,35 @@
 #include "Logs/Logs.h"
 #include "STU_Editable.h"
 
+struct hero_hp { int health, armour, shield; };
+
+// hp/armour/shield fallback, stat descriptors are CDN-only so absent offline
+static hero_hp lookup_hero_hp(__int64 heroid) {
+	switch (heroid & 0xFF) {
+	case 0x42: return { 200, 0, 0 };   // McCree
+	case 0x29: return { 200, 0, 0 };   // Genji
+	case 0x08: return { 200, 0, 0 };   // Pharah
+	case 0x02: return { 250, 0, 0 };   // Reaper
+	case 0x6e: return { 200, 0, 0 };   // Soldier: 76
+	case 0x03: return { 150, 0, 0 };   // Tracer
+	case 0x15: return { 200, 50, 0 };  // Bastion
+	case 0x05: return { 200, 0, 0 };   // Hanzo
+	case 0x65: return { 200, 0, 0 };   // Junkrat
+	case 0xdd: return { 250, 0, 0 };   // Mei
+	case 0x06: return { 200, 0, 0 };   // Torbjorn
+	case 0x0a: return { 200, 0, 0 };   // Widowmaker
+	case 0x07: return { 300, 200, 0 }; // Reinhardt
+	case 0x40: return { 600, 0, 0 };   // Roadhog
+	case 0x09: return { 400, 100, 0 }; // Winston
+	case 0x68: return { 200, 0, 200 }; // Zarya
+	case 0x79: return { 200, 0, 0 };   // Lucio
+	case 0x04: return { 200, 0, 0 };   // Mercy
+	case 0x16: return { 100, 0, 100 }; // Symmetra
+	case 0x20: return { 50, 0, 100 };  // Zenyatta
+	default:   return { 200, 0, 0 };
+	}
+}
+
 void player_spawner::modify_ent(spawn_info info, Entity* ent) {
 	auto game_ea = GameEntityAdmin();
 	//Entity* ent = game_ea->getEntById(info.latest_entid);
@@ -39,13 +68,19 @@ void player_spawner::modify_ent(spawn_info info, Entity* ent) {
 	}
 
 	Component_28_STUHealthComponent* health = ent->getById<Component_28_STUHealthComponent>(0x28);
-	if (health && info.set_health) {
-		auto& part = health->normal_health[0];
-		part.part_enabled = 1;
-		part.curr_health = 169;
-		part.max_health = 200;
-		part.some_other_flag = 1;
-		part.field_10 = 1;
+	// only seed when empty so a server stays authoritative
+	if (health && info.set_health && health->normal_health[0].max_health <= 0.0f) {
+		hero_hp hp = lookup_hero_hp(info.heroid);
+		auto set_part = [](HealthPart& p, int amount) {
+			p.part_enabled = amount > 0 ? 1 : 0;
+			p.max_health = (float)amount;
+			p.curr_health = (float)amount;
+			p.some_other_flag = amount > 0 ? 1 : 0;
+			p.field_10 = amount > 0 ? 1 : 0;
+		};
+		set_part(health->normal_health[0], hp.health);
+		set_part(health->armour_health[0], hp.armour);
+		set_part(health->shield_health[0], hp.shield);
 	}
 
 	Component_2F_LocalPlayer* lp = ent->getById<Component_2F_LocalPlayer>(0x2F);
